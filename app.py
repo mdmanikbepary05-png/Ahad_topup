@@ -1,8 +1,33 @@
-from flask import Flask, render_template_string
+from flask import Flask, render_template_string, request, jsonify
+import requests
 
 app = Flask(__name__)
 
-# সম্পূর্ণ হোমপেজ ও অর্ডার পেজের এইচটিএমএল ডিজাইন একসাথে
+# তোমার টেলিগ্রাম বট ক্রেডেনশিয়ালস
+TELEGRAM_BOT_TOKEN = "8970671481:AAFACF5V3b59JyLbdBNzszEH5VAlyefhLww"
+TELEGRAM_ADMIN_CHAT_ID = "8662169982"
+
+def send_telegram_notification(order_details):
+    try:
+        message = (
+            f"🚨 **New Order Received!** 🚨\n\n"
+            f"👤 **Service:** {order_details.get('service')}\n"
+            f"🎮 **UID/Details:** {order_details.get('uid')}\n"
+            f"📦 **Package:** {order_details.get('package')}\n"
+            f"💳 **Payment:** {order_details.get('payment')}\n"
+            f"💰 **Amount:** {order_details.get('amount')}"
+        )
+        url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
+        payload = {
+            "chat_id": TELEGRAM_ADMIN_CHAT_ID,
+            "text": message,
+            "parse_mode": "Markdown"
+        }
+        requests.post(url, json=payload)
+    except Exception as e:
+        print("Telegram Error:", e)
+
+# সম্পূর্ণ স্টাইলিশ অ্যাপ ডিজাইন (এক ফাইলের মধ্যে)
 INDEX_TEMPLATE = """
 <!DOCTYPE html>
 <html lang="bn">
@@ -18,33 +43,47 @@ INDEX_TEMPLATE = """
     </style>
 </head>
 <body class="pb-24">
-    <!-- Top Header -->
-    <header class="flex justify-between items-center p-4 bg-slate-900 border-b border-slate-800 sticky top-0 z-50">
-        <div class="flex items-center space-x-2">
-            <span class="text-xl font-bold tracking-wider text-emerald-400">AHAD TOPUP</span>
+
+    <!-- Welcome Modal / Notice -->
+    <div id="noticeModal" class="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-700 w-full max-w-sm rounded-2xl p-5 text-center shadow-2xl">
+            <div class="w-12 h-12 bg-emerald-500/20 text-emerald-400 rounded-full flex items-center justify-center mx-auto mb-3 text-xl">
+                <i class="fa-solid fa-bullhorn"></i>
+            </div>
+            <h3 class="text-lg font-bold text-white mb-2">স্বাগতম Ahad Topup-এ!</h3>
+            <p class="text-xs text-slate-300 mb-4">আমাদের অফিশিয়াল টেলিগ্রাম চ্যানেল ও সেটআপ ভিডিও দেখতে নিচের লিঙ্কে জয়েন করুন।</p>
+            <a href="https://t.me/ahadtopup" target="_blank" class="block w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-xl text-sm mb-2 transition">
+                <i class="fa-brands fa-telegram mr-1.5"></i> Telegram Channel
+            </a>
+            <button onclick="closeNotice()" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold py-2 rounded-xl text-xs transition">
+                CLOSE & CONTINUE
+            </button>
         </div>
+    </div>
+
+    <!-- Top Header -->
+    <header class="flex justify-between items-center p-4 bg-slate-900 border-b border-slate-800 sticky top-0 z-40">
+        <span class="text-xl font-bold tracking-wider text-emerald-400">AHAD TOPUP</span>
         <div class="flex items-center space-x-3">
             <div class="flex items-center bg-emerald-600/20 border border-emerald-500/50 px-3 py-1.5 rounded-full">
                 <i class="fa-solid fa-wallet text-emerald-400 mr-1.5"></i>
                 <span class="text-sm font-semibold text-emerald-300">0 ৳</span>
             </div>
-            <div class="w-9 h-9 bg-slate-800 border border-slate-700 rounded-full flex items-center justify-center text-slate-300">
-                <i class="fa-solid fa-user text-sm"></i>
-            </div>
         </div>
     </header>
 
-    <!-- Main Content Container -->
+    <!-- Main Content -->
     <main class="p-4 max-w-md mx-auto">
-        <div class="w-full h-36 bg-slate-800 rounded-xl mb-6 overflow-hidden relative border border-slate-700 flex items-center justify-center">
-            <div class="text-center">
+        <div class="w-full h-36 bg-slate-800 rounded-xl mb-6 relative border border-slate-700 flex items-center justify-center overflow-hidden">
+            <div class="text-center p-4">
                 <i class="fa-solid fa-fire text-amber-500 text-3xl mb-1"></i>
-                <p class="text-sm font-medium text-slate-300">স্পেশাল অফার ও ডিসকাউন্ট!</p>
+                <p class="text-sm font-medium text-slate-300">ফ্রি ফায়ার ইনস্ট্যান্ট অটো টপ-আপ প্ল্যাটফর্ম</p>
             </div>
         </div>
 
         <h2 class="text-center font-bold tracking-wider text-slate-200 mb-4 text-lg border-b border-slate-800 pb-2">REGULAR TOPUP</h2>
 
+        <!-- Cards matching exact categories -->
         <div class="grid grid-cols-3 gap-3">
             <a href="/order/ff-likes" class="card-bg p-2.5 rounded-xl text-center flex flex-col items-center hover:border-emerald-500 transition">
                 <div class="w-16 h-16 bg-slate-800 rounded-lg mb-2 flex items-center justify-center border border-slate-700">
@@ -85,8 +124,13 @@ INDEX_TEMPLATE = """
         </div>
     </main>
 
+    <!-- Floating Circular Support Button -->
+    <a href="https://t.me/ahahackr" target="_blank" class="fixed bottom-20 right-4 w-14 h-14 bg-blue-500 text-white rounded-full flex items-center justify-center shadow-xl shadow-blue-500/40 z-50 hover:bg-blue-600 transition">
+        <i class="fa-brands fa-telegram text-2xl"></i>
+    </a>
+
     <!-- Bottom Navigation Bar -->
-    <nav class="fixed bottom-0 left-0 right-0 bg-slate-900 border-t border-slate-800 flex justify-around items-center h-16 z-50 max-w-md mx-auto">
+    <nav class="fixed bottom-0 left-0 right-0 bg-slate-900 border-t border-slate-800 flex justify-around items-center h-16 z-40 max-w-md mx-auto">
         <a href="/" class="flex flex-col items-center text-emerald-400">
             <i class="fa-solid fa-house text-lg"></i>
             <span class="text-[10px] mt-1 font-medium">Home</span>
@@ -110,6 +154,12 @@ INDEX_TEMPLATE = """
             <span class="text-[10px] mt-1 font-medium">My Account</span>
         </a>
     </nav>
+
+    <script>
+        function closeNotice() {
+            document.getElementById('noticeModal').style.display = 'none';
+        }
+    </script>
 </body>
 </html>
 """
@@ -120,7 +170,7 @@ ORDER_TEMPLATE = """
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Order - Ahad Topup</title>
+    <title>{{ title }} - Ahad Topup</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -130,59 +180,96 @@ ORDER_TEMPLATE = """
     </style>
 </head>
 <body class="pb-20">
-    <header class="flex items-center p-4 bg-slate-900 border-b border-slate-800 sticky top-0 z-50">
+    <header class="flex items-center p-4 bg-slate-900 border-b border-slate-800 sticky top-0 z-40">
         <a href="/" class="text-slate-300 mr-4 text-lg"><i class="fa-solid fa-arrow-left"></i></a>
         <h1 class="text-base font-bold uppercase tracking-wider text-slate-200">{{ title }}</h1>
     </header>
 
-    <div class="p-4 max-w-md mx-auto space-y-5">
+    <form action="/submit-order" method="POST" class="p-4 max-w-md mx-auto space-y-5">
+        <input type="hidden" name="service" value="{{ title }}">
+        
+        <!-- UID / Input Box -->
         <div class="bg-slate-900 p-4 rounded-xl border border-slate-800">
-            <label class="block text-xs font-semibold text-slate-400 mb-2">ENTER PLAYER UID</label>
-            <input type="text" placeholder="Enter your Free Fire UID" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-3 text-sm text-white focus:outline-none focus:border-emerald-500">
+            <label class="block text-xs font-semibold text-slate-400 mb-2">
+                {% if 'Like' in title %}ENTER PLAYER UID OR PROFILE LINK{% else %}ENTER PLAYER UID{% endif %}
+            </label>
+            <input type="text" name="uid" required placeholder="Enter here..." class="w-full bg-slate-800 border border-slate-700 rounded-lg p-3 text-sm text-white focus:outline-none focus:border-emerald-500">
         </div>
 
+        <!-- Specific Packages based on Category -->
         <div>
             <label class="block text-xs font-semibold text-slate-400 mb-2">SELECT PACKAGE</label>
             <div class="grid grid-cols-2 gap-3">
-                <div onclick="selectPackage(this)" class="package-card p-3 rounded-xl cursor-pointer text-center transition">
-                    <p class="text-sm font-bold text-white">100 Diamonds</p>
-                    <p class="text-xs text-emerald-400 font-semibold mt-1">85 ৳</p>
+                {% for pkg, price in packages.items() %}
+                <div onclick="selectPackage(this, '{{ pkg }} - {{ price }}')" class="package-card p-3 rounded-xl cursor-pointer text-center transition">
+                    <p class="text-sm font-bold text-white">{{ pkg }}</p>
+                    <p class="text-xs text-emerald-400 font-semibold mt-1">{{ price }}</p>
                 </div>
-                <div onclick="selectPackage(this)" class="package-card p-3 rounded-xl cursor-pointer text-center transition">
-                    <p class="text-sm font-bold text-white">310 Diamonds</p>
-                    <p class="text-xs text-emerald-400 font-semibold mt-1">250 ৳</p>
-                </div>
-                <div onclick="selectPackage(this)" class="package-card p-3 rounded-xl cursor-pointer text-center transition">
-                    <p class="text-sm font-bold text-white">520 Diamonds</p>
-                    <p class="text-xs text-emerald-400 font-semibold mt-1">410 ৳</p>
-                </div>
-                <div onclick="selectPackage(this)" class="package-card p-3 rounded-xl cursor-pointer text-center transition">
-                    <p class="text-sm font-bold text-white">Weekly Membership</p>
-                    <p class="text-xs text-emerald-400 font-semibold mt-1">165 ৳</p>
-                </div>
+                {% endfor %}
             </div>
+            <input type="hidden" name="package" id="selectedPackageInput" required>
         </div>
 
+        <!-- Payment Method -->
         <div>
             <label class="block text-xs font-semibold text-slate-400 mb-2">SELECT PAYMENT</label>
             <div class="grid grid-cols-3 gap-3">
-                <button class="bg-slate-900 border border-slate-700 p-3 rounded-xl text-center text-xs font-bold text-pink-500 hover:border-pink-500 transition">bKash</button>
-                <button class="bg-slate-900 border border-slate-700 p-3 rounded-xl text-center text-xs font-bold text-orange-500 hover:border-orange-500 transition">Nagad</button>
-                <button class="bg-slate-900 border border-slate-700 p-3 rounded-xl text-center text-xs font-bold text-purple-500 hover:border-purple-500 transition">Rocket</button>
+                <button type="button" onclick="selectPayment(this, 'bKash')" class="pay-btn bg-slate-900 border border-slate-700 p-3 rounded-xl text-center text-xs font-bold text-pink-500 transition">bKash</button>
+                <button type="button" onclick="selectPayment(this, 'Nagad')" class="pay-btn bg-slate-900 border border-slate-700 p-3 rounded-xl text-center text-xs font-bold text-orange-500 transition">Nagad</button>
+                <button type="button" onclick="selectPayment(this, 'Rocket')" class="pay-btn bg-slate-900 border border-slate-700 p-3 rounded-xl text-center text-xs font-bold text-purple-500 transition">Rocket</button>
             </div>
+            <input type="hidden" name="payment" id="selectedPaymentInput" required>
         </div>
 
-        <button class="w-full bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold py-3.5 rounded-xl shadow-lg shadow-emerald-500/20 transition mt-4">
+        <button type="submit" class="w-full bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold py-3.5 rounded-xl shadow-lg shadow-emerald-500/25 transition mt-4">
             ORDER NOW
         </button>
-    </div>
+    </form>
+
+    <!-- Floating Circular Support Button -->
+    <a href="https://t.me/ahahackr" target="_blank" class="fixed bottom-6 right-4 w-14 h-14 bg-blue-500 text-white rounded-full flex items-center justify-center shadow-xl shadow-blue-500/40 z-50 hover:bg-blue-600 transition">
+        <i class="fa-brands fa-telegram text-2xl"></i>
+    </a>
 
     <script>
-        function selectPackage(element) {
+        function selectPackage(element, pkgName) {
             document.querySelectorAll('.package-card').forEach(card => card.classList.remove('selected'));
             element.classList.add('selected');
+            document.getElementById('selectedPackageInput').value = pkgName;
+        }
+
+        function selectPayment(element, method) {
+            document.querySelectorAll('.pay-btn').forEach(btn => btn.style.borderColor = '#334155');
+            element.style.borderColor = '#10b981';
+            document.getElementById('selectedPaymentInput').value = method;
         }
     </script>
+</body>
+</html>
+"""
+
+SUCCESS_TEMPLATE = """
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Success</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style> body { background-color: #0f172a; color: #f8fafc; font-family: sans-serif; } </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4">
+    <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl text-center max-w-sm w-full shadow-2xl">
+        <div class="w-16 h-16 bg-emerald-500/20 text-emerald-400 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl">
+            <i class="fa-solid fa-check"></i>
+        </div>
+        <h2 class="text-xl font-bold text-white mb-2">অর্ডার সফল হয়েছে!</h2>
+        <p class="text-xs text-slate-300 mb-6">আপনার অর্ডারটি রিসিভ করা হয়েছে এবং টেলিগ্রাম বটে নোটিফিকেশন পাঠানো হয়েছে। খুব শীঘ্রই প্রসেস করা হবে।</p>
+        <a href="/" class="block w-full bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold py-3 rounded-xl text-sm transition">
+            BACK TO HOME
+        </a>
+    </div>
 </body>
 </html>
 """
@@ -193,16 +280,56 @@ def home():
 
 @app.route('/order/<service_type>')
 def order_page(service_type):
-    titles = {
-        'ff-likes': 'FF Likes Order',
-        'uid-topup': 'UID Topup',
-        'unipin': 'Unipin Voucher',
-        'weekly-monthly': 'Weekly & Monthly Offer',
-        'level-up': 'Level Up Pass',
-        'weekly-lite': 'Weekly Lite'
+    # নির্দিষ্ট সার্ভিস অনুযায়ী আলাদা আলাদা প্যাকেজ লিস্ট
+    services = {
+        'ff-likes': {
+            'title': 'FF Likes',
+            'packages': {'100 Likes': '30 ৳', '500 Likes': '130 ৳', '1000 Likes': '250 ৳', '2000 Likes': '480 ৳'}
+        },
+        'uid-topup': {
+            'title': 'UID Topup',
+            'packages': {'100 Diamonds': '85 ৳', '310 Diamonds': '250 ৳', '520 Diamonds': '410 ৳', '1060 Diamonds': '820 ৳'}
+        },
+        'unipin': {
+            'title': 'Unipin Voucher',
+            'packages': {'Unipin 50 BDT': '50 ৳', 'Unipin 100 BDT': '100 ৳', 'Unipin 500 BDT': '490 ৳'}
+        },
+        'weekly-monthly': {
+            'title': 'Weekly Monthly',
+            'packages': {'Weekly Membership': '165 ৳', 'Monthly Membership': '520 ৳', 'Weekly + Monthly': '680 ৳'}
+        },
+        'level-up': {
+            'title': 'Level Up Pass',
+            'packages': {'Level Up Pass': '95 ৳'}
+        },
+        'weekly-lite': {
+            'title': 'Weekly Lite',
+            'packages': {'Weekly Lite Pass': '80 ৳'}
+        }
     }
-    title = titles.get(service_type, 'Topup Service')
-    return render_template_string(ORDER_TEMPLATE, title=title)
+    
+    data = services.get(service_type, {'title': 'Topup Service', 'packages': {'Standard Pack': '100 ৳'}})
+    return render_template_string(ORDER_TEMPLATE, title=data['title'], packages=data['packages'])
+
+@app.route('/submit-order', methods=['POST'])
+def submit_order():
+    service = request.form.get('service')
+    uid = request.form.get('uid')
+    package = request.form.get('package')
+    payment = request.form.get('payment')
+    
+    order_data = {
+        'service': service,
+        'uid': uid,
+        'package': package,
+        'payment': payment,
+        'amount': package.split(' - ')[-1] if ' - ' in package else 'N/A'
+    }
+    
+    # টেলিগ্রাম বটে নোটিফিকেশন পাঠানো
+    send_telegram_notification(order_data)
+    
+    return render_template_string(SUCCESS_TEMPLATE)
 
 if __name__ == '__main__':
     app.run(debug=True)
