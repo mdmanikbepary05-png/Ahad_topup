@@ -9,7 +9,7 @@ app.secret_key = 'ahad_topup_secret_key_secure'
 TELEGRAM_BOT_TOKEN = "8970671481:AAFACF5V3b59JyLbdBNzszEH5VAlyefhLww"
 TELEGRAM_ADMIN_CHAT_ID = "8662169982"
 
-# ডেমো ডাটাবেজ (মেমোরিতে ইউজার ও অর্ডার স্টোর করার জন্য)
+# ডেমো ডাটাবেজ
 users_db = {}
 orders_db = []
 
@@ -26,7 +26,6 @@ def send_telegram_order(order_id, order_details):
             f"👤 *User:* {order_details['username']}"
         )
         
-        # টেলিগ্রাম ইনলাইন বাটন (Green & Red)
         keyboard = {
             "inline_keyboard": [
                 [
@@ -47,7 +46,7 @@ def send_telegram_order(order_id, order_details):
     except Exception as e:
         print("Telegram Error:", e)
 
-# HTML Templates (সব এক ফাইলের ভেতর)
+# HTML Templates
 BASE_HEAD = """
 <!DOCTYPE html>
 <html lang="bn">
@@ -95,7 +94,6 @@ BOTTOM_NAV = """
 """
 
 INDEX_TEMPLATE = BASE_HEAD + """
-    <!-- Notice Modal -->
     <div id="noticeModal" class="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4">
         <div class="bg-slate-900 border border-slate-700 w-full max-w-sm rounded-2xl p-5 text-center shadow-2xl">
             <div class="w-12 h-12 bg-emerald-500/20 text-emerald-400 rounded-full flex items-center justify-center mx-auto mb-3 text-xl">
@@ -172,7 +170,6 @@ INDEX_TEMPLATE = BASE_HEAD + """
         </div>
     </main>
 
-    <!-- Support Button -->
     <a href="https://t.me/ahahackr" target="_blank" class="fixed bottom-20 right-4 w-14 h-14 bg-blue-500 text-white rounded-full flex items-center justify-center shadow-xl shadow-blue-500/40 z-50 hover:bg-blue-600 transition">
         <i class="fa-brands fa-telegram text-2xl"></i>
     </a>
@@ -219,12 +216,11 @@ ORDER_TEMPLATE = BASE_HEAD + """
             <input type="hidden" name="payment" id="selectedPaymentInput" required>
         </div>
 
-        <!-- Payment Number & TrxID Box -->
         <div id="paymentBox" class="hidden bg-slate-900 p-4 rounded-xl border border-emerald-500/50 space-y-3">
             <p class="text-xs text-slate-300">Send money to this number: <strong id="merchantNum" class="text-emerald-400"></strong></p>
             <div>
                 <label class="block text-xs font-semibold text-slate-400 mb-1">TRANSACTION ID (TrxID)</label>
-                <input type="text" name="trxid" placeholder="Enter TrxID" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-emerald-500">
+                <input type="text" name="trxid" required placeholder="Enter TrxID" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-emerald-500">
             </div>
         </div>
 
@@ -232,10 +228,6 @@ ORDER_TEMPLATE = BASE_HEAD + """
             SUBMIT ORDER
         </button>
     </form>
-
-    <a href="https://t.me/ahahackr" target="_blank" class="fixed bottom-20 right-4 w-14 h-14 bg-blue-500 text-white rounded-full flex items-center justify-center shadow-xl z-50">
-        <i class="fa-brands fa-telegram text-2xl"></i>
-    </a>
 
     <script>
         function selectPackage(element, pkgName) {
@@ -299,7 +291,7 @@ ACCOUNT_TEMPLATE = BASE_HEAD + """
                 {{ user.name[0].upper() }}
             </div>
             <h2 class="text-base font-bold text-white">{{ user.name }}</h2>
-            <p class="text-xs text-slate-400 mb-4">{{ user.email }}</p>
+            <p class="text-xs text-slate-400 mb-4">{{ user.username }}</p>
             <div class="bg-slate-800 p-3 rounded-xl border border-slate-700 text-left space-y-1">
                 <p class="text-xs text-slate-300"><i class="fa-solid fa-calendar-days text-emerald-400 mr-2"></i> Account Created: <strong>{{ user.joined_date }}</strong></p>
                 <p class="text-xs text-slate-300"><i class="fa-solid fa-shield-halved text-blue-400 mr-2"></i> Status: <strong class="text-emerald-400">Active</strong></p>
@@ -370,7 +362,7 @@ def home():
 def login():
     error = None
     if request.method == 'POST':
-        uname = request.form.get('username')
+        uname = request.form.get('username').strip()
         pwd = request.form.get('password')
         if uname in users_db and users_db[uname]['password'] == pwd:
             session['user'] = uname
@@ -382,9 +374,9 @@ def login():
 def signup():
     error = None
     if request.method == 'POST':
-        name = request.form.get('name')
-        email = request.form.get('email')
-        uname = request.form.get('username')
+        name = request.form.get('name').strip()
+        email = request.form.get('email').strip()
+        uname = request.form.get('username').strip()
         pwd = request.form.get('password')
         
         if uname in users_db:
@@ -393,6 +385,7 @@ def signup():
             users_db[uname] = {
                 'name': name,
                 'email': email,
+                'username': uname,
                 'password': pwd,
                 'joined_date': datetime.datetime.now().strftime("%d %B, %Y")
             }
@@ -454,42 +447,49 @@ def my_orders():
 def account():
     if 'user' not in session:
         return redirect(url_for('login'))
-    user_info = users_db.get(session['user'], {'name': 'User', 'email': 'N/A', 'joined_date': 'Today'})
+    user_info = users_db.get(session['user'], {'name': 'User', 'username': session['user'], 'joined_date': 'Today'})
     return render_template_string(ACCOUNT_TEMPLATE, user=user_info)
 
-# টেলিগ্রাম থেকে Callback হ্যান্ডেল করার জন্য রাউট (বটের সবুজ/লাল বাটনে ক্লিক করলে কাজ করবে)
+# টেলিগ্রাম থেকে ইনলাইন বাটন ক্লিক হ্যান্ডেল করার ফিক্সড রাউট
 @app.route('/telegram-webhook', methods=['POST'])
 def telegram_webhook():
     data = request.get_json()
-    if 'callback_query' in data:
+    if data and 'callback_query' in data:
         callback = data['callback_query']
         callback_data = callback['data']
         chat_id = callback['message']['chat']['id']
         message_id = callback['message']['message_id']
+        query_id = callback['id']
         
-        action, order_id_str = callback_data.split('_')
-        order_id = int(order_id_str)
-        
-        # অর্ডার স্ট্যাটাস আপডেট
-        for o in orders_db:
-            if o['id'] == order_id:
-                if action == 'complete':
-                    o['status'] = 'Completed'
-                    new_text = callback['message']['text'] + "\n\n✅ *Status: COMPLETED*"
-                else:
-                    o['status'] = 'Rejected'
-                    new_text = callback['message']['text'] + "\n\n❌ *Status: REJECTED*"
-                
-                # টেলিগ্রাম মেসেজ এডিট করে স্ট্যাটাস আপডেট করে দেওয়া
-                edit_url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/editMessageText"
-                requests.post(edit_url, json={
-                    "chat_id": chat_id,
-                    "message_id": message_id,
-                    "text": new_text,
-                    "parse_mode": "Markdown"
-                })
-                break
-                
+        try:
+            action, order_id_str = callback_data.split('_')
+            order_id = int(order_id_str)
+            
+            for o in orders_db:
+                if o['id'] == order_id:
+                    if action == 'complete':
+                        o['status'] = 'Completed'
+                        new_text = callback['message']['text'] + "\n\n✅ *Status: COMPLETED*"
+                    else:
+                        o['status'] = 'Rejected'
+                        new_text = callback['message']['text'] + "\n\n❌ *Status: REJECTED*"
+                    
+                    # টেলিগ্রাম মেসেজ আপডেট করা
+                    edit_url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/editMessageText"
+                    requests.post(edit_url, json={
+                        "chat_id": chat_id,
+                        "message_id": message_id,
+                        "text": new_text,
+                        "parse_mode": "Markdown"
+                    })
+                    
+                    # লোডিং বন্ধ করার জন্য অ্যানসার কল ব্যাক
+                    answer_url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/answerCallbackQuery"
+                    requests.post(answer_url, json={"callback_query_id": query_id, "text": f"Order {o['status']}!"})
+                    break
+        except Exception as e:
+            print("Webhook Error:", e)
+            
     return jsonify({"status": "ok"})
 
 if __name__ == '__main__':
