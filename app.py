@@ -10,17 +10,17 @@ TELEGRAM_SUPPORT = "https://t.me/ahadtopup"
 TELEGRAM_CHANNEL = "https://t.me/ahadtopup"
 BKASH_NUMBER = "01727246581"
 
-def send_telegram_order(player_id, package, txid):
+def send_telegram_order(player_id, category, package, txid):
     try:
         url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
         msg = (
-            f"🚨 *New Topup Order!* 🚨\n\n"
-            f"🆔 *Player ID:* `{player_id}`\n"
+            f"🔥 *AHAD TOPUP - NEW ORDER* 🔥\n\n"
+            f"📂 *Category:* {category}\n"
             f"📦 *Package:* {package}\n"
+            f"🆔 *Player UID:* `{player_id}`\n"
             f"💸 *TrxID:* `{txid}`\n"
             f"📱 *bKash No:* {BKASH_NUMBER}"
         )
-        # টেলিগ্রামে Yes/No বাটন পাঠানোর ব্যবস্থা
         keyboard = {
             "inline_keyboard": [
                 [{"text": "✅ Approve (Yes)", "callback_data": f"approve_{player_id}"},
@@ -40,42 +40,60 @@ HTML_TEMPLATE = """
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ahad Topup - Premium Free Fire Shop</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #0b0f19; margin: 0; padding-bottom: 80px; color: #fff; }
-        .header { background: #111827; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #1f2937; position: sticky; top: 0; z-index: 100; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #07090e; margin: 0; padding-bottom: 80px; color: #fff; }
+        .header { background: #0f172a; padding: 14px 16px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #1e293b; position: sticky; top: 0; z-index: 100; }
         .logo { font-size: 20px; font-weight: bold; color: #fff; display: flex; align-items: center; gap: 6px; }
-        .logo span { color: #00b862; }
-        .support-btn { background: #00b862; color: #fff; padding: 6px 14px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 13px; }
+        .logo span { color: #00ff88; }
+        .support-btn { background: #00ff88; color: #000; padding: 6px 14px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 13px; }
         
+        /* Modal Popup Styling */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: flex; justify-content: center; align-items: center; z-index: 9999; }
+        .modal-box { background: #111827; border: 2px solid #00ff88; width: 85%; max-width: 350px; padding: 20px; border-radius: 12px; text-align: center; box-shadow: 0 0 20px rgba(0,255,136,0.3); }
+        .modal-title { color: #ff4d4d; font-size: 18px; font-weight: bold; margin-bottom: 10px; }
+        .modal-desc { font-size: 13px; color: #d1d5db; margin-bottom: 20px; line-height: 1.5; }
+        .modal-btn { background: #00ff88; color: #000; border: none; padding: 10px 20px; font-weight: bold; border-radius: 6px; cursor: pointer; width: 100%; font-size: 14px; }
+
         /* Banner Slider */
-        .slider-container { position: relative; width: 100%; height: 180px; overflow: hidden; background: #111827; }
+        .slider-container { position: relative; width: 100%; height: 180px; overflow: hidden; background: #0f172a; }
         .slide { position: absolute; width: 100%; height: 100%; opacity: 0; transition: opacity 1s ease-in-out; background-size: cover; background-position: center; }
         .slide.active { opacity: 1; }
-        .banner-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(to bottom, rgba(0,0,0,0.2), rgba(11,15,25,0.8)); display: flex; align-items: flex-end; padding: 12px; box-sizing: border-box; }
-        .banner-tag { background: #00b862; color: #fff; padding: 4px 10px; border-radius: 4px; font-size: 13px; font-weight: bold; text-transform: uppercase; }
+        .banner-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(to bottom, rgba(0,0,0,0.2), rgba(7,9,14,0.9)); display: flex; align-items: flex-end; padding: 12px; box-sizing: border-box; }
+        .banner-tag { background: #00ff88; color: #000; padding: 4px 10px; border-radius: 4px; font-size: 12px; font-weight: bold; text-transform: uppercase; }
 
-        .section-title { font-size: 16px; font-weight: bold; color: #9ca3af; margin: 15px 16px 8px; text-transform: uppercase; letter-spacing: 1px; }
+        .section-title { font-size: 15px; font-weight: bold; color: #00ff88; margin: 18px 16px 10px; text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; gap: 5px; }
         
-        .grid-container { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 0 16px; margin-bottom: 15px; }
-        .card { background: #1f2937; border: 1px solid #374151; border-radius: 10px; padding: 12px; text-align: center; cursor: pointer; transition: 0.2s; }
-        .card:hover { border-color: #00b862; }
-        .card-title { font-size: 13px; font-weight: bold; color: #f3f4f6; margin-bottom: 4px; }
-        .card-price { font-size: 13px; color: #00b862; font-weight: bold; }
+        /* Category Grid */
+        .cat-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 0 16px; margin-bottom: 15px; }
+        .cat-card { background: #111827; border: 1px solid #1f2937; border-radius: 10px; padding: 14px; text-align: center; cursor: pointer; transition: 0.2s; text-decoration: none; color: #fff; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+        .cat-card:hover { border-color: #00ff88; background: #1f2937; }
+        .cat-card img { width: 45px; height: 45px; object-fit: contain; }
+        .cat-name { font-size: 13px; font-weight: bold; color: #f3f4f6; }
 
-        .form-box { background: #1f2937; margin: 0 16px 15px; padding: 16px; border-radius: 10px; border: 1px solid #374151; }
-        .form-box label { font-size: 13px; font-weight: bold; display: block; margin-bottom: 6px; color: #d1d5db; }
-        .form-box input, .form-box select { width: 100%; padding: 10px; background: #111827; border: 1px solid #374151; color: #fff; border-radius: 6px; font-size: 14px; box-sizing: border-box; margin-bottom: 10px; }
-        .check-btn { background: #00b862; color: #fff; width: 100%; padding: 10px; border: none; border-radius: 6px; font-weight: bold; font-size: 14px; cursor: pointer; }
+        /* Form Box */
+        .form-box { background: #111827; margin: 0 16px 20px; padding: 18px; border-radius: 12px; border: 1px solid #1f2937; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
+        .form-box label { font-size: 13px; font-weight: bold; display: block; margin-bottom: 6px; color: #00ff88; }
+        .form-box input, .form-box select { width: 100%; padding: 11px; background: #07090e; border: 1px solid #374151; color: #fff; border-radius: 8px; font-size: 14px; box-sizing: border-box; margin-bottom: 12px; }
+        .check-btn { background: linear-gradient(45deg, #00ff88, #00b862); color: #000; width: 100%; padding: 12px; border: none; border-radius: 8px; font-weight: bold; font-size: 15px; cursor: pointer; text-transform: uppercase; }
 
-        .leaderboard-box { background: #1f2937; margin: 0 16px 15px; border-radius: 10px; border: 1px solid #374151; padding: 12px; }
-        .lb-item { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #374151; font-size: 13px; }
+        .leaderboard-box { background: #111827; margin: 0 16px 20px; border-radius: 12px; border: 1px solid #1f2937; padding: 14px; }
+        .lb-item { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #1f2937; font-size: 13px; }
 
-        .nav-bar { position: fixed; bottom: 0; left: 0; width: 100%; background: #111827; border-top: 1px solid #1f2937; display: flex; justify-content: space-around; padding: 8px 0; z-index: 1000; }
-        .nav-item { text-decoration: none; color: #9ca3af; font-size: 11px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 3px; }
-        .nav-item.active { color: #00b862; font-weight: bold; }
+        .nav-bar { position: fixed; bottom: 0; left: 0; width: 100%; background: #0f172a; border-top: 1px solid #1e293b; display: flex; justify-content: space-around; padding: 8px 0; z-index: 100; }
+        .nav-item { text-decoration: none; color: #94a3b8; font-size: 11px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 3px; }
+        .nav-item.active { color: #00ff88; font-weight: bold; }
         .nav-item svg { width: 20px; height: 20px; fill: currentColor; }
     </style>
 </head>
 <body>
+
+    <!-- Age Warning Modal -->
+    <div class="modal-overlay" id="warningModal">
+        <div class="modal-box">
+            <div class="modal-title">⚠️ সতর্কবার্তা (Warning)</div>
+            <div class="modal-desc">১৮ বছরের নিচে কারো জন্য টপ-আপ করা নিষেধ এবং এটি সম্পূর্ণ বেআইনি। আপনি কি ১৮ বছরের উর্ধ্বে?</div>
+            <button class="modal-btn" onclick="closeModal()">হ্যাঁ, আমার বয়স ১৮+</button>
+        </div>
+    </div>
 
     <div class="header">
         <div class="logo"><span><b>AHAD</b></span>TOPUP</div>
@@ -83,63 +101,76 @@ HTML_TEMPLATE = """
     </div>
 
     <!-- FF Character Banners -->
-<div class="slider-container">
-    <div class="slide active" style="background-image: url('https://images.unsplash.com/photo-1542751371-adc38448a05e?w=600');">
-        <div class="banner-overlay"><div class="banner-tag">Ahad Topup Exclusive</div></div>
+    <div class="slider-container">
+        <div class="slide active" style="background-image: url('https://images.unsplash.com/photo-1542751371-adc38448a05e?w=600');">
+            <div class="banner-overlay"><div class="banner-tag">Alok & Chrono Special Offer</div></div>
+        </div>
+        <div class="slide" style="background-image: url('https://images.unsplash.com/photo-1538481199705-c710c4e965fc?w=600');">
+            <div class="banner-overlay"><div class="banner-tag">Weekly & Monthly Mega Discount</div></div>
+        </div>
+        <div class="slide" style="background-image: url('https://images.unsplash.com/photo-1511512578047-dfb367046420?w=600');">
+            <div class="banner-overlay"><div class="banner-tag">Level Up Pass & UID Topup</div></div>
+        </div>
     </div>
-    <div class="slide" style="background-image: url('https://images.unsplash.com/photo-1538481199705-c710c4e965fc?w=600');">
-        <div class="banner-overlay"><div class="banner-tag">Weekly & Monthly Member</div></div>
-    </div>
-    <div class="slide" style="background-image: url('https://images.unsplash.com/photo-1511512578047-dfb367046420?w=600');">
-        <div class="banner-overlay"><div class="banner-tag">Level Up Pass Offer</div></div>
-    </div>
-</div>
 
-    <div class="section-title">Select Package</div>
-    <div class="grid-container">
-        <div class="card">
-            <div class="card-title">Weekly Membership</div>
-            <div class="card-price">৳ 160</div>
+    <div class="section-title">⚡ 프리미엄 ক্যাটাগরি (Topup Categories)</div>
+    
+    <!-- 4 Main Free Fire Character / Category Options -->
+    <div class="cat-grid">
+        <div class="cat-card" onclick="selectCat('Weekly Offer')">
+            <img src="https://cdn-icons-png.flaticon.com/512/3112/3112946.png" alt="Weekly">
+            <div class="cat-name">উইকলি অফার (Weekly)</div>
         </div>
-        <div class="card">
-            <div class="card-title">Monthly Membership</div>
-            <div class="card-price">৳ 750</div>
+        <div class="cat-card" onclick="selectCat('Monthly Offer')">
+            <img src="https://cdn-icons-png.flaticon.com/512/3112/3112948.png" alt="Monthly">
+            <div class="cat-name">মান্থলি অফার (Monthly)</div>
         </div>
-        <div class="card">
-            <div class="card-title">115 Diamonds</div>
-            <div class="card-price">৳ 85</div>
+        <div class="cat-card" onclick="selectCat('UID Diamond')">
+            <img src="https://cdn-icons-png.flaticon.com/512/1164/1164951.png" alt="UID">
+            <div class="cat-name">প্লেয়ার ইউআইডি (UID Topup)</div>
         </div>
-        <div class="card">
-            <div class="card-title">Level Up Pass</div>
-            <div class="card-price">৳ 80</div>
+        <div class="cat-card" onclick="selectCat('Level Up Pass')">
+            <img src="https://cdn-icons-png.flaticon.com/512/3112/3112935.png" alt="Level Up">
+            <div class="cat-name">লেভেল আপ পাস (Level Up)</div>
         </div>
     </div>
 
     <div class="form-box">
-        <label>পেমেন্ট ও অর্ডার ফর্ম</label>
+        <label>💎 টপ-আপ অর্ডার ও পেমেন্ট ফর্ম</label>
         {% if success_msg %}
-            <p style="color: #00b862; font-weight: bold; font-size: 13px; background: rgba(0,184,98,0.1); padding: 8px; border-radius: 5px;">{{ success_msg }}</p>
+            <p style="color: #00ff88; font-weight: bold; font-size: 13px; background: rgba(0,255,136,0.1); padding: 10px; border-radius: 6px; border: 1px solid #00ff88; margin-bottom: 12px;">{{ success_msg }}</p>
         {% endif %}
         <form method="POST">
-            <input type="text" name="player_id" placeholder="Free Fire Player UID দিন" required>
+            <label>সিলেক্টেড ক্যাটাগরি:</label>
+            <input type="text" id="selectedCategory" name="category" value="Weekly Offer" readonly style="color: #00ff88; font-weight: bold;">
+            
+            <label>প্যাকেজ নির্বাচন করুন:</label>
             <select name="package" required>
-                <option value="">প্যাকেজ সিলেক্ট করুন</option>
                 <option value="Weekly Membership - ৳160">Weekly Membership - ৳160</option>
                 <option value="Monthly Membership - ৳750">Monthly Membership - ৳750</option>
                 <option value="115 Diamonds - ৳85">115 Diamonds - ৳85</option>
                 <option value="Level Up Pass - ৳80">Level Up Pass - ৳80</option>
             </select>
-            <div style="font-size: 12px; color: #9ca3af; margin-bottom: 8px;">বিকাশ সেন্ড মানি করুন: <b style="color: #00b862;">{{ bkash }}</b></div>
-            <input type="text" name="txid" placeholder="বিকাশ ট্রানজেকশন আইডি (TrxID) দিন" required>
-            <button type="submit" class="check-btn">ভেরিফাই করুন (Verify Order)</button>
+
+            <label>ফ্রি ফায়ার প্লেয়ার ইউআইডি (Player UID):</label>
+            <input type="text" name="player_id" placeholder="যেমন: 1234567890" required>
+
+            <div style="font-size: 13px; color: #94a3b8; margin-bottom: 8px; background: #07090e; padding: 8px; border-radius: 6px; border: 1px dashed #374151;">
+                বিকাশ পার্সোনাল সেন্ড মানি করুন: <b style="color: #00ff88;">{{ bkash }}</b>
+            </div>
+
+            <label>বিকাশ ট্রানজেকশন আইডি (TrxID):</label>
+            <input type="text" name="txid" placeholder="টাকা পাঠিয়ে TrxID এখানে দিন" required>
+
+            <button type="submit" class="check-btn">ভেরিফাই ও অর্ডার কনফার্ম করুন</button>
         </form>
     </div>
 
-    <div class="section-title">Top Buyers (Leaderboard)</div>
+    <div class="section-title">🏆 লিডারবোর্ড (Top Buyers)</div>
     <div class="leaderboard-box">
-        <div class="lb-item"><span>1. Rashed (UID: ***452)</span> <span style="color: #00b862;">Monthly</span></div>
-        <div class="lb-item"><span>2. Tanvir (UID: ***891)</span> <span style="color: #00b862;">Weekly</span></div>
-        <div class="lb-item"><span>3. Fahim (UID: ***230)</span> <span style="color: #00b862;">115 Diamonds</span></div>
+        <div class="lb-item"><span>1. Rashed (UID: ***452)</span> <span style="color: #00ff88;">Monthly</span></div>
+        <div class="lb-item"><span>2. Tanvir (UID: ***891)</span> <span style="color: #00ff88;">Weekly</span></div>
+        <div class="lb-item"><span>3. Fahim (UID: ***230)</span> <span style="color: #00ff88;">115 Diamonds</span></div>
     </div>
 
     <div class="nav-bar">
@@ -155,6 +186,18 @@ HTML_TEMPLATE = """
     </div>
 
     <script>
+        // Modal Control
+        function closeModal() {
+            document.getElementById('warningModal').style.display = 'none';
+        }
+
+        // Category Selection
+        function selectCat(catName) {
+            document.getElementById('selectedCategory').value = catName;
+            window.scrollTo({top: 550, behavior: 'smooth'});
+        }
+
+        // Banner Slider
         let slides = document.querySelectorAll('.slide');
         let currentSlide = 0;
         setInterval(() => {
@@ -171,12 +214,13 @@ HTML_TEMPLATE = """
 def home():
     success_msg = None
     if request.method == 'POST':
-        player_id = request.form.get('player_id')
+        category = request.form.get('category')
         package = request.form.get('package')
+        player_id = request.form.get('player_id')
         txid = request.form.get('txid')
         if player_id and package and txid:
-            send_telegram_order(player_id, package, txid)
-            success_msg = "অর্ডার সফলভাবে সাবমিট হয়েছে! একটু অপেক্ষা করুন, যাচাই করে ডায়মন্ড পাঠিয়ে দেওয়া হবে।"
+            send_telegram_order(player_id, category, package, txid)
+            success_msg = "অর্ডার সফলভাবে সাবমিট হয়েছে! ট্রানজেকশন যাচাই করে দ্রুত ডায়মন্ড পাঠিয়ে দেওয়া হবে।"
     return render_template_string(HTML_TEMPLATE, telegram_support=TELEGRAM_SUPPORT, telegram_channel=TELEGRAM_CHANNEL, bkash=BKASH_NUMBER, success_msg=success_msg)
 
 if __name__ == '__main__':
