@@ -1,6 +1,8 @@
 from flask import Flask, render_template_string, request, redirect, url_for, session, jsonify
 import requests
 import datetime
+import threading
+import time
 
 app = Flask(__name__)
 app.secret_key = 'ahad_topup_secret_key_secure'
@@ -45,6 +47,59 @@ def send_telegram_order(order_id, order_details):
         requests.post(url, json=payload)
     except Exception as e:
         print("Telegram Error:", e)
+
+# টেলিগ্রাম বাটন কাজ করার জন্য ব্যাকগ্রাউন্ড পোলিং সিস্টেম (লোডিং বা আটকে যাওয়ার সমস্যা চিরতরে সমাধান)
+def telegram_polling_worker():
+    offset = 0
+    while True:
+        try:
+            url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/getUpdates?offset={offset}&timeout=30"
+            response = requests.get(url, timeout=35)
+            if response.status_code == 200:
+                data = response.json()
+                for result in data.get('result', []):
+                    offset = result['update_id'] + 1
+                    if 'callback_query' in result:
+                        callback = result['callback_query']
+                        callback_data = callback['data']
+                        chat_id = callback['message']['chat']['id']
+                        message_id = callback['message']['message_id']
+                        query_id = callback['id']
+                        
+                        try:
+                            action, order_id_str = callback_data.split('_')
+                            order_id = int(order_id_str)
+                            
+                            for o in orders_db:
+                                if o['id'] == order_id:
+                                    if action == 'complete':
+                                        o['status'] = 'Completed'
+                                        new_text = callback['message']['text'] + "\n\n✅ *Status: COMPLETED*"
+                                    else:
+                                        o['status'] = 'Rejected'
+                                        new_text = callback['message']['text'] + "\n\n❌ *Status: REJECTED*"
+                                    
+                                    # টেলিগ্রাম মেসেজ আপডেট করা
+                                    edit_url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/editMessageText"
+                                    requests.post(edit_url, json={
+                                        "chat_id": chat_id,
+                                        "message_id": message_id,
+                                        "text": new_text,
+                                        "parse_mode": "Markdown"
+                                    })
+                                    
+                                    # লোডিং বন্ধ করার জন্য অ্যানসার কল ব্যাক
+                                    answer_url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/answerCallbackQuery"
+                                    requests.post(answer_url, json={"callback_query_id": query_id, "text": f"Order {o['status']}!"})
+                                    break
+                        except Exception as inner_e:
+                            print("Callback Parsing Error:", inner_e)
+        except Exception as e:
+            print("Polling Error:", e)
+        time.sleep(2)
+
+# ব্যাকগ্রাউন্ডে পোলিং থ্রেড স্টার্ট করা হলো
+threading.Thread(target=telegram_polling_worker, daemon=True).start()
 
 # HTML Templates
 BASE_HEAD = """
@@ -188,6 +243,18 @@ ORDER_TEMPLATE = BASE_HEAD + """
     <form action="/submit-order" method="POST" class="p-4 max-w-md mx-auto space-y-4">
         <input type="hidden" name="service" value="{{ title }}">
         
+        <!-- রুলস ও সতর্কবার্তা বক্স -->
+        <div class="bg-amber-500/10 border border-amber-500/40 p-3.5 rounded-xl space-y-2">
+            <div class="flex items-center text-amber-400 font-bold text-xs">
+                <i class="fa-solid fa-triangle-exclamation mr-1.5 text-sm"></i> গুরুত্বপূর্ণ নিয়মাবলী ও শর্তাবলি:
+            </div>
+            <ul class="text-[11px] text-slate-300 space-y-1 list-disc list-inside">
+                <li>অবশ্যම সঠিক <strong>Player UID</strong> প্রদান করুন।</li>
+                <li>ভুয়া বা ভুল UID অথবা ভুয়া TrxID প্রদান করলে আপনার অ্যাকাউন্ট <strong>চিরতরে ব্যান</strong> হতে পারে।</li>
+                <li>অর্ডার কমপ্লিট হওয়ার আগে গেম আইডি থেকে লগআউট বা নাম পরিবর্তন করবেন না।</li>
+            </ul>
+        </div>
+
         <div class="bg-slate-900 p-4 rounded-xl border border-slate-800">
             <label class="block text-xs font-semibold text-slate-400 mb-2">ENTER PLAYER UID</label>
             <input type="text" name="uid" required placeholder="Enter UID here..." class="w-full bg-slate-800 border border-slate-700 rounded-lg p-3 text-sm text-white focus:outline-none focus:border-emerald-500">
@@ -220,7 +287,7 @@ ORDER_TEMPLATE = BASE_HEAD + """
             <p class="text-xs text-slate-300">Send money to this number: <strong id="merchantNum" class="text-emerald-400"></strong></p>
             <div>
                 <label class="block text-xs font-semibold text-slate-400 mb-1">TRANSACTION ID (TrxID)</label>
-                <input type="text" name="trxid" required placeholder="Enter TrxID" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-emerald-500">
+                <input type="text" name="trxid" placeholder="Enter TrxID" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-emerald-500">
             </div>
         </div>
 
@@ -420,6 +487,7 @@ def submit_order():
         return redirect(url_for('login'))
         
     order_id = len(orders_db) + 1
+    trxid = request.form.get('trxid')
     order_data = {
         'id': order_id,
         'username': session['user'],
@@ -427,7 +495,7 @@ def submit_order():
         'uid': request.form.get('uid'),
         'package': request.form.get('package'),
         'payment': request.form.get('payment'),
-        'trxid': request.form.get('trxid'),
+        'trxid': trxid if trxid else 'N/A',
         'amount': request.form.get('package').split(' - ')[-1] if ' - ' in request.form.get('package') else 'N/A',
         'status': 'Pending'
     }
@@ -450,47 +518,5 @@ def account():
     user_info = users_db.get(session['user'], {'name': 'User', 'username': session['user'], 'joined_date': 'Today'})
     return render_template_string(ACCOUNT_TEMPLATE, user=user_info)
 
-# টেলিগ্রাম থেকে ইনলাইন বাটন ক্লিক হ্যান্ডেল করার ফিক্সড রাউট
-@app.route('/telegram-webhook', methods=['POST'])
-def telegram_webhook():
-    data = request.get_json()
-    if data and 'callback_query' in data:
-        callback = data['callback_query']
-        callback_data = callback['data']
-        chat_id = callback['message']['chat']['id']
-        message_id = callback['message']['message_id']
-        query_id = callback['id']
-        
-        try:
-            action, order_id_str = callback_data.split('_')
-            order_id = int(order_id_str)
-            
-            for o in orders_db:
-                if o['id'] == order_id:
-                    if action == 'complete':
-                        o['status'] = 'Completed'
-                        new_text = callback['message']['text'] + "\n\n✅ *Status: COMPLETED*"
-                    else:
-                        o['status'] = 'Rejected'
-                        new_text = callback['message']['text'] + "\n\n❌ *Status: REJECTED*"
-                    
-                    # টেলিগ্রাম মেসেজ আপডেট করা
-                    edit_url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/editMessageText"
-                    requests.post(edit_url, json={
-                        "chat_id": chat_id,
-                        "message_id": message_id,
-                        "text": new_text,
-                        "parse_mode": "Markdown"
-                    })
-                    
-                    # লোডিং বন্ধ করার জন্য অ্যানসার কল ব্যাক
-                    answer_url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/answerCallbackQuery"
-                    requests.post(answer_url, json={"callback_query_id": query_id, "text": f"Order {o['status']}!"})
-                    break
-        except Exception as e:
-            print("Webhook Error:", e)
-            
-    return jsonify({"status": "ok"})
-
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, use_reloader=False)
