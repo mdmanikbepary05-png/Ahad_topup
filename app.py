@@ -1,105 +1,16 @@
-from flask import Flask, render_template_string, request, redirect, url_for, session, jsonify
-import requests
+from flask import Flask, render_template_string, request, redirect, url_for, session
 import datetime
-import threading
-import time
 
 app = Flask(__name__)
 app.secret_key = 'ahad_topup_secret_key_secure'
-
-# টেলিগ্রাম ক্রেডেনশিয়ালস
-TELEGRAM_BOT_TOKEN = "8970671481:AAFACF5V3b59JyLbdBNzszEH5VAlyefhLww"
-TELEGRAM_ADMIN_CHAT_ID = "8662169982"
 
 # ডেমো ডাটাবেজ
 users_db = {}
 orders_db = []
 
-def send_telegram_order(order_id, order_details):
-    try:
-        message = (
-            f"🚨 *New Order #{order_id}* 🚨\n\n"
-            f"👤 *Service:* {order_details['service']}\n"
-            f"🎮 *UID:* {order_details['uid']}\n"
-            f"📦 *Package:* {order_details['package']}\n"
-            f"💳 *Payment:* {order_details['payment']}\n"
-            f"🔤 *TrxID:* `{order_details['trxid']}`\n"
-            f"💰 *Amount:* {order_details['amount']}\n"
-            f"👤 *User:* {order_details['username']}"
-        )
-        
-        keyboard = {
-            "inline_keyboard": [
-                [
-                    {"text": "✅ Complete", "callback_data": f"complete_{order_id}"},
-                    {"text": "❌ Reject", "callback_data": f"reject_{order_id}"}
-                ]
-            ]
-        }
-        
-        url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
-        payload = {
-            "chat_id": TELEGRAM_ADMIN_CHAT_ID,
-            "text": message,
-            "parse_mode": "Markdown",
-            "reply_markup": keyboard
-        }
-        requests.post(url, json=payload)
-    except Exception as e:
-        print("Telegram Error:", e)
-
-# টেলিগ্রাম বাটন কাজ করার জন্য ব্যাকগ্রাউন্ড পোলিং সিস্টেম (লোডিং বা আটকে যাওয়ার সমস্যা চিরতরে সমাধান)
-def telegram_polling_worker():
-    offset = 0
-    while True:
-        try:
-            url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/getUpdates?offset={offset}&timeout=30"
-            response = requests.get(url, timeout=35)
-            if response.status_code == 200:
-                data = response.json()
-                for result in data.get('result', []):
-                    offset = result['update_id'] + 1
-                    if 'callback_query' in result:
-                        callback = result['callback_query']
-                        callback_data = callback['data']
-                        chat_id = callback['message']['chat']['id']
-                        message_id = callback['message']['message_id']
-                        query_id = callback['id']
-                        
-                        try:
-                            action, order_id_str = callback_data.split('_')
-                            order_id = int(order_id_str)
-                            
-                            for o in orders_db:
-                                if o['id'] == order_id:
-                                    if action == 'complete':
-                                        o['status'] = 'Completed'
-                                        new_text = callback['message']['text'] + "\n\n✅ *Status: COMPLETED*"
-                                    else:
-                                        o['status'] = 'Rejected'
-                                        new_text = callback['message']['text'] + "\n\n❌ *Status: REJECTED*"
-                                    
-                                    # টেলিগ্রাম মেসেজ আপডেট করা
-                                    edit_url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/editMessageText"
-                                    requests.post(edit_url, json={
-                                        "chat_id": chat_id,
-                                        "message_id": message_id,
-                                        "text": new_text,
-                                        "parse_mode": "Markdown"
-                                    })
-                                    
-                                    # লোডিং বন্ধ করার জন্য অ্যানসার কল ব্যাক
-                                    answer_url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/answerCallbackQuery"
-                                    requests.post(answer_url, json={"callback_query_id": query_id, "text": f"Order {o['status']}!"})
-                                    break
-                        except Exception as inner_e:
-                            print("Callback Parsing Error:", inner_e)
-        except Exception as e:
-            print("Polling Error:", e)
-        time.sleep(2)
-
-# ব্যাকগ্রাউন্ডে পোলিং থ্রেড স্টার্ট করা হলো
-threading.Thread(target=telegram_polling_worker, daemon=True).start()
+# অ্যাডমিন ক্রেডেনশিয়াল (তোমার ইচ্ছামমত পরিবর্তন করে নিতে পারো)
+ADMIN_USERNAME = "ahadadmin"
+ADMIN_PASSWORD = "123"
 
 # HTML Templates
 BASE_HEAD = """
@@ -149,22 +60,6 @@ BOTTOM_NAV = """
 """
 
 INDEX_TEMPLATE = BASE_HEAD + """
-    <div id="noticeModal" class="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4">
-        <div class="bg-slate-900 border border-slate-700 w-full max-w-sm rounded-2xl p-5 text-center shadow-2xl">
-            <div class="w-12 h-12 bg-emerald-500/20 text-emerald-400 rounded-full flex items-center justify-center mx-auto mb-3 text-xl">
-                <i class="fa-solid fa-bullhorn"></i>
-            </div>
-            <h3 class="text-lg font-bold text-white mb-2">স্বাগতম Ahad Topup-এ!</h3>
-            <p class="text-xs text-slate-300 mb-4">অফিশিয়াল টেলিগ্রাম চ্যানেল ও আপডেট পেতে জয়েন করুন।</p>
-            <a href="https://t.me/ahadtopup" target="_blank" class="block w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-xl text-sm mb-2 transition">
-                <i class="fa-brands fa-telegram mr-1.5"></i> Telegram Channel
-            </a>
-            <button onclick="closeNotice()" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold py-2 rounded-xl text-xs transition">
-                CLOSE & CONTINUE
-            </button>
-        </div>
-    </div>
-
     <header class="flex justify-between items-center p-4 bg-slate-900 border-b border-slate-800 sticky top-0 z-40">
         <span class="text-xl font-bold tracking-wider text-emerald-400">AHAD TOPUP</span>
         <div class="flex items-center space-x-3">
@@ -224,14 +119,6 @@ INDEX_TEMPLATE = BASE_HEAD + """
             </a>
         </div>
     </main>
-
-    <a href="https://t.me/ahahackr" target="_blank" class="fixed bottom-20 right-4 w-14 h-14 bg-blue-500 text-white rounded-full flex items-center justify-center shadow-xl shadow-blue-500/40 z-50 hover:bg-blue-600 transition">
-        <i class="fa-brands fa-telegram text-2xl"></i>
-    </a>
-
-    <script>
-        function closeNotice() { document.getElementById('noticeModal').style.display = 'none'; }
-    </script>
 """ + BOTTOM_NAV
 
 ORDER_TEMPLATE = BASE_HEAD + """
@@ -287,7 +174,7 @@ ORDER_TEMPLATE = BASE_HEAD + """
             <p class="text-xs text-slate-300">Send money to this number: <strong id="merchantNum" class="text-emerald-400"></strong></p>
             <div>
                 <label class="block text-xs font-semibold text-slate-400 mb-1">TRANSACTION ID (TrxID)</label>
-                <input type="text" name="trxid" placeholder="Enter TrxID" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-emerald-500">
+                <input type="text" name="trxid" required placeholder="Enter TrxID" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-emerald-500">
             </div>
         </div>
 
@@ -418,6 +305,86 @@ AUTH_TEMPLATE = BASE_HEAD + """
 </html>
 """
 
+# অ্যাডমিন ড্যাশবোর্ড টেমপ্লেট
+ADMIN_DASHBOARD_TEMPLATE = BASE_HEAD + """
+    <header class="flex justify-between items-center p-4 bg-slate-900 border-b border-slate-800 sticky top-0 z-40">
+        <span class="text-xl font-bold tracking-wider text-amber-400">ADMIN DASHBOARD</span>
+        <a href="/admin/logout" class="bg-red-500/20 border border-red-500/40 text-red-400 px-3 py-1.5 rounded-lg text-xs font-bold">Logout</a>
+    </header>
+
+    <main class="p-4 max-w-2xl mx-auto space-y-4">
+        <h2 class="text-sm font-bold text-slate-400 uppercase tracking-wider">All User Orders</h2>
+        
+        {% if orders %}
+            {% for o in orders %}
+            <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl space-y-3">
+                <div class="flex justify-between items-center">
+                    <span class="text-xs font-bold text-emerald-400">Order #{{ o.id }} - {{ o.service }}</span>
+                    <span class="text-xs px-2.5 py-1 rounded-full font-bold 
+                        {% if o.status == 'Pending' %} bg-amber-500/20 text-amber-400 border border-amber-500/30
+                        {% elif o.status == 'Completed' %} bg-emerald-500/20 text-emerald-400 border border-emerald-500/30
+                        {% else %} bg-red-500/20 text-red-400 border border-red-500/30 {% endif %}">
+                        {{ o.status }}
+                    </span>
+                </div>
+                <div class="grid grid-cols-2 gap-2 text-xs text-slate-300 bg-slate-800/50 p-2.5 rounded-lg border border-slate-800">
+                    <p>User: <strong class="text-white">{{ o.username }}</strong></p>
+                    <p>UID: <strong class="text-white">{{ o.uid }}</strong></p>
+                    <p>Package: <strong class="text-white">{{ o.package }}</strong></p>
+                    <p>TrxID: <strong class="text-amber-400">{{ o.trxid }}</strong></p>
+                </div>
+                
+                {% if o.status == 'Pending' %}
+                <div class="flex space-x-2 pt-1">
+                    <a href="/admin/action/complete/{{ o.id }}" class="flex-1 bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold py-2 rounded-lg text-xs text-center transition">
+                        <i class="fa-solid fa-check mr-1"></i> Complete
+                    </a>
+                    <a href="/admin/action/reject/{{ o.id }}" class="flex-1 bg-red-500 hover:bg-red-600 text-white font-bold py-2 rounded-lg text-xs text-center transition">
+                        <i class="fa-solid fa-xmark mr-1"></i> Reject
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="text-center py-20 text-slate-500">
+                <i class="fa-solid fa-folder-open text-4xl mb-2"></i>
+                <p class="text-sm">কোনো অর্ডার জমা হয়নি!</p>
+            </div>
+        {% endif %}
+    </main>
+"""
+
+ADMIN_LOGIN_TEMPLATE = BASE_HEAD + """
+    <div class="flex items-center justify-center min-h-screen p-4">
+        <div class="bg-slate-900 border border-slate-800 w-full max-w-sm rounded-2xl p-6 shadow-2xl">
+            <h2 class="text-xl font-bold text-center text-amber-400 mb-1">ADMIN LOGIN</h2>
+            <p class="text-xs text-center text-slate-400 mb-6">অ্যাডমিন প্যানেলে প্রবেশ করুন</p>
+            
+            {% if error %}
+            <div class="bg-red-500/20 border border-red-500 text-red-300 text-xs p-3 rounded-xl mb-4 text-center">{{ error }}</div>
+            {% endif %}
+
+            <form method="POST" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 mb-1">ADMIN USERNAME</label>
+                    <input type="text" name="username" required class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-amber-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 mb-1">PASSWORD</label>
+                    <input type="password" name="password" required class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-amber-500">
+                </div>
+
+                <button type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-3 rounded-xl text-sm transition">
+                    LOGIN TO DASHBOARD
+                </button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
+"""
+
 # ফ্লাস্ক রাউটসমূহ
 @app.route('/')
 def home():
@@ -501,7 +468,6 @@ def submit_order():
     }
     
     orders_db.append(order_data)
-    send_telegram_order(order_id, order_data)
     return redirect(url_for('my_orders'))
 
 @app.route('/orders')
@@ -518,5 +484,44 @@ def account():
     user_info = users_db.get(session['user'], {'name': 'User', 'username': session['user'], 'joined_date': 'Today'})
     return render_template_string(ACCOUNT_TEMPLATE, user=user_info)
 
+# --- অ্যাডমিন প্যানেল রাউটসমূহ ---
+@app.route('/admin', methods=['GET', 'POST'])
+def admin_login():
+    error = None
+    if request.method == 'POST':
+        uname = request.form.get('username').strip()
+        pwd = request.form.get('password')
+        if uname == ADMIN_USERNAME and pwd == ADMIN_PASSWORD:
+            session['admin'] = True
+            return redirect(url_for('admin_dashboard'))
+        error = 'ভুল অ্যাডমিন ইউজারনেম বা পাসওয়ার্ড!'
+    return render_template_string(ADMIN_LOGIN_TEMPLATE, error=error)
+
+@app.route('/admin/dashboard')
+def admin_dashboard():
+    if not session.get('admin'):
+        return redirect(url_for('admin_login'))
+    return render_template_string(ADMIN_DASHBOARD_TEMPLATE, orders=orders_db)
+
+@app.route('/admin/action/<action_type>/<int:order_id>')
+def admin_action(action_type, order_id):
+    if not session.get('admin'):
+        return redirect(url_for('admin_login'))
+    
+    for o in orders_db:
+        if o['id'] == order_id:
+            if action_type == 'complete':
+                o['status'] = 'Completed'
+            elif action_type == 'reject':
+                o['status'] = 'Rejected'
+            break
+            
+    return redirect(url_for('admin_dashboard'))
+
+@app.route('/admin/logout')
+def admin_logout():
+    session.pop('admin', None)
+    return redirect(url_for('admin_login'))
+
 if __name__ == '__main__':
-    app.run(debug=True, use_reloader=False)
+    app.run(debug=True)
