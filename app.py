@@ -8,7 +8,14 @@ app.secret_key = 'ahad_topup_secret_key_secure'
 users_db = {}
 orders_db = []
 
-# অ্যাডমিন ক্রেডেনশিয়াল (তোমার ইচ্ছামমত পরিবর্তন করে নিতে পারো)
+# ডিফল্ট ওয়েবসাইট সেটিংস (যা অ্যাডমিন প্যানেল থেকে পরিবর্তন করা যাবে)
+site_settings = {
+    "site_title": "AHAD TOPUP",
+    "banner_text": "ফ্রি ফায়ার ইনস্ট্যান্ট অটো টপ-আপ",
+    "payment_number": "01727246581"
+}
+
+# অ্যাডমিন ক্রেডেনশিয়াল
 ADMIN_USERNAME = "ahadadmin"
 ADMIN_PASSWORD = "123"
 
@@ -19,7 +26,7 @@ BASE_HEAD = """
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ahad Topup</title>
+    <title>{{ settings.site_title }}</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -61,7 +68,7 @@ BOTTOM_NAV = """
 
 INDEX_TEMPLATE = BASE_HEAD + """
     <header class="flex justify-between items-center p-4 bg-slate-900 border-b border-slate-800 sticky top-0 z-40">
-        <span class="text-xl font-bold tracking-wider text-emerald-400">AHAD TOPUP</span>
+        <span class="text-xl font-bold tracking-wider text-emerald-400">{{ settings.site_title }}</span>
         <div class="flex items-center space-x-3">
             <div class="flex items-center bg-emerald-600/20 border border-emerald-500/50 px-3 py-1.5 rounded-full">
                 <i class="fa-solid fa-wallet text-emerald-400 mr-1.5"></i>
@@ -74,7 +81,7 @@ INDEX_TEMPLATE = BASE_HEAD + """
         <div class="w-full h-36 bg-slate-800 rounded-xl mb-6 relative border border-slate-700 flex items-center justify-center overflow-hidden">
             <div class="text-center p-4">
                 <i class="fa-solid fa-fire text-amber-500 text-3xl mb-1"></i>
-                <p class="text-sm font-medium text-slate-300">ফ্রি ফায়ার ইনস্ট্যান্ট অটো টপ-আপ</p>
+                <p class="text-sm font-medium text-slate-300">{{ settings.banner_text }}</p>
             </div>
         </div>
 
@@ -130,7 +137,6 @@ ORDER_TEMPLATE = BASE_HEAD + """
     <form action="/submit-order" method="POST" class="p-4 max-w-md mx-auto space-y-4">
         <input type="hidden" name="service" value="{{ title }}">
         
-        <!-- রুলস ও সতর্কবার্তা বক্স -->
         <div class="bg-amber-500/10 border border-amber-500/40 p-3.5 rounded-xl space-y-2">
             <div class="flex items-center text-amber-400 font-bold text-xs">
                 <i class="fa-solid fa-triangle-exclamation mr-1.5 text-sm"></i> গুরুত্বপূর্ণ নিয়মাবলী ও শর্তাবলি:
@@ -138,7 +144,6 @@ ORDER_TEMPLATE = BASE_HEAD + """
             <ul class="text-[11px] text-slate-300 space-y-1 list-disc list-inside">
                 <li>অবশ্যම সঠিক <strong>Player UID</strong> প্রদান করুন।</li>
                 <li>ভুয়া বা ভুল UID অথবা ভুয়া TrxID প্রদান করলে আপনার অ্যাকাউন্ট <strong>চিরতরে ব্যান</strong> হতে পারে।</li>
-                <li>অর্ডার কমপ্লিট হওয়ার আগে গেম আইডি থেকে লগআউট বা নাম পরিবর্তন করবেন না।</li>
             </ul>
         </div>
 
@@ -163,9 +168,9 @@ ORDER_TEMPLATE = BASE_HEAD + """
         <div>
             <label class="block text-xs font-semibold text-slate-400 mb-2">SELECT PAYMENT</label>
             <div class="grid grid-cols-3 gap-3">
-                <button type="button" onclick="selectPayment(this, 'bKash', '01727246581 (Personal)')" class="pay-btn bg-slate-900 border border-slate-700 p-3 rounded-xl text-center text-xs font-bold text-pink-500">bKash</button>
-                <button type="button" onclick="selectPayment(this, 'Nagad', '01727246581 (Personal)')" class="pay-btn bg-slate-900 border border-slate-700 p-3 rounded-xl text-center text-xs font-bold text-orange-500">Nagad</button>
-                <button type="button" onclick="selectPayment(this, 'Rocket', '01727246581 (Personal)')" class="pay-btn bg-slate-900 border border-slate-700 p-3 rounded-xl text-center text-xs font-bold text-purple-500">Rocket</button>
+                <button type="button" onclick="selectPayment(this, 'bKash', '{{ settings.payment_number }} (Personal)')" class="pay-btn bg-slate-900 border border-slate-700 p-3 rounded-xl text-center text-xs font-bold text-pink-500">bKash</button>
+                <button type="button" onclick="selectPayment(this, 'Nagad', '{{ settings.payment_number }} (Personal)')" class="pay-btn bg-slate-900 border border-slate-700 p-3 rounded-xl text-center text-xs font-bold text-orange-500">Nagad</button>
+                <button type="button" onclick="selectPayment(this, 'Rocket', '{{ settings.payment_number }} (Personal)')" class="pay-btn bg-slate-900 border border-slate-700 p-3 rounded-xl text-center text-xs font-bold text-purple-500">Rocket</button>
             </div>
             <input type="hidden" name="payment" id="selectedPaymentInput" required>
         </div>
@@ -260,7 +265,7 @@ ACCOUNT_TEMPLATE = BASE_HEAD + """
 AUTH_TEMPLATE = BASE_HEAD + """
     <div class="flex items-center justify-center min-h-screen p-4">
         <div class="bg-slate-900 border border-slate-800 w-full max-w-sm rounded-2xl p-6 shadow-2xl">
-            <h2 class="text-xl font-bold text-center text-emerald-400 mb-1">AHAD TOPUP</h2>
+            <h2 class="text-xl font-bold text-center text-emerald-400 mb-1">{{ settings.site_title }}</h2>
             <p class="text-xs text-center text-slate-400 mb-6">আপনার অ্যাকাউন্টে লগইন বা সাইন আপ করুন</p>
             
             {% if error %}
@@ -305,14 +310,36 @@ AUTH_TEMPLATE = BASE_HEAD + """
 </html>
 """
 
-# অ্যাডমিন ড্যাশবোর্ড টেমপ্লেট
+# আপডেট করা অ্যাডমিন ড্যাশবোর্ড টেমপ্লেট (যেখানে ওয়েবসাইট এডিট করার সেটিংসও থাকবে)
 ADMIN_DASHBOARD_TEMPLATE = BASE_HEAD + """
     <header class="flex justify-between items-center p-4 bg-slate-900 border-b border-slate-800 sticky top-0 z-40">
         <span class="text-xl font-bold tracking-wider text-amber-400">ADMIN DASHBOARD</span>
         <a href="/admin/logout" class="bg-red-500/20 border border-red-500/40 text-red-400 px-3 py-1.5 rounded-lg text-xs font-bold">Logout</a>
     </header>
 
-    <main class="p-4 max-w-2xl mx-auto space-y-4">
+    <main class="p-4 max-w-2xl mx-auto space-y-6">
+        <!-- ওয়েবসাইট সেটিংস এডিট ফর্ম -->
+        <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl space-y-4 shadow-xl">
+            <h2 class="text-sm font-bold text-amber-400 uppercase tracking-wider"><i class="fa-solid fa-gears mr-1.5"></i> Website Settings (কাস্টমাইজেশন)</h2>
+            <form action="/admin/update-settings" method="POST" class="space-y-3">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 mb-1">Website Title</label>
+                    <input type="text" name="site_title" value="{{ settings.site_title }}" required class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-amber-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 mb-1">Banner Notice Text</label>
+                    <input type="text" name="banner_text" value="{{ settings.banner_text }}" required class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-amber-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 mb-1">Payment / Personal Number (Bkash/Nagad/Rocket)</label>
+                    <input type="text" name="payment_number" value="{{ settings.payment_number }}" required class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-amber-500">
+                </div>
+                <button type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-2.5 rounded-xl text-xs transition">
+                    UPDATE WEBSITE SETTINGS
+                </button>
+            </form>
+        </div>
+
         <h2 class="text-sm font-bold text-slate-400 uppercase tracking-wider">All User Orders</h2>
         
         {% if orders %}
@@ -347,7 +374,7 @@ ADMIN_DASHBOARD_TEMPLATE = BASE_HEAD + """
             </div>
             {% endfor %}
         {% else %}
-            <div class="text-center py-20 text-slate-500">
+            <div class="text-center py-10 text-slate-500">
                 <i class="fa-solid fa-folder-open text-4xl mb-2"></i>
                 <p class="text-sm">কোনো অর্ডার জমা হয়নি!</p>
             </div>
@@ -390,7 +417,7 @@ ADMIN_LOGIN_TEMPLATE = BASE_HEAD + """
 def home():
     if 'user' not in session:
         return redirect(url_for('login'))
-    return render_template_string(INDEX_TEMPLATE)
+    return render_template_string(INDEX_TEMPLATE, settings=site_settings)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -402,7 +429,7 @@ def login():
             session['user'] = uname
             return redirect(url_for('home'))
         error = 'ভুল ইউজারনেম বা পাসওয়ার্ড!'
-    return render_template_string(AUTH_TEMPLATE, is_signup=False, error=error)
+    return render_template_string(AUTH_TEMPLATE, is_signup=False, error=error, settings=site_settings)
 
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
@@ -425,7 +452,7 @@ def signup():
             }
             session['user'] = uname
             return redirect(url_for('home'))
-    return render_template_string(AUTH_TEMPLATE, is_signup=True, error=error)
+    return render_template_string(AUTH_TEMPLATE, is_signup=True, error=error, settings=site_settings)
 
 @app.route('/logout')
 def logout():
@@ -446,7 +473,7 @@ def order_page(service_type):
         'weekly-lite': {'title': 'Weekly Lite', 'packages': {'Weekly Lite Pass': '80 ৳'}}
     }
     data = services.get(service_type, {'title': 'Topup Service', 'packages': {'Pack': '100 ৳'}})
-    return render_template_string(ORDER_TEMPLATE, title=data['title'], packages=data['packages'])
+    return render_template_string(ORDER_TEMPLATE, title=data['title'], packages=data['packages'], settings=site_settings)
 
 @app.route('/submit-order', methods=['POST'])
 def submit_order():
@@ -475,14 +502,14 @@ def my_orders():
     if 'user' not in session:
         return redirect(url_for('login'))
     user_orders = [o for o in orders_db if o['username'] == session['user']]
-    return render_template_string(ORDERS_TEMPLATE, orders=user_orders)
+    return render_template_string(ORDERS_TEMPLATE, orders=user_orders, settings=site_settings)
 
 @app.route('/account')
 def account():
     if 'user' not in session:
         return redirect(url_for('login'))
     user_info = users_db.get(session['user'], {'name': 'User', 'username': session['user'], 'joined_date': 'Today'})
-    return render_template_string(ACCOUNT_TEMPLATE, user=user_info)
+    return render_template_string(ACCOUNT_TEMPLATE, user=user_info, settings=site_settings)
 
 # --- অ্যাডমিন প্যানেল রাউটসমূহ ---
 @app.route('/admin', methods=['GET', 'POST'])
@@ -495,13 +522,24 @@ def admin_login():
             session['admin'] = True
             return redirect(url_for('admin_dashboard'))
         error = 'ভুল অ্যাডমিন ইউজারনেম বা পাসওয়ার্ড!'
-    return render_template_string(ADMIN_LOGIN_TEMPLATE, error=error)
+    return render_template_string(ADMIN_LOGIN_TEMPLATE, error=error, settings=site_settings)
 
 @app.route('/admin/dashboard')
 def admin_dashboard():
     if not session.get('admin'):
         return redirect(url_for('admin_login'))
-    return render_template_string(ADMIN_DASHBOARD_TEMPLATE, orders=orders_db)
+    return render_template_string(ADMIN_DASHBOARD_TEMPLATE, orders=orders_db, settings=site_settings)
+
+@app.route('/admin/update-settings', methods=['POST'])
+def update_settings():
+    if not session.get('admin'):
+        return redirect(url_for('admin_login'))
+    
+    site_settings['site_title'] = request.form.get('site_title').strip()
+    site_settings['banner_text'] = request.form.get('banner_text').strip()
+    site_settings['payment_number'] = request.form.get('payment_number').strip()
+    
+    return redirect(url_for('admin_dashboard'))
 
 @app.route('/admin/action/<action_type>/<int:order_id>')
 def admin_action(action_type, order_id):
