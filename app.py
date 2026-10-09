@@ -4,18 +4,15 @@ import datetime
 app = Flask(__name__)
 app.secret_key = 'ahad_topup_secret_key_secure'
 
-# ডেটাবেজ (মেমোরি ডিকশনারি ও লিস্ট)
 users_db = {}
 orders_db = []
 add_money_db = []
 
-# ব্যানার লিস্ট (অ্যাডমিন প্যানেল থেকে ডাইনামিক্যালি ম্যানেজ করা যাবে)
 banners_db = [
     {"id": 1, "image_url": "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=800&auto=format&fit=crop&q=80", "caption": "ফ্রি ফায়ার ইনস্ট্যান্ট অটো টপ-আপ"},
     {"id": 2, "image_url": "https://images.unsplash.com/photo-1538481199705-c710c4e965fc?w=800&auto=format&fit=crop&q=80", "caption": "১০০% ট্রাস্টেড ও দ্রুত সার্ভিস"}
 ]
 
-# সার্ভিস ও ডায়মন্ড/প্যাকেজ লিস্ট
 services_data = {
     'ff-likes': {
         'title': 'FF LIKES',
@@ -49,7 +46,6 @@ services_data = {
     }
 }
 
-# ওয়েবসাইট সেটিংস
 site_settings = {
     "site_title": "AHAD TOPUP",
     "payment_number": "01727246581",
@@ -60,7 +56,6 @@ site_settings = {
 ADMIN_USERNAME = "ahadadmin"
 ADMIN_PASSWORD = "123"
 
-# HTML Templates
 BASE_HEAD = """
 <!DOCTYPE html>
 <html lang="bn">
@@ -82,7 +77,6 @@ BASE_HEAD = """
 </head>
 <body class="pb-24">
 
-    <!-- এন্ট্রি ওয়ার্নিং নোটিফিকেশন মোডাল -->
     <div id="welcomeWarningModal" class="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
         <div class="bg-slate-900 border border-amber-500/50 w-full max-w-sm rounded-2xl p-5 shadow-2xl space-y-4">
             <div class="flex items-center space-x-2 text-amber-400">
@@ -147,7 +141,6 @@ INDEX_TEMPLATE = BASE_HEAD + """
     </header>
 
     <main class="p-4 max-w-md mx-auto space-y-4">
-        <!-- অটো স্লাইডার ব্যানার -->
         <div class="w-full h-40 bg-slate-800 rounded-xl relative border border-slate-700 overflow-hidden shadow-lg">
             <div id="sliderContainer" class="w-full h-full relative">
                 {% for b in banners %}
@@ -265,8 +258,27 @@ ORDER_TEMPLATE = BASE_HEAD + """
             <input type="hidden" name="package" id="selectedPackageInput" required>
         </div>
 
+        <div>
+            <label class="block text-xs font-semibold text-slate-400 mb-2">SELECT PAYMENT (পেমেন্ট পদ্ধতি)</label>
+            <div class="grid grid-cols-4 gap-2">
+                <button type="button" onclick="selectPayment(this, 'bKash')" class="pay-btn bg-slate-900 border border-slate-700 p-2.5 rounded-xl text-center text-[11px] font-bold text-pink-500">bKash</button>
+                <button type="button" onclick="selectPayment(this, 'Nagad')" class="pay-btn bg-slate-900 border border-slate-700 p-2.5 rounded-xl text-center text-[11px] font-bold text-orange-500">Nagad</button>
+                <button type="button" onclick="selectPayment(this, 'Rocket')" class="pay-btn bg-slate-900 border border-slate-700 p-2.5 rounded-xl text-center text-[11px] font-bold text-purple-500">Rocket</button>
+                <button type="button" onclick="selectPayment(this, 'Wallet')" class="pay-btn bg-slate-900 border border-slate-700 p-2.5 rounded-xl text-center text-[11px] font-bold text-emerald-400">Wallet</button>
+            </div>
+            <input type="hidden" name="payment" id="selectedPaymentInput" required>
+        </div>
+
+        <div id="paymentBox" class="hidden bg-slate-900 p-4 rounded-xl border border-emerald-500/50 space-y-3">
+            <p class="text-xs text-slate-300">Send money to: <strong class="text-emerald-400">{{ settings.payment_number }}</strong></p>
+            <div>
+                <label class="block text-xs font-semibold text-slate-400 mb-1">TRANSACTION ID (TrxID)</label>
+                <input type="text" name="trxid" id="trxidInput" placeholder="Enter TrxID" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-sm text-white">
+            </div>
+        </div>
+
         <button type="submit" class="w-full bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold py-3.5 rounded-xl shadow-lg transition mt-2">
-            SUBMIT ORDER (ওয়ালেট থেকে কাটবে)
+            SUBMIT ORDER
         </button>
     </form>
 
@@ -275,6 +287,21 @@ ORDER_TEMPLATE = BASE_HEAD + """
             document.querySelectorAll('.package-card').forEach(card => card.style.borderColor = '#334155');
             element.style.borderColor = '#10b981';
             document.getElementById('selectedPackageInput').value = pkgName;
+        }
+        function selectPayment(element, method) {
+            document.querySelectorAll('.pay-btn').forEach(btn => btn.style.borderColor = '#334155');
+            element.style.borderColor = '#10b981';
+            document.getElementById('selectedPaymentInput').value = method;
+            
+            const payBox = document.getElementById('paymentBox');
+            const trxInput = document.getElementById('trxidInput');
+            if(method === 'Wallet') {
+                payBox.classList.add('hidden');
+                trxInput.required = false;
+            } else {
+                payBox.classList.remove('hidden');
+                trxInput.required = true;
+            }
         }
     </script>
 """ + BOTTOM_NAV
@@ -301,6 +328,7 @@ ORDERS_TEMPLATE = BASE_HEAD + """
                 </div>
                 <p class="text-xs text-slate-300">UID: <strong>{{ o.uid }}</strong></p>
                 <p class="text-xs text-slate-300">Package: <strong>{{ o.package }}</strong></p>
+                <p class="text-xs text-slate-300">Payment: <strong class="text-amber-300">{{ o.payment }} {% if o.trxid %} (TrxID: {{ o.trxid }}) {% endif %}</strong></p>
             </div>
             {% endfor %}
         {% else %}
@@ -399,7 +427,6 @@ AUTH_TEMPLATE = BASE_HEAD + """
 </html>
 """
 
-# অ্যাডমিন ড্যাশবোর্ড (ব্যানার ম্যানেজমেন্ট ও অটো ওয়ালেট এপ্রুভ সহ)
 ADMIN_DASHBOARD_TEMPLATE = """
 <!DOCTYPE html>
 <html lang="bn">
@@ -421,7 +448,6 @@ ADMIN_DASHBOARD_TEMPLATE = """
             </div>
         </div>
 
-        <!-- ব্যানার ম্যানেজমেন্ট ফর্ম -->
         <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl space-y-4 shadow-xl">
             <h2 class="text-sm font-bold text-amber-400 uppercase tracking-wider"><i class="fa-solid fa-images mr-1.5"></i> স্লাইডার ব্যানার ম্যানেজ করুন</h2>
             <form action="/admin/add-banner" method="POST" class="space-y-3">
@@ -449,7 +475,6 @@ ADMIN_DASHBOARD_TEMPLATE = """
             </div>
         </div>
 
-        <!-- Add Money Requests (Approve করলে অটো ওয়ালেটে টাকা যোগ হবে) -->
         <h2 class="text-sm font-bold text-sky-400 uppercase tracking-wider">Pending Add Money Requests</h2>
         {% if add_moneys %}
             {% for am in add_moneys %}
@@ -458,7 +483,7 @@ ADMIN_DASHBOARD_TEMPLATE = """
                     <p class="text-xs text-slate-300">User: <strong class="text-white">{{ am.username }}</strong> | Amount: <strong class="text-emerald-400">{{ am.amount }} ৳</strong></p>
                     <p class="text-xs text-slate-300">TrxID: <strong class="text-amber-300">{{ am.trxid }}</strong></p>
                     <div class="flex space-x-2 pt-1">
-                        <a href="/admin/add-money-action/approve/{{ am.id }}" class="flex-1 bg-emerald-500 text-slate-950 font-bold py-2 rounded-lg text-xs text-center">Approve (Auto Wallet Add)</a>
+                        <a href="/admin/add-money-action/approve/{{ am.id }}" class="flex-1 bg-emerald-500 text-slate-950 font-bold py-2 rounded-lg text-xs text-center">Approve</a>
                         <a href="/admin/add-money-action/reject/{{ am.id }}" class="flex-1 bg-red-500 text-white font-bold py-2 rounded-lg text-xs text-center">Reject</a>
                     </div>
                 </div>
@@ -468,7 +493,6 @@ ADMIN_DASHBOARD_TEMPLATE = """
             <p class="text-xs text-slate-500">কোনো পেন্ডিং অ্যাড মানি রিকোয়েস্ট নেই।</p>
         {% endif %}
 
-        <!-- Topup Orders -->
         <h2 class="text-sm font-bold text-amber-400 uppercase tracking-wider pt-4">Pending Topup Orders</h2>
         {% if orders %}
             {% for o in orders %}
@@ -476,6 +500,7 @@ ADMIN_DASHBOARD_TEMPLATE = """
                 <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl space-y-2">
                     <p class="text-xs text-slate-300">Order #{{ o.id }} - <strong class="text-emerald-400">{{ o.service }}</strong> (User: {{ o.username }})</p>
                     <p class="text-xs text-slate-300">UID: <strong class="text-white">{{ o.uid }}</strong> | Package: <strong class="text-white">{{ o.package }}</strong></p>
+                    <p class="text-xs text-slate-300">Payment: <strong class="text-amber-300">{{ o.payment }} {% if o.trxid %} (TrxID: {{ o.trxid }}) {% endif %}</strong></p>
                     <div class="flex space-x-2 pt-1">
                         <a href="/admin/order-action/complete/{{ o.id }}" class="flex-1 bg-emerald-500 text-slate-950 font-bold py-2 rounded-lg text-xs text-center">Complete</a>
                         <a href="/admin/order-action/reject/{{ o.id }}" class="flex-1 bg-red-500 text-white font-bold py-2 rounded-lg text-xs text-center">Reject</a>
@@ -522,7 +547,6 @@ ADMIN_LOGIN_TEMPLATE = """
 </html>
 """
 
-# Routes
 @app.route('/')
 def home():
     if 'user' not in session:
@@ -608,18 +632,19 @@ def submit_order():
     uname = session['user']
     user = users_db.get(uname)
     package_str = request.form.get('package')
+    payment_method = request.form.get('payment')
+    trxid = request.form.get('trxid', 'N/A')
     
-    # প্যাকেজ প্রাইস আলাদা করা
     try:
         price = float(package_str.split(' - ')[1].replace(' ৳', ''))
     except:
         price = 0
 
-    if user['wallet'] < price:
-        return "ওয়ালেটে পর্যাপ্ত ব্যালেন্স নেই! আগে Add Money করুন।"
-
-    # ওয়ালেট থেকে টাকা কাটা
-    user['wallet'] -= price
+    if payment_method == 'Wallet':
+        if user['wallet'] < price:
+            return "ওয়ালেটে পর্যাপ্ত ব্যালেন্স নেই! আগে Add Money করুন।"
+        user['wallet'] -= price
+        trxid = 'Wallet Paid'
 
     order_id = len(orders_db) + 1
     order_data = {
@@ -628,6 +653,8 @@ def submit_order():
         'service': request.form.get('service'),
         'uid': request.form.get('uid'),
         'package': package_str,
+        'payment': payment_method,
+        'trxid': trxid,
         'status': 'Pending'
     }
     orders_db.append(order_data)
@@ -654,7 +681,6 @@ def account():
     u_info = users_db.get(session['user'], {'name': 'User', 'username': session['user'], 'wallet': 0})
     return render_template_string(ACCOUNT_TEMPLATE, user=u_info, settings=site_settings)
 
-# Admin Routes
 @app.route('/admin', methods=['GET', 'POST'])
 def admin_login():
     if request.method == 'POST':
@@ -709,7 +735,6 @@ def add_money_action(action, aid):
         if am['id'] == aid:
             if action == 'approve' and am['status'] == 'Pending':
                 am['status'] = 'Approved'
-                # ইউজারের ওয়ালেটে অটো টাকা যোগ করা
                 target_user = users_db.get(am['username'])
                 if target_user:
                     target_user['wallet'] += am['amount']
