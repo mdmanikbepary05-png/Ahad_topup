@@ -14,7 +14,7 @@ site_settings = {
     "banner_text": "ফ্রি ফায়ার ইনস্ট্যান্ট অটো টপ-আপ",
     "banner_image": "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=600&auto=format&fit=crop&q=80",
     "payment_number": "01727246581",
-    "telegram_link": "https://t.me/ahadtopup",
+    "telegram_link": "https://t.me/ahahackr",
     "notice_text": "অবশ্যই সঠিক Player UID প্রদান করুন। ভুয়া TrxID দিলে অ্যাকাউন্ট ব্যান হবে।",
     # সার্ভিসগুলোর নাম ও ছবি/আইকন লিংক
     "service_1_name": "FF LIKES",
@@ -48,6 +48,11 @@ BASE_HEAD = """
     <style>
         body { background-color: #0f172a; color: #f8fafc; font-family: sans-serif; }
         .card-bg { background: linear-gradient(135deg, #1e293b, #0f172a); border: 1px solid #334155; }
+        .floating-support {
+            position: fixed; bottom: 85px; right: 20px; background-color: #0088cc; color: white;
+            width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center;
+            justify-content: center; font-size: 24px; box-shadow: 0 4px 10px rgba(0,0,0,0.4); z-index: 50;
+        }
     </style>
 </head>
 <body class="pb-24">
@@ -78,16 +83,23 @@ BOTTOM_NAV = """
             <span class="text-[10px] mt-1 font-medium">My Account</span>
         </a>
     </nav>
+    <!-- Floating Telegram Support Button -->
+    <a href="https://t.me/ahahackr" target="_blank" class="floating-support" title="Telegram Support">
+        <i class="fa-brands fa-telegram-plane"></i>
+    </a>
 </body>
 </html>
 """
 
 INDEX_TEMPLATE = BASE_HEAD + """
     <header class="flex justify-between items-center p-4 bg-slate-900 border-b border-slate-800 sticky top-0 z-40">
-        <span class="text-xl font-bold tracking-wider text-emerald-400">{{ settings.site_title }}</span>
+        <div class="flex items-center space-x-2">
+            <span class="text-xl font-bold tracking-wider text-emerald-400">{{ settings.site_title }}</span>
+            <a href="/admin" class="bg-amber-500/20 border border-amber-500/40 text-amber-400 px-2.5 py-1 rounded-md text-[10px] font-bold"><i class="fa-solid fa-shield-halved"></i> Admin</a>
+        </div>
         <div class="flex items-center space-x-3">
             {% if settings.telegram_link %}
-            <a href="{{ settings.telegram_link }}" target="_blank" class="bg-sky-500/20 border border-sky-500/50 text-sky-400 px-3 py-1.5 rounded-full text-xs font-bold flex items-center">
+            <a href="https://t.me/ahahackr" target="_blank" class="bg-sky-500/20 border border-sky-500/50 text-sky-400 px-3 py-1.5 rounded-full text-xs font-bold flex items-center">
                 <i class="fa-brands fa-telegram mr-1 text-sm"></i> Telegram
             </a>
             {% endif %}
@@ -365,7 +377,10 @@ AUTH_TEMPLATE = BASE_HEAD + """
 ADMIN_DASHBOARD_TEMPLATE = BASE_HEAD + """
     <header class="flex justify-between items-center p-4 bg-slate-900 border-b border-slate-800 sticky top-0 z-40">
         <span class="text-xl font-bold tracking-wider text-amber-400">ADMIN CONTROL PANEL</span>
-        <a href="/admin/logout" class="bg-red-500/20 border border-red-500/40 text-red-400 px-3 py-1.5 rounded-lg text-xs font-bold">Logout</a>
+        <div class="flex items-center space-x-2">
+            <a href="/" class="bg-slate-800 border border-slate-700 text-slate-200 px-3 py-1.5 rounded-lg text-xs font-bold">Home</a>
+            <a href="/admin/logout" class="bg-red-500/20 border border-red-500/40 text-red-400 px-3 py-1.5 rounded-lg text-xs font-bold">Logout</a>
+        </div>
     </header>
 
     <main class="p-4 max-w-2xl mx-auto space-y-6">
