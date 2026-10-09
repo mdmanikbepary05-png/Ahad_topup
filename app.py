@@ -8,41 +8,54 @@ users_db = {}
 orders_db = []
 add_money_db = []
 
-# ড্রাইভের লিংকগুলোকে ডাইরেক্ট লিংকে রূপান্তর করে স্লাইডার ব্যানারে সেট করা হলো
 banners_db = [
     {"id": 1, "image_url": "https://lh3.googleusercontent.com/d/1ldbBCEdoUUmtQ1_69KxB9agbp6xXxCUL", "caption": "ফ্রি ফায়ার ইনস্ট্যান্ট অটো টপ-আপ"},
-    {"id": 2, "image_url": "https://lh3.googleusercontent.com/d/1ooA0FOZTeDXb99ZoKmEv-u8XlBclamFa", "caption": "১০০% ট্রাস্টেড ও দ্রুত সার্ভিস"}
+    {"id": 2, "image_url": "https://lh3.googleusercontent.com/d/1ooA0FOZTeDXb99ZoKmEv-u8XlBclamFa", "caption": "১০০% ট্রাস্টেড ও দ্রুত সার্ভিস"},
+    {"id": 3, "image_url": "https://lh3.googleusercontent.com/d/1jbB56j3MXlpC4ERjQN233O5vb3_0wcxg", "caption": "নতুন স্পেশাল অফার"}
 ]
 
+# ফুল ডাইনামিক ওয়েবসাইট ও সার্ভিস সেটিংস (সার্ভিস অনুযায়ী আলাদা ওয়ার্নিং সহ)
 site_settings = {
     "site_title": "AHAD TOPUP",
     "payment_number": "01727246581",
     "telegram_link": "https://t.me/ahahackr",
     "notice_text": "⚠️ জরুরি ঘোষণা: কোনো ভুয়া TrxID বা ভুল তথ্য দিলে অ্যাকাউন্ট চিরতরে ব্যান করা হবে।",
     
+    # সার্ভিস ১
     "service_1_name": "FF LIKES",
     "service_1_icon": "https://images.unsplash.com/photo-1560253023-3ec5d502959f?w=200&auto=format&fit=crop&q=80",
     "service_1_pkgs": "100 Likes - 30 ৳, 500 Likes - 130 ৳, 1000 Likes - 250 ৳",
+    "service_1_warning": "সঠিক ইউজারনেম বা আইডি দিন। লাইক ডেলিভারিতে ২৪ ঘণ্টা পর্যন্ত সময় লাগতে পারে।",
 
+    # সার্ভিস ২
     "service_2_name": "UID TOPUP",
     "service_2_icon": "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=200&auto=format&fit=crop&q=80",
     "service_2_pkgs": "100 Diamonds - 85 ৳, 310 Diamonds - 250 ৳, 520 Diamonds - 410 ৳",
+    "service_2_warning": "সঠিক Player UID প্রদান করুন। ভুল UID-তে ডায়মন্ড গেলে কর্তৃপক্ষ দায়ী নয়।",
 
+    # সার্ভিস ৩
     "service_3_name": "UNIPIN VOUCHER",
     "service_3_icon": "https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?w=200&auto=format&fit=crop&q=80",
     "service_3_pkgs": "Unipin 50 BDT - 50 ৳, Unipin 100 BDT - 100 ৳",
+    "service_3_warning": "ইউনপিন ভাউচার কোড সফলভাবে পেমেন্ট হওয়ার পর My Codes অপশনে পেয়ে যাবেন।",
 
+    # সার্ভিস ৪
     "service_4_name": "WEEKLY MONTHLY",
     "service_4_icon": "https://images.unsplash.com/photo-1612287233202-b51f3ed6f67c?w=200&auto=format&fit=crop&q=80",
     "service_4_pkgs": "Weekly Membership - 165 ৳, Monthly Membership - 520 ৳",
+    "service_4_warning": "উইকলি বা মান্থলি নেওয়ার আগে গেমের ইন-গেম রুলস ও লিমি트 চেক করে নিন।",
 
+    # সার্ভিস ৫
     "service_5_name": "LEVEL UP PASS",
     "service_5_icon": "https://images.unsplash.com/photo-1538481199705-c710c4e965fc?w=200&auto=format&fit=crop&q=80",
     "service_5_pkgs": "Level Up Pass - 95 ৳",
+    "service_5_warning": "আইডিতে লেভেল আপ পাস আগে কেনা থাকলে পুনরায় অর্ডার করবেন না।",
 
+    # সার্ভিস ৬
     "service_6_name": "WEEKLY LITE",
     "service_6_icon": "https://images.unsplash.com/photo-1579373903781-fd5c0c30c4cd?w=200&auto=format&fit=crop&q=80",
-    "service_6_pkgs": "Weekly Lite Pass - 80 ৳"
+    "service_6_pkgs": "Weekly Lite Pass - 80 ৳",
+    "service_6_warning": "সঠিক তথ্য দিয়ে পেমেন্ট কনফার্ম করুন। কোনো সমস্যা হলে টেলিগ্রামে যোগাযোগ করুন।"
 }
 
 ADMIN_USERNAME = "ahadadmin"
@@ -133,7 +146,6 @@ INDEX_TEMPLATE = BASE_HEAD + """
     </header>
 
     <main class="p-4 max-w-md mx-auto space-y-4">
-        <!-- স্লাইডার ব্যানার সেকশন -->
         <div class="w-full h-40 bg-slate-800 rounded-xl relative border border-slate-700 overflow-hidden shadow-lg">
             <div id="sliderContainer" class="w-full h-full relative">
                 {% for b in banners %}
@@ -261,6 +273,16 @@ ORDER_TEMPLATE = BASE_HEAD + """
     <form action="/submit-order" method="POST" class="p-4 max-w-md mx-auto space-y-4">
         <input type="hidden" name="service" value="{{ service_name }}">
         
+        <!-- সার্ভিস অনুযায়ী ওয়ার্নিং নোটিশ -->
+        {% if service_warning %}
+        <div class="bg-amber-500/10 border border-amber-500/40 p-3.5 rounded-xl space-y-1">
+            <div class="flex items-center text-amber-400 font-bold text-xs">
+                <i class="fa-solid fa-triangle-exclamation mr-1.5 text-sm"></i> বিশেষ সতর্কতা:
+            </div>
+            <p class="text-[11px] text-slate-300 leading-relaxed">{{ service_warning }}</p>
+        </div>
+        {% endif %}
+
         <div class="bg-slate-900 p-4 rounded-xl border border-slate-800">
             <label class="block text-xs font-semibold text-slate-400 mb-2">ENTER PLAYER UID</label>
             <input type="text" name="uid" required placeholder="Enter UID here..." class="w-full bg-slate-800 border border-slate-700 rounded-lg p-3 text-sm text-white">
@@ -447,6 +469,7 @@ AUTH_TEMPLATE = BASE_HEAD + """
 </html>
 """
 
+# অ্যাডমিন ড্যাশবোর্ড (সার্ভিস ওয়ার্নিং এডিটর সহ)
 ADMIN_DASHBOARD_TEMPLATE = """
 <!DOCTYPE html>
 <html lang="bn">
@@ -468,6 +491,7 @@ ADMIN_DASHBOARD_TEMPLATE = """
             </div>
         </div>
 
+        <!-- ওয়েবসাইট ও সার্ভিস সেটিংস আপডেট ফর্ম -->
         <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl space-y-4 shadow-xl">
             <h2 class="text-sm font-bold text-amber-400 uppercase tracking-wider"><i class="fa-solid fa-sliders mr-1.5"></i> ওয়েবসাইট ও সার্ভিস কাস্টমাইজ করুন</h2>
             <form action="/admin/update-settings" method="POST" class="space-y-3">
@@ -484,12 +508,12 @@ ADMIN_DASHBOARD_TEMPLATE = """
                     <input type="text" name="payment_number" value="{{ settings.payment_number }}" required class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-sm text-white">
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold text-slate-400 mb-1">Notice / Warning Text</label>
+                    <label class="block text-xs font-semibold text-slate-400 mb-1">Popup Notice / Warning Text</label>
                     <textarea name="notice_text" rows="2" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-sm text-white">{{ settings.notice_text }}</textarea>
                 </div>
 
                 <hr class="border-slate-800 my-2">
-                <h3 class="text-xs font-bold text-emerald-400 uppercase">৬টি সার্ভিস কার্ড ও প্যাকেজ কাস্টমাইজার</h3>
+                <h3 class="text-xs font-bold text-emerald-400 uppercase">৬টি সার্ভিস কার্ড, প্যাকেজ ও ওয়ার্নিং কাস্টমাইজার</h3>
                 
                 <div class="space-y-3">
                     {% for i in range(1, 7) %}
@@ -499,7 +523,8 @@ ADMIN_DASHBOARD_TEMPLATE = """
                             <input type="text" name="service_{{ i }}_name" value="{{ settings['service_' ~ i ~ '_name'] }}" class="bg-slate-800 border border-slate-700 rounded p-2 text-xs text-white" placeholder="নাম">
                             <input type="text" name="service_{{ i }}_icon" value="{{ settings['service_' ~ i ~ '_icon'] }}" class="bg-slate-800 border border-slate-700 rounded p-2 text-xs text-white" placeholder="ছবির লিংক">
                         </div>
-                        <input type="text" name="service_{{ i }}_pkgs" value="{{ settings['service_' ~ i ~ '_pkgs'] }}" class="w-full bg-slate-800 border border-slate-700 rounded p-2 text-xs text-white" placeholder="প্যাকেজসমূহ">
+                        <input type="text" name="service_{{ i }}_pkgs" value="{{ settings['service_' ~ i ~ '_pkgs'] }}" class="w-full bg-slate-800 border border-slate-700 rounded p-2 text-xs text-white" placeholder="প্যাকেজসমূহ (যেমন: 100 Diamonds - 85 ৳)">
+                        <input type="text" name="service_{{ i }}_warning" value="{{ settings['service_' ~ i ~ '_warning'] }}" class="w-full bg-slate-800 border border-slate-700 rounded p-2 text-xs text-amber-200" placeholder="এই সার্ভিসের জন্য বিশেষ ওয়ার্নিং টেক্সট...">
                     </div>
                     {% endfor %}
                 </div>
@@ -510,6 +535,7 @@ ADMIN_DASHBOARD_TEMPLATE = """
             </form>
         </div>
 
+        <!-- ব্যানার ম্যানেজমেন্ট -->
         <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl space-y-4 shadow-xl">
             <h2 class="text-sm font-bold text-amber-400 uppercase tracking-wider"><i class="fa-solid fa-images mr-1.5"></i> স্লাইডার ব্যানার ম্যানেজ করুন</h2>
             <form action="/admin/add-banner" method="POST" class="space-y-3">
@@ -537,6 +563,7 @@ ADMIN_DASHBOARD_TEMPLATE = """
             </div>
         </div>
 
+        <!-- Add Money Requests -->
         <h2 class="text-sm font-bold text-sky-400 uppercase tracking-wider">Pending Add Money Requests</h2>
         {% if add_moneys %}
             {% for am in add_moneys %}
@@ -555,6 +582,7 @@ ADMIN_DASHBOARD_TEMPLATE = """
             <p class="text-xs text-slate-500">কোনো পেন্ডিং অ্যাড মানি রিকোয়েস্ট নেই।</p>
         {% endif %}
 
+        <!-- Topup Orders -->
         <h2 class="text-sm font-bold text-amber-400 uppercase tracking-wider pt-4">Pending Topup Orders</h2>
         {% if orders %}
             {% for o in orders %}
@@ -613,7 +641,12 @@ ADMIN_LOGIN_TEMPLATE = """
 def home():
     if 'user' not in session:
         return redirect(url_for('login'))
-    user = users_db.get(session['user'], {'wallet': 0})
+    uname = session['user']
+    if uname not in users_db:
+        users_db[uname] = {'name': uname, 'username': uname, 'wallet': 0.0}
+    user = users_db[uname]
+    if 'wallet' not in user:
+        user['wallet'] = 0.0
     return render_template_string(INDEX_TEMPLATE, settings=site_settings, banners=banners_db, wallet_balance=user['wallet'])
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -622,7 +655,7 @@ def login():
     if request.method == 'POST':
         uname = request.form.get('username').strip()
         pwd = request.form.get('password')
-        if uname in users_db and users_db[uname]['password'] == pwd:
+        if uname in users_db and users_db[uname].get('password') == pwd:
             session['user'] = uname
             return redirect(url_for('home'))
         error = 'ভুল ইউজারনেম বা পাসওয়ার্ড!'
@@ -639,7 +672,7 @@ def signup():
         if uname in users_db:
             error = 'এই অ্যাকাউন্টটি আগেই রেজিস্টার্ড!'
         else:
-            users_db[uname] = {'name': name, 'email': email, 'username': uname, 'password': pwd, 'wallet': 0}
+            users_db[uname] = {'name': name, 'email': email, 'username': uname, 'password': pwd, 'wallet': 0.0}
             session['user'] = uname
             return redirect(url_for('home'))
     return render_template_string(AUTH_TEMPLATE, is_signup=True, error=error, settings=site_settings)
@@ -683,12 +716,12 @@ def order_page(sid):
         return redirect(url_for('login'))
     
     services_map = {
-        '1': {'name': site_settings['service_1_name'], 'pkgs': site_settings['service_1_pkgs']},
-        '2': {'name': site_settings['service_2_name'], 'pkgs': site_settings['service_2_pkgs']},
-        '3': {'name': site_settings['service_3_name'], 'pkgs': site_settings['service_3_pkgs']},
-        '4': {'name': site_settings['service_4_name'], 'pkgs': site_settings['service_4_pkgs']},
-        '5': {'name': site_settings['service_5_name'], 'pkgs': site_settings['service_5_pkgs']},
-        '6': {'name': site_settings['service_6_name'], 'pkgs': site_settings['service_6_pkgs']}
+        '1': {'name': site_settings['service_1_name'], 'pkgs': site_settings['service_1_pkgs'], 'warning': site_settings['service_1_warning']},
+        '2': {'name': site_settings['service_2_name'], 'pkgs': site_settings['service_2_pkgs'], 'warning': site_settings['service_2_warning']},
+        '3': {'name': site_settings['service_3_name'], 'pkgs': site_settings['service_3_pkgs'], 'warning': site_settings['service_3_warning']},
+        '4': {'name': site_settings['service_4_name'], 'pkgs': site_settings['service_4_pkgs'], 'warning': site_settings['service_4_warning']},
+        '5': {'name': site_settings['service_5_name'], 'pkgs': site_settings['service_5_pkgs'], 'warning': site_settings['service_5_warning']},
+        '6': {'name': site_settings['service_6_name'], 'pkgs': site_settings['service_6_pkgs'], 'warning': site_settings['service_6_warning']}
     }
     
     srv = services_map.get(sid)
@@ -696,7 +729,7 @@ def order_page(sid):
         return redirect(url_for('home'))
         
     pkgs_list = [p.strip() for p in srv['pkgs'].split(',') if p.strip()]
-    return render_template_string(ORDER_TEMPLATE, service_name=srv['name'], packages=pkgs_list, settings=site_settings)
+    return render_template_string(ORDER_TEMPLATE, service_name=srv['name'], packages=pkgs_list, service_warning=srv['warning'], settings=site_settings)
 
 @app.route('/submit-order', methods=['POST'])
 def submit_order():
@@ -704,7 +737,10 @@ def submit_order():
         return redirect(url_for('login'))
     
     uname = session['user']
-    user = users_db.get(uname)
+    if uname not in users_db:
+        users_db[uname] = {'name': uname, 'username': uname, 'wallet': 0.0}
+    user = users_db[uname]
+    
     package_str = request.form.get('package')
     payment_method = request.form.get('payment')
     trxid = request.form.get('trxid', 'N/A')
@@ -713,9 +749,9 @@ def submit_order():
         try:
             price = float(package_str.split('-')[-1].replace('৳', '').strip())
         except:
-            price = 0
+            price = 0.0
             
-        if user['wallet'] < price:
+        if user.get('wallet', 0.0) < price:
             return "ওয়ালেটে পর্যাপ্ত ব্যালেন্স নেই! আগে Add Money করুন।"
         user['wallet'] -= price
         trxid = 'Wallet Paid'
@@ -752,7 +788,12 @@ def codes():
 def account():
     if 'user' not in session:
         return redirect(url_for('login'))
-    u_info = users_db.get(session['user'], {'name': 'User', 'username': session['user'], 'wallet': 0})
+    uname = session['user']
+    if uname not in users_db:
+        users_db[uname] = {'name': uname, 'username': uname, 'wallet': 0.0}
+    u_info = users_db[uname]
+    if 'wallet' not in u_info:
+        u_info['wallet'] = 0.0
     return render_template_string(ACCOUNT_TEMPLATE, user=u_info, settings=site_settings)
 
 @app.route('/admin', methods=['GET', 'POST'])
@@ -785,6 +826,7 @@ def update_settings():
         site_settings[f'service_{i}_name'] = request.form.get(f'service_{i}_name').strip()
         site_settings[f'service_{i}_icon'] = request.form.get(f'service_{i}_icon').strip()
         site_settings[f'service_{i}_pkgs'] = request.form.get(f'service_{i}_pkgs').strip()
+        site_settings[f'service_{i}_warning'] = request.form.get(f'service_{i}_warning').strip()
         
     return redirect(url_for('admin_dashboard'))
 
@@ -794,7 +836,6 @@ def add_banner():
         return redirect(url_for('admin_login'))
     
     raw_url = request.form.get('image_url').strip()
-    # গুগল ড্রাইভ লিংক হলে ডাইরেক্ট লিংকে রূপান্তর করা
     if 'drive.google.com' in raw_url:
         try:
             file_id = raw_url.split('/d/')[1].split('/')[0]
@@ -836,9 +877,12 @@ def add_money_action(action, aid):
         if am['id'] == aid:
             if action == 'approve' and am['status'] == 'Pending':
                 am['status'] = 'Approved'
-                target_user = users_db.get(am['username'])
-                if target_user:
-                    target_user['wallet'] += am['amount']
+                uname = am['username']
+                if uname not in users_db:
+                    users_db[uname] = {'name': uname, 'username': uname, 'wallet': 0.0}
+                if 'wallet' not in users_db[uname]:
+                    users_db[uname]['wallet'] = 0.0
+                users_db[uname]['wallet'] += am['amount']
             elif action == 'reject':
                 am['status'] = 'Rejected'
             break
