@@ -13,44 +13,42 @@ banners_db = [
     {"id": 2, "image_url": "https://images.unsplash.com/photo-1538481199705-c710c4e965fc?w=800&auto=format&fit=crop&q=80", "caption": "১০০% ট্রাস্টেড ও দ্রুত সার্ভিস"}
 ]
 
-services_data = {
-    'ff-likes': {
-        'title': 'FF LIKES',
-        'icon': 'fa-solid fa-thumbs-up text-red-500',
-        'packages': [{'name': '100 Likes', 'price': 30}, {'name': '500 Likes', 'price': 130}, {'name': '1000 Likes', 'price': 250}]
-    },
-    'uid-topup': {
-        'title': 'UID TOPUP',
-        'icon': 'fa-solid fa-id-card text-emerald-400',
-        'packages': [{'name': '100 Diamonds', 'price': 85}, {'name': '310 Diamonds', 'price': 250}, {'name': '520 Diamonds', 'price': 410}, {'name': '1060 Diamonds', 'price': 820}]
-    },
-    'unipin': {
-        'title': 'UNIPIN VOUCHER',
-        'icon': 'fa-solid fa-ticket text-amber-400',
-        'packages': [{'name': 'Unipin 50 BDT', 'price': 50}, {'name': 'Unipin 100 BDT', 'price': 100}, {'name': 'Unipin 500 BDT', 'price': 480}]
-    },
-    'weekly-monthly': {
-        'title': 'WEEKLY MONTHLY',
-        'icon': 'fa-solid fa-box-open text-purple-400',
-        'packages': [{'name': 'Weekly Membership', 'price': 165}, {'name': 'Monthly Membership', 'price': 520}]
-    },
-    'level-up': {
-        'title': 'LEVEL UP PASS',
-        'icon': 'fa-solid fa-shield-halved text-blue-400',
-        'packages': [{'name': 'Level Up Pass', 'price': 95}]
-    },
-    'weekly-lite': {
-        'title': 'WEEKLY LITE',
-        'icon': 'fa-solid fa-gem text-cyan-400',
-        'packages': [{'name': 'Weekly Lite Pass', 'price': 80}]
-    }
-}
-
+# ফুল ডাইনামিক ওয়েবসাইট ও সার্ভিস সেটিংস (অ্যাডমিন প্যানেল থেকে পরিবর্তনযোগ্য)
 site_settings = {
     "site_title": "AHAD TOPUP",
     "payment_number": "01727246581",
     "telegram_link": "https://t.me/ahahackr",
-    "notice_text": "⚠️ জরুরি ঘোষণা: কোনো ভুয়া TrxID বা ভুল তথ্য দিলে অ্যাকাউন্ট চিরতরে ব্যান করা হবে।"
+    "notice_text": "⚠️ জরুরি ঘোষণা: কোনো ভুয়া TrxID বা ভুল তথ্য দিলে অ্যাকাউন্ট চিরতরে ব্যান করা হবে।",
+    
+    # সার্ভিস ১
+    "service_1_name": "FF LIKES",
+    "service_1_icon": "https://images.unsplash.com/photo-1560253023-3ec5d502959f?w=200&auto=format&fit=crop&q=80",
+    "service_1_pkgs": "100 Likes - 30 ৳, 500 Likes - 130 ৳, 1000 Likes - 250 ৳",
+
+    # সার্ভিস ২
+    "service_2_name": "UID TOPUP",
+    "service_2_icon": "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=200&auto=format&fit=crop&q=80",
+    "service_2_pkgs": "100 Diamonds - 85 ৳, 310 Diamonds - 250 ৳, 520 Diamonds - 410 ৳",
+
+    # সার্ভিস ৩
+    "service_3_name": "UNIPIN VOUCHER",
+    "service_3_icon": "https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?w=200&auto=format&fit=crop&q=80",
+    "service_3_pkgs": "Unipin 50 BDT - 50 ৳, Unipin 100 BDT - 100 ৳",
+
+    # সার্ভিস ৪
+    "service_4_name": "WEEKLY MONTHLY",
+    "service_4_icon": "https://images.unsplash.com/photo-1612287233202-b51f3ed6f67c?w=200&auto=format&fit=crop&q=80",
+    "service_4_pkgs": "Weekly Membership - 165 ৳, Monthly Membership - 520 ৳",
+
+    # সার্ভিস ৫
+    "service_5_name": "LEVEL UP PASS",
+    "service_5_icon": "https://images.unsplash.com/photo-1538481199705-c710c4e965fc?w=200&auto=format&fit=crop&q=80",
+    "service_5_pkgs": "Level Up Pass - 95 ৳",
+
+    # সার্ভিস ৬
+    "service_6_name": "WEEKLY LITE",
+    "service_6_icon": "https://images.unsplash.com/photo-1579373903781-fd5c0c30c4cd?w=200&auto=format&fit=crop&q=80",
+    "service_6_pkgs": "Weekly Lite Pass - 80 ৳"
 }
 
 ADMIN_USERNAME = "ahadadmin"
@@ -169,14 +167,42 @@ INDEX_TEMPLATE = BASE_HEAD + """
         <h2 class="text-center font-bold tracking-wider text-slate-200 mb-2 text-lg border-b border-slate-800 pb-2">REGULAR TOPUP</h2>
 
         <div class="grid grid-cols-3 gap-3">
-            {% for key, val in services.items() %}
-            <a href="/order/{{ key }}" class="card-bg p-2.5 rounded-xl text-center flex flex-col items-center hover:border-emerald-500 transition">
+            <a href="/order/1" class="card-bg p-2.5 rounded-xl text-center flex flex-col items-center hover:border-emerald-500 transition">
                 <div class="w-16 h-16 bg-slate-800 rounded-lg mb-2 flex items-center justify-center border border-slate-700 overflow-hidden">
-                    <i class="{{ val.icon }} text-xl"></i>
+                    <img src="{{ settings.service_1_icon }}" class="w-full h-full object-cover">
                 </div>
-                <span class="text-[11px] font-bold text-slate-200 leading-tight">{{ val.title }}</span>
+                <span class="text-[11px] font-bold text-slate-200 leading-tight">{{ settings.service_1_name }}</span>
             </a>
-            {% endfor %}
+            <a href="/order/2" class="card-bg p-2.5 rounded-xl text-center flex flex-col items-center hover:border-emerald-500 transition">
+                <div class="w-16 h-16 bg-slate-800 rounded-lg mb-2 flex items-center justify-center border border-slate-700 overflow-hidden">
+                    <img src="{{ settings.service_2_icon }}" class="w-full h-full object-cover">
+                </div>
+                <span class="text-[11px] font-bold text-slate-200 leading-tight">{{ settings.service_2_name }}</span>
+            </a>
+            <a href="/order/3" class="card-bg p-2.5 rounded-xl text-center flex flex-col items-center hover:border-emerald-500 transition">
+                <div class="w-16 h-16 bg-slate-800 rounded-lg mb-2 flex items-center justify-center border border-slate-700 overflow-hidden">
+                    <img src="{{ settings.service_3_icon }}" class="w-full h-full object-cover">
+                </div>
+                <span class="text-[11px] font-bold text-slate-200 leading-tight">{{ settings.service_3_name }}</span>
+            </a>
+            <a href="/order/4" class="card-bg p-2.5 rounded-xl text-center flex flex-col items-center hover:border-emerald-500 transition">
+                <div class="w-16 h-16 bg-slate-800 rounded-lg mb-2 flex items-center justify-center border border-slate-700 overflow-hidden">
+                    <img src="{{ settings.service_4_icon }}" class="w-full h-full object-cover">
+                </div>
+                <span class="text-[11px] font-bold text-slate-200 leading-tight">{{ settings.service_4_name }}</span>
+            </a>
+            <a href="/order/5" class="card-bg p-2.5 rounded-xl text-center flex flex-col items-center hover:border-emerald-500 transition">
+                <div class="w-16 h-16 bg-slate-800 rounded-lg mb-2 flex items-center justify-center border border-slate-700 overflow-hidden">
+                    <img src="{{ settings.service_5_icon }}" class="w-full h-full object-cover">
+                </div>
+                <span class="text-[11px] font-bold text-slate-200 leading-tight">{{ settings.service_5_name }}</span>
+            </a>
+            <a href="/order/6" class="card-bg p-2.5 rounded-xl text-center flex flex-col items-center hover:border-emerald-500 transition">
+                <div class="w-16 h-16 bg-slate-800 rounded-lg mb-2 flex items-center justify-center border border-slate-700 overflow-hidden">
+                    <img src="{{ settings.service_6_icon }}" class="w-full h-full object-cover">
+                </div>
+                <span class="text-[11px] font-bold text-slate-200 leading-tight">{{ settings.service_6_name }}</span>
+            </a>
         </div>
     </main>
 """ + BOTTOM_NAV
@@ -193,7 +219,7 @@ ADD_MONEY_TEMPLATE = BASE_HEAD + """
             <form action="/submit-add-money" method="POST" class="space-y-3">
                 <div>
                     <label class="block text-xs font-semibold text-slate-400 mb-1">পরিমাণ (Amount in BDT)</label>
-                    <input type="number" name="amount" required placeholder="উদা: 100" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-3 text-sm text-white focus:outline-none focus:border-emerald-500">
+                    <input type="number" name="amount" required placeholder="উদা: 100" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-3 text-sm text-white">
                 </div>
                 <button type="submit" class="w-full bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold py-3 rounded-xl text-xs transition">
                     প্রসিড করুন (Next)
@@ -234,24 +260,23 @@ ADD_MONEY_PAY_TEMPLATE = BASE_HEAD + """
 ORDER_TEMPLATE = BASE_HEAD + """
     <header class="flex items-center p-4 bg-slate-900 border-b border-slate-800 sticky top-0 z-40">
         <a href="/" class="text-slate-300 mr-4 text-lg"><i class="fa-solid fa-arrow-left"></i></a>
-        <h1 class="text-base font-bold uppercase tracking-wider text-slate-200">{{ service.title }}</h1>
+        <h1 class="text-base font-bold uppercase tracking-wider text-slate-200">{{ service_name }}</h1>
     </header>
 
     <form action="/submit-order" method="POST" class="p-4 max-w-md mx-auto space-y-4">
-        <input type="hidden" name="service" value="{{ service.title }}">
+        <input type="hidden" name="service" value="{{ service_name }}">
         
         <div class="bg-slate-900 p-4 rounded-xl border border-slate-800">
             <label class="block text-xs font-semibold text-slate-400 mb-2">ENTER PLAYER UID</label>
-            <input type="text" name="uid" required placeholder="Enter UID here..." class="w-full bg-slate-800 border border-slate-700 rounded-lg p-3 text-sm text-white focus:outline-none focus:border-emerald-500">
+            <input type="text" name="uid" required placeholder="Enter UID here..." class="w-full bg-slate-800 border border-slate-700 rounded-lg p-3 text-sm text-white">
         </div>
 
         <div>
-            <label class="block text-xs font-semibold text-slate-400 mb-2">SELECT PACKAGE (ডায়মন্ড তালিকা)</label>
+            <label class="block text-xs font-semibold text-slate-400 mb-2">SELECT PACKAGE</label>
             <div class="grid grid-cols-2 gap-3">
-                {% for pkg in service.packages %}
-                <div onclick="selectPackage(this, '{{ pkg.name }} - {{ pkg.price }} ৳')" class="package-card p-3 rounded-xl cursor-pointer text-center transition bg-slate-900 border border-slate-800">
-                    <p class="text-sm font-bold text-white">{{ pkg.name }}</p>
-                    <p class="text-xs text-emerald-400 font-semibold mt-1">{{ pkg.price }} ৳</p>
+                {% for pkg in packages %}
+                <div onclick="selectPackage(this, '{{ pkg }}')" class="package-card p-3 rounded-xl cursor-pointer text-center transition bg-slate-900 border border-slate-800">
+                    <p class="text-sm font-bold text-white">{{ pkg }}</p>
                 </div>
                 {% endfor %}
             </div>
@@ -259,7 +284,7 @@ ORDER_TEMPLATE = BASE_HEAD + """
         </div>
 
         <div>
-            <label class="block text-xs font-semibold text-slate-400 mb-2">SELECT PAYMENT (পেমেন্ট পদ্ধতি)</label>
+            <label class="block text-xs font-semibold text-slate-400 mb-2">SELECT PAYMENT</label>
             <div class="grid grid-cols-4 gap-2">
                 <button type="button" onclick="selectPayment(this, 'bKash')" class="pay-btn bg-slate-900 border border-slate-700 p-2.5 rounded-xl text-center text-[11px] font-bold text-pink-500">bKash</button>
                 <button type="button" onclick="selectPayment(this, 'Nagad')" class="pay-btn bg-slate-900 border border-slate-700 p-2.5 rounded-xl text-center text-[11px] font-bold text-orange-500">Nagad</button>
@@ -427,6 +452,7 @@ AUTH_TEMPLATE = BASE_HEAD + """
 </html>
 """
 
+# ফুল ডাইনামিক অ্যাডমিন ড্যাশবোর্ড (ব্যানার + ৬টি সার্ভিসের নাম, ছবি ও প্যাকেজ পরিবর্তন করার অপশন সহ)
 ADMIN_DASHBOARD_TEMPLATE = """
 <!DOCTYPE html>
 <html lang="bn">
@@ -448,6 +474,93 @@ ADMIN_DASHBOARD_TEMPLATE = """
             </div>
         </div>
 
+        <!-- ওয়েবসাইট ও সার্ভিস সেটিংস আপডেট ফর্ম -->
+        <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl space-y-4 shadow-xl">
+            <h2 class="text-sm font-bold text-amber-400 uppercase tracking-wider"><i class="fa-solid fa-sliders mr-1.5"></i> ওয়েবসাইট ও সার্ভিস কাস্টমাইজ করুন</h2>
+            <form action="/admin/update-settings" method="POST" class="space-y-3">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 mb-1">Website Title</label>
+                    <input type="text" name="site_title" value="{{ settings.site_title }}" required class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-sm text-white">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 mb-1">Telegram Support Link</label>
+                    <input type="text" name="telegram_link" value="{{ settings.telegram_link }}" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-sm text-white">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 mb-1">Payment Number (bKash/Nagad/Rocket)</label>
+                    <input type="text" name="payment_number" value="{{ settings.payment_number }}" required class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-sm text-white">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 mb-1">Notice / Warning Text</label>
+                    <textarea name="notice_text" rows="2" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-sm text-white">{{ settings.notice_text }}</textarea>
+                </div>
+
+                <hr class="border-slate-800 my-2">
+                <h3 class="text-xs font-bold text-emerald-400 uppercase">৬টি সার্ভিস কার্ড ও প্যাকেজ কাস্টমাইজার</h3>
+                
+                <div class="space-y-3">
+                    <div class="bg-slate-800/50 p-3 rounded-xl border border-slate-800 space-y-2">
+                        <p class="text-xs font-bold text-amber-300">Service 1</p>
+                        <div class="grid grid-cols-2 gap-2">
+                            <input type="text" name="service_1_name" value="{{ settings.service_1_name }}" class="bg-slate-800 border border-slate-700 rounded p-2 text-xs text-white" placeholder="নাম">
+                            <input type="text" name="service_1_icon" value="{{ settings.service_1_icon }}" class="bg-slate-800 border border-slate-700 rounded p-2 text-xs text-white" placeholder="ছবির লিংক">
+                        </div>
+                        <input type="text" name="service_1_pkgs" value="{{ settings.service_1_pkgs }}" class="w-full bg-slate-800 border border-slate-700 rounded p-2 text-xs text-white" placeholder="প্যাকেজসমূহ (যেমন: 100 Likes - 30 ৳, 500 Likes - 130 ৳)">
+                    </div>
+
+                    <div class="bg-slate-800/50 p-3 rounded-xl border border-slate-800 space-y-2">
+                        <p class="text-xs font-bold text-amber-300">Service 2</p>
+                        <div class="grid grid-cols-2 gap-2">
+                            <input type="text" name="service_2_name" value="{{ settings.service_2_name }}" class="bg-slate-800 border border-slate-700 rounded p-2 text-xs text-white" placeholder="নাম">
+                            <input type="text" name="service_2_icon" value="{{ settings.service_2_icon }}" class="bg-slate-800 border border-slate-700 rounded p-2 text-xs text-white" placeholder="ছবির লিংক">
+                        </div>
+                        <input type="text" name="service_2_pkgs" value="{{ settings.service_2_pkgs }}" class="w-full bg-slate-800 border border-slate-700 rounded p-2 text-xs text-white" placeholder="প্যাকেজসমূহ">
+                    </div>
+
+                    <div class="bg-slate-800/50 p-3 rounded-xl border border-slate-800 space-y-2">
+                        <p class="text-xs font-bold text-amber-300">Service 3</p>
+                        <div class="grid grid-cols-2 gap-2">
+                            <input type="text" name="service_3_name" value="{{ settings.service_3_name }}" class="bg-slate-800 border border-slate-700 rounded p-2 text-xs text-white" placeholder="নাম">
+                            <input type="text" name="service_3_icon" value="{{ settings.service_3_icon }}" class="bg-slate-800 border border-slate-700 rounded p-2 text-xs text-white" placeholder="ছবির লিংক">
+                        </div>
+                        <input type="text" name="service_3_pkgs" value="{{ settings.service_3_pkgs }}" class="w-full bg-slate-800 border border-slate-700 rounded p-2 text-xs text-white" placeholder="প্যাকেজসমূহ">
+                    </div>
+
+                    <div class="bg-slate-800/50 p-3 rounded-xl border border-slate-800 space-y-2">
+                        <p class="text-xs font-bold text-amber-300">Service 4</p>
+                        <div class="grid grid-cols-2 gap-2">
+                            <input type="text" name="service_4_name" value="{{ settings.service_4_name }}" class="bg-slate-800 border border-slate-700 rounded p-2 text-xs text-white" placeholder="নাম">
+                            <input type="text" name="service_4_icon" value="{{ settings.service_4_icon }}" class="bg-slate-800 border border-slate-700 rounded p-2 text-xs text-white" placeholder="ছবির লিংক">
+                        </div>
+                        <input type="text" name="service_4_pkgs" value="{{ settings.service_4_pkgs }}" class="w-full bg-slate-800 border border-slate-700 rounded p-2 text-xs text-white" placeholder="প্যাকেজসমূহ">
+                    </div>
+
+                    <div class="bg-slate-800/50 p-3 rounded-xl border border-slate-800 space-y-2">
+                        <p class="text-xs font-bold text-amber-300">Service 5</p>
+                        <div class="grid grid-cols-2 gap-2">
+                            <input type="text" name="service_5_name" value="{{ settings.service_5_name }}" class="bg-slate-800 border border-slate-700 rounded p-2 text-xs text-white" placeholder="নাম">
+                            <input type="text" name="service_5_icon" value="{{ settings.service_5_icon }}" class="bg-slate-800 border border-slate-700 rounded p-2 text-xs text-white" placeholder="ছবির লিংক">
+                        </div>
+                        <input type="text" name="service_5_pkgs" value="{{ settings.service_5_pkgs }}" class="w-full bg-slate-800 border border-slate-700 rounded p-2 text-xs text-white" placeholder="প্যাকেজসমূহ">
+                    </div>
+
+                    <div class="bg-slate-800/50 p-3 rounded-xl border border-slate-800 space-y-2">
+                        <p class="text-xs font-bold text-amber-300">Service 6</p>
+                        <div class="grid grid-cols-2 gap-2">
+                            <input type="text" name="service_6_name" value="{{ settings.service_6_name }}" class="bg-slate-800 border border-slate-700 rounded p-2 text-xs text-white" placeholder="নাম">
+                            <input type="text" name="service_6_icon" value="{{ settings.service_6_icon }}" class="bg-slate-800 border border-slate-700 rounded p-2 text-xs text-white" placeholder="ছবির লিংক">
+                        </div>
+                        <input type="text" name="service_6_pkgs" value="{{ settings.service_6_pkgs }}" class="w-full bg-slate-800 border border-slate-700 rounded p-2 text-xs text-white" placeholder="প্যাকেজসমূহ">
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-3 rounded-xl text-xs transition shadow-lg mt-4">
+                    SAVE & UPDATE WEBSITE
+                </button>
+            </form>
+        </div>
+
+        <!-- ব্যানার ম্যানেজমেন্ট -->
         <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl space-y-4 shadow-xl">
             <h2 class="text-sm font-bold text-amber-400 uppercase tracking-wider"><i class="fa-solid fa-images mr-1.5"></i> স্লাইডার ব্যানার ম্যানেজ করুন</h2>
             <form action="/admin/add-banner" method="POST" class="space-y-3">
@@ -475,6 +588,7 @@ ADMIN_DASHBOARD_TEMPLATE = """
             </div>
         </div>
 
+        <!-- Add Money Requests -->
         <h2 class="text-sm font-bold text-sky-400 uppercase tracking-wider">Pending Add Money Requests</h2>
         {% if add_moneys %}
             {% for am in add_moneys %}
@@ -493,6 +607,7 @@ ADMIN_DASHBOARD_TEMPLATE = """
             <p class="text-xs text-slate-500">কোনো পেন্ডিং অ্যাড মানি রিকোয়েস্ট নেই।</p>
         {% endif %}
 
+        <!-- Topup Orders -->
         <h2 class="text-sm font-bold text-amber-400 uppercase tracking-wider pt-4">Pending Topup Orders</h2>
         {% if orders %}
             {% for o in orders %}
@@ -552,7 +667,7 @@ def home():
     if 'user' not in session:
         return redirect(url_for('login'))
     user = users_db.get(session['user'], {'wallet': 0})
-    return render_template_string(INDEX_TEMPLATE, settings=site_settings, banners=banners_db, services=services_data, wallet_balance=user['wallet'])
+    return render_template_string(INDEX_TEMPLATE, settings=site_settings, banners=banners_db, wallet_balance=user['wallet'])
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -615,14 +730,27 @@ def confirm_add_money():
     add_money_db.append(am_data)
     return redirect(url_for('my_orders'))
 
-@app.route('/order/<service_type>')
-def order_page(service_type):
+@app.route('/order/<sid>')
+def order_page(sid):
     if 'user' not in session:
         return redirect(url_for('login'))
-    service = services_data.get(service_type)
-    if not service:
+    
+    # ডাইনামিক সার্ভিস ডেটা ম্যাপ করা
+    services_map = {
+        '1': {'name': site_settings['service_1_name'], 'pkgs': site_settings['service_1_pkgs']},
+        '2': {'name': site_settings['service_2_name'], 'pkgs': site_settings['service_2_pkgs']},
+        '3': {'name': site_settings['service_3_name'], 'pkgs': site_settings['service_3_pkgs']},
+        '4': {'name': site_settings['service_4_name'], 'pkgs': site_settings['service_4_pkgs']},
+        '5': {'name': site_settings['service_5_name'], 'pkgs': site_settings['service_5_pkgs']},
+        '6': {'name': site_settings['service_6_name'], 'pkgs': site_settings['service_6_pkgs']}
+    }
+    
+    srv = services_map.get(sid)
+    if not srv:
         return redirect(url_for('home'))
-    return render_template_string(ORDER_TEMPLATE, service=service, settings=site_settings)
+        
+    pkgs_list = [p.strip() for p in srv['pkgs'].split(',') if p.strip()]
+    return render_template_string(ORDER_TEMPLATE, service_name=srv['name'], packages=pkgs_list, settings=site_settings)
 
 @app.route('/submit-order', methods=['POST'])
 def submit_order():
@@ -635,12 +763,12 @@ def submit_order():
     payment_method = request.form.get('payment')
     trxid = request.form.get('trxid', 'N/A')
     
-    try:
-        price = float(package_str.split(' - ')[1].replace(' ৳', ''))
-    except:
-        price = 0
-
     if payment_method == 'Wallet':
+        try:
+            price = float(package_str.split('-')[-1].replace('৳', '').strip())
+        except:
+            price = 0
+            
         if user['wallet'] < price:
             return "ওয়ালেটে পর্যাপ্ত ব্যালেন্স নেই! আগে Add Money করুন।"
         user['wallet'] -= price
@@ -696,6 +824,23 @@ def admin_dashboard():
     if not session.get('admin'):
         return redirect(url_for('admin_login'))
     return render_template_string(ADMIN_DASHBOARD_TEMPLATE, orders=orders_db, add_moneys=add_money_db, banners=banners_db, settings=site_settings)
+
+@app.route('/admin/update-settings', methods=['POST'])
+def update_settings():
+    if not session.get('admin'):
+        return redirect(url_for('admin_login'))
+    
+    site_settings['site_title'] = request.form.get('site_title').strip()
+    site_settings['telegram_link'] = request.form.get('telegram_link').strip()
+    site_settings['payment_number'] = request.form.get('payment_number').strip()
+    site_settings['notice_text'] = request.form.get('notice_text').strip()
+    
+    for i in range(1, 7):
+        site_settings[f'service_{i}_name'] = request.form.get(f'service_{i}_name').strip()
+        site_settings[f'service_{i}_icon'] = request.form.get(f'service_{i}_icon').strip()
+        site_settings[f'service_{i}_pkgs'] = request.form.get(f'service_{i}_pkgs').strip()
+        
+    return redirect(url_for('admin_dashboard'))
 
 @app.route('/admin/add-banner', methods=['POST'])
 def add_banner():
