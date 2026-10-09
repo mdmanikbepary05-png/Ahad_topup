@@ -8,11 +8,27 @@ app.secret_key = 'ahad_topup_secret_key_secure'
 users_db = {}
 orders_db = []
 
-# ডিফল্ট ওয়েবসাইট সেটিংস (যা অ্যাডমিন প্যানেল থেকে পরিবর্তন করা যাবে)
+# ফুল ডাইনামিক ওয়েবসাইট সেটিংস (সার্ভিস আইকন/ছবি সহ)
 site_settings = {
     "site_title": "AHAD TOPUP",
     "banner_text": "ফ্রি ফায়ার ইনস্ট্যান্ট অটো টপ-আপ",
-    "payment_number": "01727246581"
+    "banner_image": "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=600&auto=format&fit=crop&q=80",
+    "payment_number": "01727246581",
+    "telegram_link": "https://t.me/ahadtopup",
+    "notice_text": "অবশ্যই সঠিক Player UID প্রদান করুন। ভুয়া TrxID দিলে অ্যাকাউন্ট ব্যান হবে।",
+    # সার্ভিসগুলোর আইকন বা ছবি (FontAwesome class অথবা Image URL)
+    "service_1_name": "FF LIKES",
+    "service_1_icon": "fa-solid fa-thumbs-up text-red-500",
+    "service_2_name": "UID TOPUP",
+    "service_2_icon": "fa-solid fa-id-card text-emerald-400",
+    "service_3_name": "UNIPIN VOUCHER",
+    "service_3_icon": "fa-solid fa-ticket text-amber-400",
+    "service_4_name": "WEEKLY MONTHLY",
+    "service_4_icon": "fa-solid fa-box-open text-purple-400",
+    "service_5_name": "LEVEL UP PASS",
+    "service_5_icon": "fa-solid fa-shield-halved text-blue-400",
+    "service_6_name": "WEEKLY LITE",
+    "service_6_icon": "fa-solid fa-gem text-cyan-400"
 }
 
 # অ্যাডমিন ক্রেডেনশিয়াল
@@ -70,6 +86,11 @@ INDEX_TEMPLATE = BASE_HEAD + """
     <header class="flex justify-between items-center p-4 bg-slate-900 border-b border-slate-800 sticky top-0 z-40">
         <span class="text-xl font-bold tracking-wider text-emerald-400">{{ settings.site_title }}</span>
         <div class="flex items-center space-x-3">
+            {% if settings.telegram_link %}
+            <a href="{{ settings.telegram_link }}" target="_blank" class="bg-sky-500/20 border border-sky-500/50 text-sky-400 px-3 py-1.5 rounded-full text-xs font-bold flex items-center">
+                <i class="fa-brands fa-telegram mr-1 text-sm"></i> Telegram
+            </a>
+            {% endif %}
             <div class="flex items-center bg-emerald-600/20 border border-emerald-500/50 px-3 py-1.5 rounded-full">
                 <i class="fa-solid fa-wallet text-emerald-400 mr-1.5"></i>
                 <span class="text-sm font-semibold text-emerald-300">0 ৳</span>
@@ -77,52 +98,56 @@ INDEX_TEMPLATE = BASE_HEAD + """
         </div>
     </header>
 
-    <main class="p-4 max-w-md mx-auto">
-        <div class="w-full h-36 bg-slate-800 rounded-xl mb-6 relative border border-slate-700 flex items-center justify-center overflow-hidden">
-            <div class="text-center p-4">
+    <main class="p-4 max-w-md mx-auto space-y-4">
+        <!-- ব্যানার ইমেজ ও টেক্সট -->
+        <div class="w-full h-40 bg-slate-800 rounded-xl relative border border-slate-700 flex items-center justify-center overflow-hidden shadow-lg">
+            {% if settings.banner_image %}
+            <img src="{{ settings.banner_image }}" class="absolute inset-0 w-full h-full object-cover opacity-40">
+            {% endif %}
+            <div class="text-center p-4 relative z-10">
                 <i class="fa-solid fa-fire text-amber-500 text-3xl mb-1"></i>
-                <p class="text-sm font-medium text-slate-300">{{ settings.banner_text }}</p>
+                <p class="text-sm font-bold text-white drop-shadow">{{ settings.banner_text }}</p>
             </div>
         </div>
 
-        <h2 class="text-center font-bold tracking-wider text-slate-200 mb-4 text-lg border-b border-slate-800 pb-2">REGULAR TOPUP</h2>
+        <h2 class="text-center font-bold tracking-wider text-slate-200 mb-2 text-lg border-b border-slate-800 pb-2">REGULAR TOPUP</h2>
 
         <div class="grid grid-cols-3 gap-3">
             <a href="/order/ff-likes" class="card-bg p-2.5 rounded-xl text-center flex flex-col items-center hover:border-emerald-500 transition">
                 <div class="w-16 h-16 bg-slate-800 rounded-lg mb-2 flex items-center justify-center border border-slate-700">
-                    <i class="fa-solid fa-thumbs-up text-red-500 text-xl"></i>
+                    <i class="{{ settings.service_1_icon }} text-xl"></i>
                 </div>
-                <span class="text-[11px] font-bold text-slate-200 leading-tight">FF LIKES</span>
+                <span class="text-[11px] font-bold text-slate-200 leading-tight">{{ settings.service_1_name }}</span>
             </a>
             <a href="/order/uid-topup" class="card-bg p-2.5 rounded-xl text-center flex flex-col items-center hover:border-emerald-500 transition">
                 <div class="w-16 h-16 bg-slate-800 rounded-lg mb-2 flex items-center justify-center border border-slate-700">
-                    <i class="fa-solid fa-id-card text-emerald-400 text-xl"></i>
+                    <i class="{{ settings.service_2_icon }} text-xl"></i>
                 </div>
-                <span class="text-[11px] font-bold text-slate-200 leading-tight">UID TOPUP</span>
+                <span class="text-[11px] font-bold text-slate-200 leading-tight">{{ settings.service_2_name }}</span>
             </a>
             <a href="/order/unipin" class="card-bg p-2.5 rounded-xl text-center flex flex-col items-center hover:border-emerald-500 transition">
                 <div class="w-16 h-16 bg-slate-800 rounded-lg mb-2 flex items-center justify-center border border-slate-700">
-                    <i class="fa-solid fa-ticket text-amber-400 text-xl"></i>
+                    <i class="{{ settings.service_3_icon }} text-xl"></i>
                 </div>
-                <span class="text-[11px] font-bold text-slate-200 leading-tight">UNIPIN VOUCHER</span>
+                <span class="text-[11px] font-bold text-slate-200 leading-tight">{{ settings.service_3_name }}</span>
             </a>
             <a href="/order/weekly-monthly" class="card-bg p-2.5 rounded-xl text-center flex flex-col items-center hover:border-emerald-500 transition">
                 <div class="w-16 h-16 bg-slate-800 rounded-lg mb-2 flex items-center justify-center border border-slate-700">
-                    <i class="fa-solid fa-box-open text-purple-400 text-xl"></i>
+                    <i class="{{ settings.service_4_icon }} text-xl"></i>
                 </div>
-                <span class="text-[11px] font-bold text-slate-200 leading-tight">WEEKLY MONTHLY</span>
+                <span class="text-[11px] font-bold text-slate-200 leading-tight">{{ settings.service_4_name }}</span>
             </a>
             <a href="/order/level-up" class="card-bg p-2.5 rounded-xl text-center flex flex-col items-center hover:border-emerald-500 transition">
                 <div class="w-16 h-16 bg-slate-800 rounded-lg mb-2 flex items-center justify-center border border-slate-700">
-                    <i class="fa-solid fa-shield-halved text-blue-400 text-xl"></i>
+                    <i class="{{ settings.service_5_icon }} text-xl"></i>
                 </div>
-                <span class="text-[11px] font-bold text-slate-200 leading-tight">LEVEL UP PASS</span>
+                <span class="text-[11px] font-bold text-slate-200 leading-tight">{{ settings.service_5_name }}</span>
             </a>
             <a href="/order/weekly-lite" class="card-bg p-2.5 rounded-xl text-center flex flex-col items-center hover:border-emerald-500 transition">
                 <div class="w-16 h-16 bg-slate-800 rounded-lg mb-2 flex items-center justify-center border border-slate-700">
-                    <i class="fa-solid fa-gem text-cyan-400 text-xl"></i>
+                    <i class="{{ settings.service_6_icon }} text-xl"></i>
                 </div>
-                <span class="text-[11px] font-bold text-slate-200 leading-tight">WEEKLY LITE</span>
+                <span class="text-[11px] font-bold text-slate-200 leading-tight">{{ settings.service_6_name }}</span>
             </a>
         </div>
     </main>
@@ -139,12 +164,9 @@ ORDER_TEMPLATE = BASE_HEAD + """
         
         <div class="bg-amber-500/10 border border-amber-500/40 p-3.5 rounded-xl space-y-2">
             <div class="flex items-center text-amber-400 font-bold text-xs">
-                <i class="fa-solid fa-triangle-exclamation mr-1.5 text-sm"></i> গুরুত্বপূর্ণ নিয়মাবলী ও শর্তাবলি:
+                <i class="fa-solid fa-triangle-exclamation mr-1.5 text-sm"></i> গুরুত্বপূর্ণ নিয়মাবলী:
             </div>
-            <ul class="text-[11px] text-slate-300 space-y-1 list-disc list-inside">
-                <li>অবশ্যම সঠিক <strong>Player UID</strong> প্রদান করুন।</li>
-                <li>ভুয়া বা ভুল UID অথবা ভুয়া TrxID প্রদান করলে আপনার অ্যাকাউন্ট <strong>চিরতরে ব্যান</strong> হতে পারে।</li>
-            </ul>
+            <p class="text-[11px] text-slate-300 leading-relaxed">{{ settings.notice_text }}</p>
         </div>
 
         <div class="bg-slate-900 p-4 rounded-xl border border-slate-800">
@@ -310,17 +332,17 @@ AUTH_TEMPLATE = BASE_HEAD + """
 </html>
 """
 
-# আপডেট করা অ্যাডমিন ড্যাশবোর্ড টেমপ্লেট (যেখানে ওয়েবসাইট এডিট করার সেটিংসও থাকবে)
+# সুপার পাওয়ারফুল অ্যাডমিন ড্যাশবোর্ড (সার্ভিস কার্ড কাস্টমাইজেশন সহ)
 ADMIN_DASHBOARD_TEMPLATE = BASE_HEAD + """
     <header class="flex justify-between items-center p-4 bg-slate-900 border-b border-slate-800 sticky top-0 z-40">
-        <span class="text-xl font-bold tracking-wider text-amber-400">ADMIN DASHBOARD</span>
+        <span class="text-xl font-bold tracking-wider text-amber-400">ADMIN CONTROL PANEL</span>
         <a href="/admin/logout" class="bg-red-500/20 border border-red-500/40 text-red-400 px-3 py-1.5 rounded-lg text-xs font-bold">Logout</a>
     </header>
 
     <main class="p-4 max-w-2xl mx-auto space-y-6">
-        <!-- ওয়েবসাইট সেটিংস এডিট ফর্ম -->
+        <!-- ফুল ওয়েবসাইট কাস্টমাইজেশন ও সার্ভিস কার্ড ম্যানেজার -->
         <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl space-y-4 shadow-xl">
-            <h2 class="text-sm font-bold text-amber-400 uppercase tracking-wider"><i class="fa-solid fa-gears mr-1.5"></i> Website Settings (কাস্টমাইজেশন)</h2>
+            <h2 class="text-sm font-bold text-amber-400 uppercase tracking-wider"><i class="fa-solid fa-sliders mr-1.5"></i> Website & Services Customizer</h2>
             <form action="/admin/update-settings" method="POST" class="space-y-3">
                 <div>
                     <label class="block text-xs font-semibold text-slate-400 mb-1">Website Title</label>
@@ -331,11 +353,83 @@ ADMIN_DASHBOARD_TEMPLATE = BASE_HEAD + """
                     <input type="text" name="banner_text" value="{{ settings.banner_text }}" required class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-amber-500">
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold text-slate-400 mb-1">Payment / Personal Number (Bkash/Nagad/Rocket)</label>
+                    <label class="block text-xs font-semibold text-slate-400 mb-1">Banner Image URL</label>
+                    <input type="text" name="banner_image" value="{{ settings.banner_image }}" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-amber-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 mb-1">Telegram Channel Link</label>
+                    <input type="text" name="telegram_link" value="{{ settings.telegram_link }}" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-amber-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 mb-1">Payment Number (bKash/Nagad/Rocket)</label>
                     <input type="text" name="payment_number" value="{{ settings.payment_number }}" required class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-amber-500">
                 </div>
-                <button type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-2.5 rounded-xl text-xs transition">
-                    UPDATE WEBSITE SETTINGS
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 mb-1">Order Rules / Notice Text</label>
+                    <textarea name="notice_text" rows="2" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-amber-500">{{ settings.notice_text }}</textarea>
+                </div>
+
+                <hr class="border-slate-800 my-2">
+                <h3 class="text-xs font-bold text-emerald-400 uppercase">Service Cards Customizer (নাম ও আইকন পরিবর্তন)</h3>
+                
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block text-[10px] text-slate-400 mb-1">Service 1 Name</label>
+                        <input type="text" name="service_1_name" value="{{ settings.service_1_name }}" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-xs text-white">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] text-slate-400 mb-1">Service 1 Icon Class (FontAwesome)</label>
+                        <input type="text" name="service_1_icon" value="{{ settings.service_1_icon }}" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-xs text-white">
+                    </div>
+
+                    <div>
+                        <label class="block text-[10px] text-slate-400 mb-1">Service 2 Name</label>
+                        <input type="text" name="service_2_name" value="{{ settings.service_2_name }}" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-xs text-white">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] text-slate-400 mb-1">Service 2 Icon Class</label>
+                        <input type="text" name="service_2_icon" value="{{ settings.service_2_icon }}" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-xs text-white">
+                    </div>
+
+                    <div>
+                        <label class="block text-[10px] text-slate-400 mb-1">Service 3 Name</label>
+                        <input type="text" name="service_3_name" value="{{ settings.service_3_name }}" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-xs text-white">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] text-slate-400 mb-1">Service 3 Icon Class</label>
+                        <input type="text" name="service_3_icon" value="{{ settings.service_3_icon }}" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-xs text-white">
+                    </div>
+
+                    <div>
+                        <label class="block text-[10px] text-slate-400 mb-1">Service 4 Name</label>
+                        <input type="text" name="service_4_name" value="{{ settings.service_4_name }}" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-xs text-white">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] text-slate-400 mb-1">Service 4 Icon Class</label>
+                        <input type="text" name="service_4_icon" value="{{ settings.service_4_icon }}" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-xs text-white">
+                    </div>
+
+                    <div>
+                        <label class="block text-[10px] text-slate-400 mb-1">Service 5 Name</label>
+                        <input type="text" name="service_5_name" value="{{ settings.service_5_name }}" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-xs text-white">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] text-slate-400 mb-1">Service 5 Icon Class</label>
+                        <input type="text" name="service_5_icon" value="{{ settings.service_5_icon }}" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-xs text-white">
+                    </div>
+
+                    <div>
+                        <label class="block text-[10px] text-slate-400 mb-1">Service 6 Name</label>
+                        <input type="text" name="service_6_name" value="{{ settings.service_6_name }}" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-xs text-white">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] text-slate-400 mb-1">Service 6 Icon Class</label>
+                        <input type="text" name="service_6_icon" value="{{ settings.service_6_icon }}" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-xs text-white">
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-3 rounded-xl text-xs transition shadow-lg shadow-amber-500/20 mt-4">
+                    SAVE & UPDATE WEBSITE
                 </button>
             </form>
         </div>
@@ -465,12 +559,12 @@ def order_page(service_type):
         return redirect(url_for('login'))
         
     services = {
-        'ff-likes': {'title': 'FF Likes', 'packages': {'100 Likes': '30 ৳', '500 Likes': '130 ৳', '1000 Likes': '250 ৳'}},
-        'uid-topup': {'title': 'UID Topup', 'packages': {'100 Diamonds': '85 ৳', '310 Diamonds': '250 ৳', '520 Diamonds': '410 ৳'}},
-        'unipin': {'title': 'Unipin Voucher', 'packages': {'Unipin 50 BDT': '50 ৳', 'Unipin 100 BDT': '100 ৳'}},
-        'weekly-monthly': {'title': 'Weekly Monthly', 'packages': {'Weekly Membership': '165 ৳', 'Monthly Membership': '520 ৳'}},
-        'level-up': {'title': 'Level Up Pass', 'packages': {'Level Up Pass': '95 ৳'}},
-        'weekly-lite': {'title': 'Weekly Lite', 'packages': {'Weekly Lite Pass': '80 ৳'}}
+        'ff-likes': {'title': site_settings['service_1_name'], 'packages': {'100 Likes': '30 ৳', '500 Likes': '130 ৳', '1000 Likes': '250 ৳'}},
+        'uid-topup': {'title': site_settings['service_2_name'], 'packages': {'100 Diamonds': '85 ৳', '310 Diamonds': '250 ৳', '520 Diamonds': '410 ৳'}},
+        'unipin': {'title': site_settings['service_3_name'], 'packages': {'Unipin 50 BDT': '50 ৳', 'Unipin 100 BDT': '100 ৳'}},
+        'weekly-monthly': {'title': site_settings['service_4_name'], 'packages': {'Weekly Membership': '165 ৳', 'Monthly Membership': '520 ৳'}},
+        'level-up': {'title': site_settings['service_5_name'], 'packages': {'Level Up Pass': '95 ৳'}},
+        'weekly-lite': {'title': site_settings['service_6_name'], 'packages': {'Weekly Lite Pass': '80 ৳'}}
     }
     data = services.get(service_type, {'title': 'Topup Service', 'packages': {'Pack': '100 ৳'}})
     return render_template_string(ORDER_TEMPLATE, title=data['title'], packages=data['packages'], settings=site_settings)
@@ -537,7 +631,24 @@ def update_settings():
     
     site_settings['site_title'] = request.form.get('site_title').strip()
     site_settings['banner_text'] = request.form.get('banner_text').strip()
+    site_settings['banner_image'] = request.form.get('banner_image').strip()
+    site_settings['telegram_link'] = request.form.get('telegram_link').strip()
     site_settings['payment_number'] = request.form.get('payment_number').strip()
+    site_settings['notice_text'] = request.form.get('notice_text').strip()
+    
+    # সার্ভিসগুলোর নাম ও আইকন আপডেট
+    site_settings['service_1_name'] = request.form.get('service_1_name').strip()
+    site_settings['service_1_icon'] = request.form.get('service_1_icon').strip()
+    site_settings['service_2_name'] = request.form.get('service_2_name').strip()
+    site_settings['service_2_icon'] = request.form.get('service_2_icon').strip()
+    site_settings['service_3_name'] = request.form.get('service_3_name').strip()
+    site_settings['service_3_icon'] = request.form.get('service_3_icon').strip()
+    site_settings['service_4_name'] = request.form.get('service_4_name').strip()
+    site_settings['service_4_icon'] = request.form.get('service_4_icon').strip()
+    site_settings['service_5_name'] = request.form.get('service_5_name').strip()
+    site_settings['service_5_icon'] = request.form.get('service_5_icon').strip()
+    site_settings['service_6_name'] = request.form.get('service_6_name').strip()
+    site_settings['service_6_icon'] = request.form.get('service_6_icon').strip()
     
     return redirect(url_for('admin_dashboard'))
 
