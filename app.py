@@ -16,7 +16,7 @@ site_settings = {
     "payment_number": "01727246581",
     "telegram_link": "https://t.me/ahadtopup",
     "notice_text": "অবশ্যই সঠিক Player UID প্রদান করুন। ভুয়া TrxID দিলে অ্যাকাউন্ট ব্যান হবে।",
-    # সার্ভিসগুলোর আইকন বা ছবি (FontAwesome class অথবা Image URL)
+    # সার্ভিসগুলোর নাম ও ছবি/আইকন লিংক
     "service_1_name": "FF LIKES",
     "service_1_icon": "fa-solid fa-thumbs-up text-red-500",
     "service_2_name": "UID TOPUP",
@@ -113,39 +113,69 @@ INDEX_TEMPLATE = BASE_HEAD + """
         <h2 class="text-center font-bold tracking-wider text-slate-200 mb-2 text-lg border-b border-slate-800 pb-2">REGULAR TOPUP</h2>
 
         <div class="grid grid-cols-3 gap-3">
+            <!-- Service 1 -->
             <a href="/order/ff-likes" class="card-bg p-2.5 rounded-xl text-center flex flex-col items-center hover:border-emerald-500 transition">
-                <div class="w-16 h-16 bg-slate-800 rounded-lg mb-2 flex items-center justify-center border border-slate-700">
-                    <i class="{{ settings.service_1_icon }} text-xl"></i>
+                <div class="w-16 h-16 bg-slate-800 rounded-lg mb-2 flex items-center justify-center border border-slate-700 overflow-hidden">
+                    {% if 'http' in settings.service_1_icon %}
+                        <img src="{{ settings.service_1_icon }}" class="w-full h-full object-cover">
+                    {% else %}
+                        <i class="{{ settings.service_1_icon }} text-xl"></i>
+                    {% endif %}
                 </div>
                 <span class="text-[11px] font-bold text-slate-200 leading-tight">{{ settings.service_1_name }}</span>
             </a>
+            <!-- Service 2 -->
             <a href="/order/uid-topup" class="card-bg p-2.5 rounded-xl text-center flex flex-col items-center hover:border-emerald-500 transition">
-                <div class="w-16 h-16 bg-slate-800 rounded-lg mb-2 flex items-center justify-center border border-slate-700">
-                    <i class="{{ settings.service_2_icon }} text-xl"></i>
+                <div class="w-16 h-16 bg-slate-800 rounded-lg mb-2 flex items-center justify-center border border-slate-700 overflow-hidden">
+                    {% if 'http' in settings.service_2_icon %}
+                        <img src="{{ settings.service_2_icon }}" class="w-full h-full object-cover">
+                    {% else %}
+                        <i class="{{ settings.service_2_icon }} text-xl"></i>
+                    {% endif %}
                 </div>
                 <span class="text-[11px] font-bold text-slate-200 leading-tight">{{ settings.service_2_name }}</span>
             </a>
+            <!-- Service 3 -->
             <a href="/order/unipin" class="card-bg p-2.5 rounded-xl text-center flex flex-col items-center hover:border-emerald-500 transition">
-                <div class="w-16 h-16 bg-slate-800 rounded-lg mb-2 flex items-center justify-center border border-slate-700">
-                    <i class="{{ settings.service_3_icon }} text-xl"></i>
+                <div class="w-16 h-16 bg-slate-800 rounded-lg mb-2 flex items-center justify-center border border-slate-700 overflow-hidden">
+                    {% if 'http' in settings.service_3_icon %}
+                        <img src="{{ settings.service_3_icon }}" class="w-full h-full object-cover">
+                    {% else %}
+                        <i class="{{ settings.service_3_icon }} text-xl"></i>
+                    {% endif %}
                 </div>
                 <span class="text-[11px] font-bold text-slate-200 leading-tight">{{ settings.service_3_name }}</span>
             </a>
+            <!-- Service 4 -->
             <a href="/order/weekly-monthly" class="card-bg p-2.5 rounded-xl text-center flex flex-col items-center hover:border-emerald-500 transition">
-                <div class="w-16 h-16 bg-slate-800 rounded-lg mb-2 flex items-center justify-center border border-slate-700">
-                    <i class="{{ settings.service_4_icon }} text-xl"></i>
+                <div class="w-16 h-16 bg-slate-800 rounded-lg mb-2 flex items-center justify-center border border-slate-700 overflow-hidden">
+                    {% if 'http' in settings.service_4_icon %}
+                        <img src="{{ settings.service_4_icon }}" class="w-full h-full object-cover">
+                    {% else %}
+                        <i class="{{ settings.service_4_icon }} text-xl"></i>
+                    {% endif %}
                 </div>
                 <span class="text-[11px] font-bold text-slate-200 leading-tight">{{ settings.service_4_name }}</span>
             </a>
+            <!-- Service 5 -->
             <a href="/order/level-up" class="card-bg p-2.5 rounded-xl text-center flex flex-col items-center hover:border-emerald-500 transition">
-                <div class="w-16 h-16 bg-slate-800 rounded-lg mb-2 flex items-center justify-center border border-slate-700">
-                    <i class="{{ settings.service_5_icon }} text-xl"></i>
+                <div class="w-16 h-16 bg-slate-800 rounded-lg mb-2 flex items-center justify-center border border-slate-700 overflow-hidden">
+                    {% if 'http' in settings.service_5_icon %}
+                        <img src="{{ settings.service_5_icon }}" class="w-full h-full object-cover">
+                    {% else %}
+                        <i class="{{ settings.service_5_icon }} text-xl"></i>
+                    {% endif %}
                 </div>
                 <span class="text-[11px] font-bold text-slate-200 leading-tight">{{ settings.service_5_name }}</span>
             </a>
+            <!-- Service 6 -->
             <a href="/order/weekly-lite" class="card-bg p-2.5 rounded-xl text-center flex flex-col items-center hover:border-emerald-500 transition">
-                <div class="w-16 h-16 bg-slate-800 rounded-lg mb-2 flex items-center justify-center border border-slate-700">
-                    <i class="{{ settings.service_6_icon }} text-xl"></i>
+                <div class="w-16 h-16 bg-slate-800 rounded-lg mb-2 flex items-center justify-center border border-slate-700 overflow-hidden">
+                    {% if 'http' in settings.service_6_icon %}
+                        <img src="{{ settings.service_6_icon }}" class="w-full h-full object-cover">
+                    {% else %}
+                        <i class="{{ settings.service_6_icon }} text-xl"></i>
+                    {% endif %}
                 </div>
                 <span class="text-[11px] font-bold text-slate-200 leading-tight">{{ settings.service_6_name }}</span>
             </a>
@@ -332,7 +362,6 @@ AUTH_TEMPLATE = BASE_HEAD + """
 </html>
 """
 
-# সুপার পাওয়ারফুল অ্যাডমিন ড্যাশবোর্ড (সার্ভিস কার্ড কাস্টমাইজেশন সহ)
 ADMIN_DASHBOARD_TEMPLATE = BASE_HEAD + """
     <header class="flex justify-between items-center p-4 bg-slate-900 border-b border-slate-800 sticky top-0 z-40">
         <span class="text-xl font-bold tracking-wider text-amber-400">ADMIN CONTROL PANEL</span>
@@ -340,7 +369,6 @@ ADMIN_DASHBOARD_TEMPLATE = BASE_HEAD + """
     </header>
 
     <main class="p-4 max-w-2xl mx-auto space-y-6">
-        <!-- ফুল ওয়েবসাইট কাস্টমাইজেশন ও সার্ভিস কার্ড ম্যানেজার -->
         <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl space-y-4 shadow-xl">
             <h2 class="text-sm font-bold text-amber-400 uppercase tracking-wider"><i class="fa-solid fa-sliders mr-1.5"></i> Website & Services Customizer</h2>
             <form action="/admin/update-settings" method="POST" class="space-y-3">
@@ -370,7 +398,7 @@ ADMIN_DASHBOARD_TEMPLATE = BASE_HEAD + """
                 </div>
 
                 <hr class="border-slate-800 my-2">
-                <h3 class="text-xs font-bold text-emerald-400 uppercase">Service Cards Customizer (নাম ও আইকন পরিবর্তন)</h3>
+                <h3 class="text-xs font-bold text-emerald-400 uppercase">Service Cards Customizer (নাম ও ইমেজ/আইকন লিংক)</h3>
                 
                 <div class="grid grid-cols-2 gap-2">
                     <div>
@@ -378,7 +406,7 @@ ADMIN_DASHBOARD_TEMPLATE = BASE_HEAD + """
                         <input type="text" name="service_1_name" value="{{ settings.service_1_name }}" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-xs text-white">
                     </div>
                     <div>
-                        <label class="block text-[10px] text-slate-400 mb-1">Service 1 Icon Class (FontAwesome)</label>
+                        <label class="block text-[10px] text-slate-400 mb-1">Service 1 Image/Icon URL or Class</label>
                         <input type="text" name="service_1_icon" value="{{ settings.service_1_icon }}" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-xs text-white">
                     </div>
 
@@ -387,7 +415,7 @@ ADMIN_DASHBOARD_TEMPLATE = BASE_HEAD + """
                         <input type="text" name="service_2_name" value="{{ settings.service_2_name }}" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-xs text-white">
                     </div>
                     <div>
-                        <label class="block text-[10px] text-slate-400 mb-1">Service 2 Icon Class</label>
+                        <label class="block text-[10px] text-slate-400 mb-1">Service 2 Image/Icon URL or Class</label>
                         <input type="text" name="service_2_icon" value="{{ settings.service_2_icon }}" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-xs text-white">
                     </div>
 
@@ -396,7 +424,7 @@ ADMIN_DASHBOARD_TEMPLATE = BASE_HEAD + """
                         <input type="text" name="service_3_name" value="{{ settings.service_3_name }}" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-xs text-white">
                     </div>
                     <div>
-                        <label class="block text-[10px] text-slate-400 mb-1">Service 3 Icon Class</label>
+                        <label class="block text-[10px] text-slate-400 mb-1">Service 3 Image/Icon URL or Class</label>
                         <input type="text" name="service_3_icon" value="{{ settings.service_3_icon }}" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-xs text-white">
                     </div>
 
@@ -405,7 +433,7 @@ ADMIN_DASHBOARD_TEMPLATE = BASE_HEAD + """
                         <input type="text" name="service_4_name" value="{{ settings.service_4_name }}" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-xs text-white">
                     </div>
                     <div>
-                        <label class="block text-[10px] text-slate-400 mb-1">Service 4 Icon Class</label>
+                        <label class="block text-[10px] text-slate-400 mb-1">Service 4 Image/Icon URL or Class</label>
                         <input type="text" name="service_4_icon" value="{{ settings.service_4_icon }}" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-xs text-white">
                     </div>
 
@@ -414,7 +442,7 @@ ADMIN_DASHBOARD_TEMPLATE = BASE_HEAD + """
                         <input type="text" name="service_5_name" value="{{ settings.service_5_name }}" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-xs text-white">
                     </div>
                     <div>
-                        <label class="block text-[10px] text-slate-400 mb-1">Service 5 Icon Class</label>
+                        <label class="block text-[10px] text-slate-400 mb-1">Service 5 Image/Icon URL or Class</label>
                         <input type="text" name="service_5_icon" value="{{ settings.service_5_icon }}" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-xs text-white">
                     </div>
 
@@ -423,7 +451,7 @@ ADMIN_DASHBOARD_TEMPLATE = BASE_HEAD + """
                         <input type="text" name="service_6_name" value="{{ settings.service_6_name }}" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-xs text-white">
                     </div>
                     <div>
-                        <label class="block text-[10px] text-slate-400 mb-1">Service 6 Icon Class</label>
+                        <label class="block text-[10px] text-slate-400 mb-1">Service 6 Image/Icon URL or Class</label>
                         <input type="text" name="service_6_icon" value="{{ settings.service_6_icon }}" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-xs text-white">
                     </div>
                 </div>
@@ -636,7 +664,7 @@ def update_settings():
     site_settings['payment_number'] = request.form.get('payment_number').strip()
     site_settings['notice_text'] = request.form.get('notice_text').strip()
     
-    # সার্ভিসগুলোর নাম ও আইকন আপডেট
+    # সার্ভিসগুলোর নাম ও ছবি/আইকন লিংক আপডেট
     site_settings['service_1_name'] = request.form.get('service_1_name').strip()
     site_settings['service_1_icon'] = request.form.get('service_1_icon').strip()
     site_settings['service_2_name'] = request.form.get('service_2_name').strip()
