@@ -8,44 +8,38 @@ users_db = {}
 orders_db = []
 add_money_db = []
 
+# ড্রাইভের লিংকগুলোকে ডাইরেক্ট লিংকে রূপান্তর করে স্লাইডার ব্যানারে সেট করা হলো
 banners_db = [
-    {"id": 1, "image_url": "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=800&auto=format&fit=crop&q=80", "caption": "ফ্রি ফায়ার ইনস্ট্যান্ট অটো টপ-আপ"},
-    {"id": 2, "image_url": "https://images.unsplash.com/photo-1538481199705-c710c4e965fc?w=800&auto=format&fit=crop&q=80", "caption": "১০০% ট্রাস্টেড ও দ্রুত সার্ভিস"}
+    {"id": 1, "image_url": "https://lh3.googleusercontent.com/d/1ldbBCEdoUUmtQ1_69KxB9agbp6xXxCUL", "caption": "ফ্রি ফায়ার ইনস্ট্যান্ট অটো টপ-আপ"},
+    {"id": 2, "image_url": "https://lh3.googleusercontent.com/d/1ooA0FOZTeDXb99ZoKmEv-u8XlBclamFa", "caption": "১০০% ট্রাস্টেড ও দ্রুত সার্ভিস"}
 ]
 
-# ফুল ডাইনামিক ওয়েবসাইট ও সার্ভিস সেটিংস (অ্যাডমিন প্যানেল থেকে পরিবর্তনযোগ্য)
 site_settings = {
     "site_title": "AHAD TOPUP",
     "payment_number": "01727246581",
     "telegram_link": "https://t.me/ahahackr",
     "notice_text": "⚠️ জরুরি ঘোষণা: কোনো ভুয়া TrxID বা ভুল তথ্য দিলে অ্যাকাউন্ট চিরতরে ব্যান করা হবে।",
     
-    # সার্ভিস ১
     "service_1_name": "FF LIKES",
     "service_1_icon": "https://images.unsplash.com/photo-1560253023-3ec5d502959f?w=200&auto=format&fit=crop&q=80",
     "service_1_pkgs": "100 Likes - 30 ৳, 500 Likes - 130 ৳, 1000 Likes - 250 ৳",
 
-    # সার্ভিস ২
     "service_2_name": "UID TOPUP",
     "service_2_icon": "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=200&auto=format&fit=crop&q=80",
     "service_2_pkgs": "100 Diamonds - 85 ৳, 310 Diamonds - 250 ৳, 520 Diamonds - 410 ৳",
 
-    # সার্ভিস ৩
     "service_3_name": "UNIPIN VOUCHER",
     "service_3_icon": "https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?w=200&auto=format&fit=crop&q=80",
     "service_3_pkgs": "Unipin 50 BDT - 50 ৳, Unipin 100 BDT - 100 ৳",
 
-    # সার্ভিস ৪
     "service_4_name": "WEEKLY MONTHLY",
     "service_4_icon": "https://images.unsplash.com/photo-1612287233202-b51f3ed6f67c?w=200&auto=format&fit=crop&q=80",
     "service_4_pkgs": "Weekly Membership - 165 ৳, Monthly Membership - 520 ৳",
 
-    # সার্ভিস ৫
     "service_5_name": "LEVEL UP PASS",
     "service_5_icon": "https://images.unsplash.com/photo-1538481199705-c710c4e965fc?w=200&auto=format&fit=crop&q=80",
     "service_5_pkgs": "Level Up Pass - 95 ৳",
 
-    # সার্ভিস ৬
     "service_6_name": "WEEKLY LITE",
     "service_6_icon": "https://images.unsplash.com/photo-1579373903781-fd5c0c30c4cd?w=200&auto=format&fit=crop&q=80",
     "service_6_pkgs": "Weekly Lite Pass - 80 ৳"
@@ -139,13 +133,14 @@ INDEX_TEMPLATE = BASE_HEAD + """
     </header>
 
     <main class="p-4 max-w-md mx-auto space-y-4">
+        <!-- স্লাইডার ব্যানার সেকশন -->
         <div class="w-full h-40 bg-slate-800 rounded-xl relative border border-slate-700 overflow-hidden shadow-lg">
             <div id="sliderContainer" class="w-full h-full relative">
                 {% for b in banners %}
                 <div class="slide absolute inset-0 w-full h-full transition-opacity duration-1000 {% if loop.index0 != 0 %}opacity-0{% else %}opacity-100{% endif %}">
-                    <img src="{{ b.image_url }}" class="w-full h-full object-cover opacity-50">
-                    <div class="absolute inset-0 flex items-center justify-center p-4 text-center">
-                        <p class="text-sm font-bold text-white drop-shadow-md bg-black/40 px-3 py-1.5 rounded-lg">{{ b.caption }}</p>
+                    <img src="{{ b.image_url }}" class="w-full h-full object-cover">
+                    <div class="absolute inset-0 flex items-end justify-center p-3">
+                        <p class="text-xs font-bold text-white drop-shadow bg-black/50 px-3 py-1 rounded-full">{{ b.caption }}</p>
                     </div>
                 </div>
                 {% endfor %}
@@ -452,7 +447,6 @@ AUTH_TEMPLATE = BASE_HEAD + """
 </html>
 """
 
-# ফুল ডাইনামিক অ্যাডমিন ড্যাশবোর্ড (ব্যানার + ৬টি সার্ভিসের নাম, ছবি ও প্যাকেজ পরিবর্তন করার অপশন সহ)
 ADMIN_DASHBOARD_TEMPLATE = """
 <!DOCTYPE html>
 <html lang="bn">
@@ -474,7 +468,6 @@ ADMIN_DASHBOARD_TEMPLATE = """
             </div>
         </div>
 
-        <!-- ওয়েবসাইট ও সার্ভিস সেটিংস আপডেট ফর্ম -->
         <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl space-y-4 shadow-xl">
             <h2 class="text-sm font-bold text-amber-400 uppercase tracking-wider"><i class="fa-solid fa-sliders mr-1.5"></i> ওয়েবসাইট ও সার্ভিস কাস্টমাইজ করুন</h2>
             <form action="/admin/update-settings" method="POST" class="space-y-3">
@@ -499,59 +492,16 @@ ADMIN_DASHBOARD_TEMPLATE = """
                 <h3 class="text-xs font-bold text-emerald-400 uppercase">৬টি সার্ভিস কার্ড ও প্যাকেজ কাস্টমাইজার</h3>
                 
                 <div class="space-y-3">
+                    {% for i in range(1, 7) %}
                     <div class="bg-slate-800/50 p-3 rounded-xl border border-slate-800 space-y-2">
-                        <p class="text-xs font-bold text-amber-300">Service 1</p>
+                        <p class="text-xs font-bold text-amber-300">Service {{ i }}</p>
                         <div class="grid grid-cols-2 gap-2">
-                            <input type="text" name="service_1_name" value="{{ settings.service_1_name }}" class="bg-slate-800 border border-slate-700 rounded p-2 text-xs text-white" placeholder="নাম">
-                            <input type="text" name="service_1_icon" value="{{ settings.service_1_icon }}" class="bg-slate-800 border border-slate-700 rounded p-2 text-xs text-white" placeholder="ছবির লিংক">
+                            <input type="text" name="service_{{ i }}_name" value="{{ settings['service_' ~ i ~ '_name'] }}" class="bg-slate-800 border border-slate-700 rounded p-2 text-xs text-white" placeholder="নাম">
+                            <input type="text" name="service_{{ i }}_icon" value="{{ settings['service_' ~ i ~ '_icon'] }}" class="bg-slate-800 border border-slate-700 rounded p-2 text-xs text-white" placeholder="ছবির লিংক">
                         </div>
-                        <input type="text" name="service_1_pkgs" value="{{ settings.service_1_pkgs }}" class="w-full bg-slate-800 border border-slate-700 rounded p-2 text-xs text-white" placeholder="প্যাকেজসমূহ (যেমন: 100 Likes - 30 ৳, 500 Likes - 130 ৳)">
+                        <input type="text" name="service_{{ i }}_pkgs" value="{{ settings['service_' ~ i ~ '_pkgs'] }}" class="w-full bg-slate-800 border border-slate-700 rounded p-2 text-xs text-white" placeholder="প্যাকেজসমূহ">
                     </div>
-
-                    <div class="bg-slate-800/50 p-3 rounded-xl border border-slate-800 space-y-2">
-                        <p class="text-xs font-bold text-amber-300">Service 2</p>
-                        <div class="grid grid-cols-2 gap-2">
-                            <input type="text" name="service_2_name" value="{{ settings.service_2_name }}" class="bg-slate-800 border border-slate-700 rounded p-2 text-xs text-white" placeholder="নাম">
-                            <input type="text" name="service_2_icon" value="{{ settings.service_2_icon }}" class="bg-slate-800 border border-slate-700 rounded p-2 text-xs text-white" placeholder="ছবির লিংক">
-                        </div>
-                        <input type="text" name="service_2_pkgs" value="{{ settings.service_2_pkgs }}" class="w-full bg-slate-800 border border-slate-700 rounded p-2 text-xs text-white" placeholder="প্যাকেজসমূহ">
-                    </div>
-
-                    <div class="bg-slate-800/50 p-3 rounded-xl border border-slate-800 space-y-2">
-                        <p class="text-xs font-bold text-amber-300">Service 3</p>
-                        <div class="grid grid-cols-2 gap-2">
-                            <input type="text" name="service_3_name" value="{{ settings.service_3_name }}" class="bg-slate-800 border border-slate-700 rounded p-2 text-xs text-white" placeholder="নাম">
-                            <input type="text" name="service_3_icon" value="{{ settings.service_3_icon }}" class="bg-slate-800 border border-slate-700 rounded p-2 text-xs text-white" placeholder="ছবির লিংক">
-                        </div>
-                        <input type="text" name="service_3_pkgs" value="{{ settings.service_3_pkgs }}" class="w-full bg-slate-800 border border-slate-700 rounded p-2 text-xs text-white" placeholder="প্যাকেজসমূহ">
-                    </div>
-
-                    <div class="bg-slate-800/50 p-3 rounded-xl border border-slate-800 space-y-2">
-                        <p class="text-xs font-bold text-amber-300">Service 4</p>
-                        <div class="grid grid-cols-2 gap-2">
-                            <input type="text" name="service_4_name" value="{{ settings.service_4_name }}" class="bg-slate-800 border border-slate-700 rounded p-2 text-xs text-white" placeholder="নাম">
-                            <input type="text" name="service_4_icon" value="{{ settings.service_4_icon }}" class="bg-slate-800 border border-slate-700 rounded p-2 text-xs text-white" placeholder="ছবির লিংক">
-                        </div>
-                        <input type="text" name="service_4_pkgs" value="{{ settings.service_4_pkgs }}" class="w-full bg-slate-800 border border-slate-700 rounded p-2 text-xs text-white" placeholder="প্যাকেজসমূহ">
-                    </div>
-
-                    <div class="bg-slate-800/50 p-3 rounded-xl border border-slate-800 space-y-2">
-                        <p class="text-xs font-bold text-amber-300">Service 5</p>
-                        <div class="grid grid-cols-2 gap-2">
-                            <input type="text" name="service_5_name" value="{{ settings.service_5_name }}" class="bg-slate-800 border border-slate-700 rounded p-2 text-xs text-white" placeholder="নাম">
-                            <input type="text" name="service_5_icon" value="{{ settings.service_5_icon }}" class="bg-slate-800 border border-slate-700 rounded p-2 text-xs text-white" placeholder="ছবির লিংক">
-                        </div>
-                        <input type="text" name="service_5_pkgs" value="{{ settings.service_5_pkgs }}" class="w-full bg-slate-800 border border-slate-700 rounded p-2 text-xs text-white" placeholder="প্যাকেজসমূহ">
-                    </div>
-
-                    <div class="bg-slate-800/50 p-3 rounded-xl border border-slate-800 space-y-2">
-                        <p class="text-xs font-bold text-amber-300">Service 6</p>
-                        <div class="grid grid-cols-2 gap-2">
-                            <input type="text" name="service_6_name" value="{{ settings.service_6_name }}" class="bg-slate-800 border border-slate-700 rounded p-2 text-xs text-white" placeholder="নাম">
-                            <input type="text" name="service_6_icon" value="{{ settings.service_6_icon }}" class="bg-slate-800 border border-slate-700 rounded p-2 text-xs text-white" placeholder="ছবির লিংক">
-                        </div>
-                        <input type="text" name="service_6_pkgs" value="{{ settings.service_6_pkgs }}" class="w-full bg-slate-800 border border-slate-700 rounded p-2 text-xs text-white" placeholder="প্যাকেজসমূহ">
-                    </div>
+                    {% endfor %}
                 </div>
 
                 <button type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-3 rounded-xl text-xs transition shadow-lg mt-4">
@@ -560,7 +510,6 @@ ADMIN_DASHBOARD_TEMPLATE = """
             </form>
         </div>
 
-        <!-- ব্যানার ম্যানেজমেন্ট -->
         <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl space-y-4 shadow-xl">
             <h2 class="text-sm font-bold text-amber-400 uppercase tracking-wider"><i class="fa-solid fa-images mr-1.5"></i> স্লাইডার ব্যানার ম্যানেজ করুন</h2>
             <form action="/admin/add-banner" method="POST" class="space-y-3">
@@ -588,7 +537,6 @@ ADMIN_DASHBOARD_TEMPLATE = """
             </div>
         </div>
 
-        <!-- Add Money Requests -->
         <h2 class="text-sm font-bold text-sky-400 uppercase tracking-wider">Pending Add Money Requests</h2>
         {% if add_moneys %}
             {% for am in add_moneys %}
@@ -607,7 +555,6 @@ ADMIN_DASHBOARD_TEMPLATE = """
             <p class="text-xs text-slate-500">কোনো পেন্ডিং অ্যাড মানি রিকোয়েস্ট নেই।</p>
         {% endif %}
 
-        <!-- Topup Orders -->
         <h2 class="text-sm font-bold text-amber-400 uppercase tracking-wider pt-4">Pending Topup Orders</h2>
         {% if orders %}
             {% for o in orders %}
@@ -735,7 +682,6 @@ def order_page(sid):
     if 'user' not in session:
         return redirect(url_for('login'))
     
-    # ডাইনামিক সার্ভিস ডেটা ম্যাপ করা
     services_map = {
         '1': {'name': site_settings['service_1_name'], 'pkgs': site_settings['service_1_pkgs']},
         '2': {'name': site_settings['service_2_name'], 'pkgs': site_settings['service_2_pkgs']},
@@ -846,9 +792,19 @@ def update_settings():
 def add_banner():
     if not session.get('admin'):
         return redirect(url_for('admin_login'))
+    
+    raw_url = request.form.get('image_url').strip()
+    # গুগল ড্রাইভ লিংক হলে ডাইরেক্ট লিংকে রূপান্তর করা
+    if 'drive.google.com' in raw_url:
+        try:
+            file_id = raw_url.split('/d/')[1].split('/')[0]
+            raw_url = f"https://lh3.googleusercontent.com/d/{file_id}"
+        except:
+            pass
+
     new_b = {
         'id': len(banners_db) + 1,
-        'image_url': request.form.get('image_url').strip(),
+        'image_url': raw_url,
         'caption': request.form.get('caption').strip()
     }
     banners_db.append(new_b)
