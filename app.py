@@ -1,5 +1,5 @@
 from flask import Flask, render_template_string, request, redirect, url_for, session
-import datetime
+import random
 
 app = Flask(__name__)
 app.secret_key = 'ahad_topup_secret_key_secure'
@@ -7,6 +7,12 @@ app.secret_key = 'ahad_topup_secret_key_secure'
 users_db = {}
 orders_db = []
 add_money_db = []
+
+# প্রোমো কোড ডাটাবেস (অ্যাডমিন বা কোড থেকে নিয়ন্ত্রিত)
+promo_codes = {
+    "AHAD50": 50,  # ৫০ টাকা ছাড়
+    "FREE20": 20   # ২০ টাকা ছাড়
+}
 
 # ড্রাইভ লিংক দিয়ে স্থায়ী স্লাইডার ব্যানার
 banners_db = [
@@ -111,7 +117,6 @@ BASE_HEAD = """
     <script>
         function closeWarningModal() { document.getElementById('welcomeWarningModal').style.display = 'none'; }
         
-        // সেভ করা থিম রান করানো
         window.addEventListener('DOMContentLoaded', () => {
             const savedTheme = localStorage.getItem('site_theme');
             if(savedTheme === 'light') {
@@ -137,9 +142,9 @@ BOTTOM_NAV = """
             </div>
             <span class="text-[10px] mt-1 font-medium text-slate-300">Add Money</span>
         </a>
-        <a href="/codes" class="flex flex-col items-center text-slate-400 hover:text-slate-200">
-            <i class="fa-solid fa-code text-lg"></i>
-            <span class="text-[10px] mt-1 font-medium">My Codes</span>
+        <a href="/spin" class="flex flex-col items-center text-amber-400 hover:text-amber-300">
+            <i class="fa-solid fa-dharmachakra text-lg"></i>
+            <span class="text-[10px] mt-1 font-medium">Spin & Win</span>
         </a>
         <a href="/settings" class="flex flex-col items-center text-slate-400 hover:text-slate-200">
             <i class="fa-solid fa-gear text-lg"></i>
@@ -168,6 +173,7 @@ INDEX_TEMPLATE = BASE_HEAD + """
     </header>
 
     <main class="p-4 max-w-md mx-auto space-y-4">
+        <!-- স্লাইডার ব্যানার -->
         <div class="w-full h-40 bg-slate-800 rounded-xl relative border border-slate-700 overflow-hidden shadow-lg">
             <div id="sliderContainer" class="w-full h-full relative">
                 {% for b in banners %}
@@ -192,6 +198,18 @@ INDEX_TEMPLATE = BASE_HEAD + """
                 }, 3500);
             }
         </script>
+
+        <!-- স্পিন অ্যান্ড উইন ব্যানার প্রমোশন -->
+        <a href="/spin" class="block bg-gradient-to-r from-amber-500 to-orange-600 p-3 rounded-2xl shadow-lg text-slate-950 flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 bg-black/20 rounded-full flex items-center justify-center text-xl">🎰</div>
+                <div>
+                    <h3 class="font-black text-xs uppercase">Daily Spin & Win Bonus</h3>
+                    <p class="text-[10px] font-medium opacity-90">প্রতিদিন ফ্রিতে চাকা ঘুরিয়ে জিতুন টাকা!</p>
+                </div>
+            </div>
+            <span class="bg-black/80 text-amber-400 font-bold px-3 py-1.5 rounded-xl text-[10px]">SPIN NOW</span>
+        </a>
 
         <h2 class="text-center font-bold tracking-wider text-slate-200 mb-2 text-lg border-b border-slate-800 pb-2">REGULAR TOPUP</h2>
 
@@ -236,6 +254,125 @@ INDEX_TEMPLATE = BASE_HEAD + """
     </main>
 """ + BOTTOM_NAV
 
+SPIN_TEMPLATE = BASE_HEAD + """
+    <header class="flex items-center p-4 bg-slate-900 border-b border-slate-800 sticky top-0 z-40">
+        <a href="/" class="text-slate-300 mr-4 text-lg"><i class="fa-solid fa-arrow-left"></i></a>
+        <h1 class="text-base font-bold uppercase tracking-wider text-slate-200"><i class="fa-solid fa-dharmachakra mr-1 text-amber-400"></i> Daily Spin & Win</h1>
+    </header>
+
+    <main class="p-4 max-w-md mx-auto space-y-5 text-center">
+        <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl space-y-4 shadow-xl">
+            <h2 class="text-sm font-bold text-amber-400">ভাগ্য পরীক্ষা করুন ও বোনাস জিতুন!</h2>
+            
+            {% if message %}
+            <div class="bg-emerald-500/20 border border-emerald-500 text-emerald-300 text-xs p-3 rounded-xl font-bold">
+                {{ message }}
+            </div>
+            {% endif %}
+
+            <div class="w-32 h-32 bg-amber-500/10 border-4 border-amber-500 rounded-full mx-auto flex items-center justify-center text-4xl shadow-2xl animate-pulse">
+                🎰
+            </div>
+
+            <form action="/play-spin" method="POST">
+                <button type="submit" class="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-slate-950 font-black py-3.5 rounded-xl text-sm shadow-lg transition transform active:scale-95">
+                    SPIN WHEEL NOW
+                </button>
+            </form>
+            <p class="text-[10px] text-slate-400">প্রতিবার স্পিনে জিতুন ১ থেকে ১০ টাকা পর্যন্ত সরাসরি ওয়ালেটে!</p>
+        </div>
+    </main>
+""" + BOTTOM_NAV
+
+ORDER_TEMPLATE = BASE_HEAD + """
+    <header class="flex items-center p-4 bg-slate-900 border-b border-slate-800 sticky top-0 z-40">
+        <a href="/" class="text-slate-300 mr-4 text-lg"><i class="fa-solid fa-arrow-left"></i></a>
+        <h1 class="text-base font-bold uppercase tracking-wider text-slate-200">{{ service_name }}</h1>
+    </header>
+
+    <form action="/submit-order" method="POST" class="p-4 max-w-md mx-auto space-y-4">
+        <input type="hidden" name="service" value="{{ service_name }}">
+        
+        {% if service_warning %}
+        <div class="bg-amber-500/10 border border-amber-500/40 p-3.5 rounded-xl space-y-1">
+            <div class="flex items-center text-amber-400 font-bold text-xs">
+                <i class="fa-solid fa-triangle-exclamation mr-1.5 text-sm"></i> বিশেষ সতর্কতা:
+            </div>
+            <p class="text-[11px] text-slate-300 leading-relaxed">{{ service_warning }}</p>
+        </div>
+        {% endif %}
+
+        <div class="bg-slate-900 p-4 rounded-xl border border-slate-800">
+            <label class="block text-xs font-semibold text-slate-400 mb-2">ENTER PLAYER UID</label>
+            <input type="text" name="uid" required placeholder="Enter UID here..." class="w-full bg-slate-800 border border-slate-700 rounded-lg p-3 text-sm text-white">
+        </div>
+
+        <div>
+            <label class="block text-xs font-semibold text-slate-400 mb-2">SELECT PACKAGE</label>
+            <div class="grid grid-cols-2 gap-3">
+                {% for pkg in packages %}
+                <div onclick="selectPackage(this, '{{ pkg }}')" class="package-card p-3 rounded-xl cursor-pointer text-center transition bg-slate-900 border border-slate-800">
+                    <p class="text-sm font-bold text-white">{{ pkg }}</p>
+                </div>
+                {% endfor %}
+            </div>
+            <input type="hidden" name="package" id="selectedPackageInput" required>
+        </div>
+
+        <!-- প্রমো কোড বা কুপন বক্স -->
+        <div class="bg-slate-900 p-4 rounded-xl border border-slate-800 space-y-2">
+            <label class="block text-xs font-semibold text-slate-400">PROMO / COUPON CODE (Optional)</label>
+            <input type="text" name="promo" placeholder="Enter Promo Code (e.g. AHAD50)" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-xs text-amber-400 uppercase font-bold">
+        </div>
+
+        <div>
+            <label class="block text-xs font-semibold text-slate-400 mb-2">SELECT PAYMENT</label>
+            <div class="grid grid-cols-4 gap-2">
+                <button type="button" onclick="selectPayment(this, 'bKash')" class="pay-btn bg-slate-900 border border-slate-700 p-2.5 rounded-xl text-center text-[11px] font-bold text-pink-500">bKash</button>
+                <button type="button" onclick="selectPayment(this, 'Nagad')" class="pay-btn bg-slate-900 border border-slate-700 p-2.5 rounded-xl text-center text-[11px] font-bold text-orange-500">Nagad</button>
+                <button type="button" onclick="selectPayment(this, 'Rocket')" class="pay-btn bg-slate-900 border border-slate-700 p-2.5 rounded-xl text-center text-[11px] font-bold text-purple-500">Rocket</button>
+                <button type="button" onclick="selectPayment(this, 'Wallet')" class="pay-btn bg-slate-900 border border-slate-700 p-2.5 rounded-xl text-center text-[11px] font-bold text-emerald-400">Wallet</button>
+            </div>
+            <input type="hidden" name="payment" id="selectedPaymentInput" required>
+        </div>
+
+        <div id="paymentBox" class="hidden bg-slate-900 p-4 rounded-xl border border-emerald-500/50 space-y-3">
+            <p class="text-xs text-slate-300">Send money to: <strong class="text-emerald-400">{{ settings.payment_number }}</strong></p>
+            <div>
+                <label class="block text-xs font-semibold text-slate-400 mb-1">TRANSACTION ID (TrxID)</label>
+                <input type="text" name="trxid" id="trxidInput" placeholder="Enter TrxID" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-sm text-white">
+            </div>
+        </div>
+
+        <button type="submit" class="w-full bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold py-3.5 rounded-xl shadow-lg transition mt-2">
+            SUBMIT ORDER
+        </button>
+    </form>
+
+    <script>
+        function selectPackage(element, pkgName) {
+            document.querySelectorAll('.package-card').forEach(card => card.style.borderColor = '#334155');
+            element.style.borderColor = '#10b981';
+            document.getElementById('selectedPackageInput').value = pkgName;
+        }
+        function selectPayment(element, method) {
+            document.querySelectorAll('.pay-btn').forEach(btn => btn.style.borderColor = '#334155');
+            element.style.borderColor = '#10b981';
+            document.getElementById('selectedPaymentInput').value = method;
+            
+            const payBox = document.getElementById('paymentBox');
+            const trxInput = document.getElementById('trxidInput');
+            if(method === 'Wallet') {
+                payBox.classList.add('hidden');
+                trxInput.required = false;
+            } else {
+                payBox.classList.remove('hidden');
+                trxInput.required = true;
+            }
+        }
+    </script>
+""" + BOTTOM_NAV
+
 SETTINGS_TEMPLATE = BASE_HEAD + """
     <header class="flex items-center p-4 bg-slate-900 border-b border-slate-800 sticky top-0 z-40">
         <a href="/" class="text-slate-300 mr-4 text-lg"><i class="fa-solid fa-arrow-left"></i></a>
@@ -243,7 +380,6 @@ SETTINGS_TEMPLATE = BASE_HEAD + """
     </header>
 
     <main class="p-4 max-w-md mx-auto space-y-4">
-        <!-- ইউজার প্রোফাইল বিবরণ -->
         <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl text-center space-y-2">
             <div class="w-16 h-16 bg-emerald-500/20 text-emerald-400 rounded-full flex items-center justify-center mx-auto text-2xl font-bold border border-emerald-500/30">
                 {{ user.name[0].upper() }}
@@ -256,11 +392,8 @@ SETTINGS_TEMPLATE = BASE_HEAD + """
             </div>
         </div>
 
-        <!-- থিম ও ডিসপ্লে সেটিংস (Sun / Night Option) -->
         <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl space-y-3">
             <h3 class="text-xs font-bold text-amber-400 uppercase tracking-wider"><i class="fa-solid fa-palette mr-1"></i> Theme Settings</h3>
-            <p class="text-[11px] text-slate-400">ইন্টারফেসের আলো বা কালার মোড পরিবর্তন করুন:</p>
-            
             <div class="grid grid-cols-2 gap-3 pt-1">
                 <button onclick="changeTheme('light')" class="bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-2.5 rounded-xl text-xs flex items-center justify-center shadow">
                     <i class="fa-solid fa-sun mr-1.5 text-base"></i> Sun (Light)
@@ -271,7 +404,6 @@ SETTINGS_TEMPLATE = BASE_HEAD + """
             </div>
         </div>
 
-        <!-- অর্ডার ও লেনদেন পরিসংখ্যান -->
         <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl space-y-3">
             <h3 class="text-xs font-bold text-sky-400 uppercase tracking-wider"><i class="fa-solid fa-chart-pie mr-1"></i> Activity Summary</h3>
             <div class="grid grid-cols-2 gap-3">
@@ -286,7 +418,6 @@ SETTINGS_TEMPLATE = BASE_HEAD + """
             </div>
         </div>
 
-        <!-- লগআউট অপশন -->
         <a href="/logout" class="block w-full bg-red-500/10 border border-red-500/30 text-red-400 font-bold py-3 rounded-xl text-xs text-center hover:bg-red-500 hover:text-white transition">
             <i class="fa-solid fa-right-from-bracket mr-1"></i> LOGOUT ACCOUNT
         </a>
@@ -353,89 +484,6 @@ ADD_MONEY_PAY_TEMPLATE = BASE_HEAD + """
             SUBMIT TRXID
         </button>
     </form>
-""" + BOTTOM_NAV
-
-ORDER_TEMPLATE = BASE_HEAD + """
-    <header class="flex items-center p-4 bg-slate-900 border-b border-slate-800 sticky top-0 z-40">
-        <a href="/" class="text-slate-300 mr-4 text-lg"><i class="fa-solid fa-arrow-left"></i></a>
-        <h1 class="text-base font-bold uppercase tracking-wider text-slate-200">{{ service_name }}</h1>
-    </header>
-
-    <form action="/submit-order" method="POST" class="p-4 max-w-md mx-auto space-y-4">
-        <input type="hidden" name="service" value="{{ service_name }}">
-        
-        {% if service_warning %}
-        <div class="bg-amber-500/10 border border-amber-500/40 p-3.5 rounded-xl space-y-1">
-            <div class="flex items-center text-amber-400 font-bold text-xs">
-                <i class="fa-solid fa-triangle-exclamation mr-1.5 text-sm"></i> বিশেষ সতর্কতা:
-            </div>
-            <p class="text-[11px] text-slate-300 leading-relaxed">{{ service_warning }}</p>
-        </div>
-        {% endif %}
-
-        <div class="bg-slate-900 p-4 rounded-xl border border-slate-800">
-            <label class="block text-xs font-semibold text-slate-400 mb-2">ENTER PLAYER UID</label>
-            <input type="text" name="uid" required placeholder="Enter UID here..." class="w-full bg-slate-800 border border-slate-700 rounded-lg p-3 text-sm text-white">
-        </div>
-
-        <div>
-            <label class="block text-xs font-semibold text-slate-400 mb-2">SELECT PACKAGE</label>
-            <div class="grid grid-cols-2 gap-3">
-                {% for pkg in packages %}
-                <div onclick="selectPackage(this, '{{ pkg }}')" class="package-card p-3 rounded-xl cursor-pointer text-center transition bg-slate-900 border border-slate-800">
-                    <p class="text-sm font-bold text-white">{{ pkg }}</p>
-                </div>
-                {% endfor %}
-            </div>
-            <input type="hidden" name="package" id="selectedPackageInput" required>
-        </div>
-
-        <div>
-            <label class="block text-xs font-semibold text-slate-400 mb-2">SELECT PAYMENT</label>
-            <div class="grid grid-cols-4 gap-2">
-                <button type="button" onclick="selectPayment(this, 'bKash')" class="pay-btn bg-slate-900 border border-slate-700 p-2.5 rounded-xl text-center text-[11px] font-bold text-pink-500">bKash</button>
-                <button type="button" onclick="selectPayment(this, 'Nagad')" class="pay-btn bg-slate-900 border border-slate-700 p-2.5 rounded-xl text-center text-[11px] font-bold text-orange-500">Nagad</button>
-                <button type="button" onclick="selectPayment(this, 'Rocket')" class="pay-btn bg-slate-900 border border-slate-700 p-2.5 rounded-xl text-center text-[11px] font-bold text-purple-500">Rocket</button>
-                <button type="button" onclick="selectPayment(this, 'Wallet')" class="pay-btn bg-slate-900 border border-slate-700 p-2.5 rounded-xl text-center text-[11px] font-bold text-emerald-400">Wallet</button>
-            </div>
-            <input type="hidden" name="payment" id="selectedPaymentInput" required>
-        </div>
-
-        <div id="paymentBox" class="hidden bg-slate-900 p-4 rounded-xl border border-emerald-500/50 space-y-3">
-            <p class="text-xs text-slate-300">Send money to: <strong class="text-emerald-400">{{ settings.payment_number }}</strong></p>
-            <div>
-                <label class="block text-xs font-semibold text-slate-400 mb-1">TRANSACTION ID (TrxID)</label>
-                <input type="text" name="trxid" id="trxidInput" placeholder="Enter TrxID" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-sm text-white">
-            </div>
-        </div>
-
-        <button type="submit" class="w-full bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold py-3.5 rounded-xl shadow-lg transition mt-2">
-            SUBMIT ORDER
-        </button>
-    </form>
-
-    <script>
-        function selectPackage(element, pkgName) {
-            document.querySelectorAll('.package-card').forEach(card => card.style.borderColor = '#334155');
-            element.style.borderColor = '#10b981';
-            document.getElementById('selectedPackageInput').value = pkgName;
-        }
-        function selectPayment(element, method) {
-            document.querySelectorAll('.pay-btn').forEach(btn => btn.style.borderColor = '#334155');
-            element.style.borderColor = '#10b981';
-            document.getElementById('selectedPaymentInput').value = method;
-            
-            const payBox = document.getElementById('paymentBox');
-            const trxInput = document.getElementById('trxidInput');
-            if(method === 'Wallet') {
-                payBox.classList.add('hidden');
-                trxInput.required = false;
-            } else {
-                payBox.classList.remove('hidden');
-                trxInput.required = true;
-            }
-        }
-    </script>
 """ + BOTTOM_NAV
 
 ORDERS_TEMPLATE = BASE_HEAD + """
@@ -710,6 +758,22 @@ def home():
         user['wallet'] = 0.0
     return render_template_string(INDEX_TEMPLATE, settings=site_settings, banners=banners_db, wallet_balance=user['wallet'])
 
+@app.route('/spin')
+def spin_page():
+    if 'user' not in session:
+        return redirect(url_for('login'))
+    return render_template_string(SPIN_TEMPLATE, message=None, settings=site_settings)
+
+@app.route('/play-spin', methods=['POST'])
+def play_spin():
+    if 'user' not in session:
+        return redirect(url_for('login'))
+    uname = session['user']
+    win_amount = random.randint(1, 10)
+    users_db[uname]['wallet'] += win_amount
+    msg = f"অভিনন্দন! আপনি চাকা ঘুরে পেয়েছেন {win_amount} ৳ বোনাস!"
+    return render_template_string(SPIN_TEMPLATE, message=msg, settings=site_settings)
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     error = None
@@ -805,16 +869,24 @@ def submit_order():
     package_str = request.form.get('package')
     payment_method = request.form.get('payment')
     trxid = request.form.get('trxid', 'N/A')
+    promo = request.form.get('promo', '').strip().upper()
     
+    # প্রমো কোড হিসাব
+    discount = 0
+    if promo in promo_codes:
+        discount = promo_codes[promo]
+
     if payment_method == 'Wallet':
         try:
             price = float(package_str.split('-')[-1].replace('৳', '').strip())
         except:
             price = 0.0
             
-        if user.get('wallet', 0.0) < price:
-            return "ওয়ালেটে পর্যাপ্ত ব্যালেন্স নেই! আগে Add Money করুন।"
-        user['wallet'] -= price
+        final_price = max(0, price - discount)
+            
+        if user.get('wallet', 0.0) < final_price:
+            return f"ওয়ালেটে পর্যাপ্ত ব্যালেন্স নেই! প্রয়োজন: {final_price} ৳"
+        user['wallet'] -= final_price
         trxid = 'Wallet Paid'
 
     order_id = len(orders_db) + 1
@@ -838,12 +910,6 @@ def my_orders():
     u_orders = [o for o in orders_db if o['username'] == session['user']]
     u_am = [am for am in add_money_db if am['username'] == session['user']]
     return render_template_string(ORDERS_TEMPLATE, orders=u_orders, add_moneys=u_am, settings=site_settings)
-
-@app.route('/codes')
-def codes():
-    if 'user' not in session:
-        return redirect(url_for('login'))
-    return render_template_string(ORDERS_TEMPLATE, orders=[], add_moneys=[], settings=site_settings)
 
 @app.route('/settings')
 def settings_page():
