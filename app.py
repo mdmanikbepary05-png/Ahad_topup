@@ -25,6 +25,7 @@ site_settings = {
     "payment_number": "01727246581",
     "telegram_link": "https://t.me/ahahackr",
     "notice_text": "⚠️ সাবধান! কেউ কোনো ভুয়া TrxID বা ভুল তথ্য দিয়ে ট্রাই করলে সাথে সাথে একাউন্ট ব্যান করা হবে! 🤬🛑\n\nকোনো সমস্যা হলে টেলিগ্রামে যোগাযোগ করুন: @ahahackr\n— আহাদ 😎✊",
+    "is_app_off": False,  # অ্যাডমিন থেকে অ্যাপ অফ রাখার সুইচ (True / False)
     
     "service_1_name": "FF LIKES",
     "service_1_icon": "https://lh3.googleusercontent.com/d/1Epgm0nOw4e3yY6ExS_aTooGYOPU9C49p",
@@ -59,6 +60,64 @@ site_settings = {
 
 ADMIN_USERNAME = "ahadadmin"
 ADMIN_PASSWORD = "123"
+
+# 🕌 ৫ ওয়াক্ত নামাজের অটো-অফ টাইম ফিল্টার
+def check_prayer_or_maintenance():
+    # অ্যাডমিন যদি নিজে অ্যাপ অফ করে রাখে
+    if site_settings.get("is_app_off"):
+        return True, "🛠️ অ্যাপটির আপডেট কাজ চলছে, অনুগ্রহ করে অপেক্ষা করুন..."
+    
+    # বর্তমান লোকাল সময় চেক (HH:MM ফরম্যাটে)
+    now_time = datetime.datetime.now().strftime("%H:%M")
+    
+    # ৫ ওয়াক্ত নামাজের নির্ধারিত অফ টাইম রেঞ্জ
+    prayer_times = [
+        ("04:45", "05:45", "ফজর"),
+        ("13:00", "13:30", "জোহর"),
+        ("16:15", "17:00", "আসর"),
+        ("17:45", "18:30", "মাগরিব"),
+        ("19:45", "20:30", "এশা")
+    ]
+    
+    for start, end, name in prayer_times:
+        if start <= now_time <= end:
+            return True, f"🕌 পবিত্র {name} নামাজের জন্য অ্যাপ সাময়িকভাবে বন্ধ রয়েছে। নামাজের ওয়াক্ত শেষে আবার চালু হবে।"
+            
+    return False, ""
+
+# 🔒 মিডলওয়্যার: সব রিকোয়েস্ট চেক করার জন্য
+@app.before_request
+def check_app_status():
+    # অ্যাডমিন প্যানেল এবং স্ট্যাটিক রুট ছাড়া বাকি সব পেজে অফ স্ক্রিন দেখাবে
+    if request.endpoint and not request.endpoint.startswith('admin') and request.endpoint not in ['static', 'app_closed']:
+        is_closed, reason_msg = check_prayer_or_maintenance()
+        if is_closed:
+            return render_template_string(CLOSED_TEMPLATE, reason=reason_msg)
+
+CLOSED_TEMPLATE = """
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>App Closed</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-slate-950 text-white min-h-screen flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-800 p-8 rounded-3xl max-w-sm text-center space-y-5 shadow-2xl">
+        <div class="w-20 h-20 bg-amber-500/10 border-2 border-amber-500/40 rounded-full flex items-center justify-center mx-auto text-3xl animate-bounce">
+            ⏰
+        </div>
+        <h2 class="text-lg font-bold text-amber-400 uppercase tracking-wider">অ্যাপ বর্তমানে বন্ধ আছে</h2>
+        <div class="bg-slate-800/80 p-4 rounded-2xl border border-slate-700">
+            <p class="text-xs text-slate-200 leading-relaxed font-medium">{{ reason }}</p>
+        </div>
+        <p class="text-[10px] text-slate-500">আমাদের অ্যাপটি ২৪ ঘণ্টা চালু থাকে, তবে নামাজের সময় ও আপডেট চলায় সাময়িক বিরতি দেওয়া হয়। ধন্যবাদ।</p>
+    </div>
+</body>
+</html>
+"""
 
 BASE_HEAD = """
 <!DOCTYPE html>
@@ -151,6 +210,12 @@ INDEX_TEMPLATE = BASE_HEAD + """
     </header>
 
     <main class="p-4 max-w-md mx-auto space-y-4">
+        <!-- ২৪ ঘণ্টা সার্ভিস ব্যাজ -->
+        <div class="bg-emerald-500/10 border border-emerald-500/30 p-2.5 rounded-xl flex items-center justify-center space-x-2 text-emerald-400">
+            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+            <span class="text-[11px] font-bold">২৪ ঘণ্টা আমাদের সার্ভিস ও অটো টপ-আপ ওপেন থাকে!</span>
+        </div>
+
         <!-- স্লাইডার ব্যানার -->
         <div class="w-full h-40 bg-slate-800 rounded-xl relative border border-slate-700 overflow-hidden shadow-lg">
             <div id="sliderContainer" class="w-full h-full relative">
@@ -664,6 +729,19 @@ ADMIN_DASHBOARD_TEMPLATE = """
             </div>
         </div>
 
+        <!-- 🔴 অ্যাপ ম্যানুয়াল অফ / আপডেট মোড সুইচ -->
+        <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl flex justify-between items-center shadow-xl">
+            <div>
+                <h3 class="text-sm font-bold text-white flex items-center">
+                    <i class="fa-solid fa-power-off mr-2 text-red-500"></i> App Maintenance Mode
+                </h3>
+                <p class="text-[11px] text-slate-400 mt-0.5">অ্যাপটি বন্ধ করে দিলে ইউজারের স্ক্রিনে আপডেট নোটিশ দেখাবে।</p>
+            </div>
+            <a href="/admin/toggle-app-status" class="px-5 py-2.5 rounded-xl font-bold text-xs transition {% if settings.is_app_off %} bg-emerald-500 text-slate-950 {% else %} bg-red-500 text-white {% endif %}">
+                {{ 'ENABLE APP (ON)' if settings.is_app_off else 'DISABLE APP (OFF)' }}
+            </a>
+        </div>
+
         <div class="grid grid-cols-3 gap-3">
             <div class="bg-slate-900 border border-slate-800 p-4 rounded-2xl text-center">
                 <p class="text-[10px] text-slate-400 font-bold uppercase">Total Users</p>
@@ -679,7 +757,7 @@ ADMIN_DASHBOARD_TEMPLATE = """
             </div>
         </div>
 
-        <!-- ১. রেজিস্টার্ড ইউজারের UID ডাটাবেস ও ইউজার ম্যানেজমেন্ট সেকশন -->
+        <!-- ১. রেজিস্টার্ড ইউজারের UID ডাটাবেস সেকশন -->
         <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl space-y-4 shadow-xl">
             <div class="flex justify-between items-center border-b border-slate-800 pb-2">
                 <h2 class="text-sm font-bold text-sky-400 uppercase tracking-wider"><i class="fa-solid fa-users-gear mr-1.5"></i> Registered Users UID Interface</h2>
@@ -729,11 +807,11 @@ ADMIN_DASHBOARD_TEMPLATE = """
             </div>
         </div>
 
-        <!-- ২. আলাদা আলাদা ক্যাটাগরিতে অর্ডার ম্যানেজমেন্ট অপশন -->
+        <!-- ২. ক্যাটাগরি ওয়াইজ অর্ডার ম্যানেজমেন্ট -->
         <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl space-y-4 shadow-xl">
             <h2 class="text-sm font-bold text-amber-400 uppercase tracking-wider border-b border-slate-800 pb-2"><i class="fa-solid fa-list-check mr-1.5"></i> Order Management (Category Wise)</h2>
 
-            <!-- ক্যাটাগরি ১: ফ্রি ডায়মন্ড উইথড্র ও রিডিম অপশন -->
+            <!-- ক্যাটাগরি ১: ফ্রি ডায়মন্ড উইথড্র অপশন -->
             <div class="space-y-3 pt-1">
                 <div class="flex items-center space-x-2 text-sky-400 font-bold text-xs uppercase">
                     <i class="fa-solid fa-gem text-sm"></i>
@@ -766,7 +844,7 @@ ADMIN_DASHBOARD_TEMPLATE = """
 
             <hr class="border-slate-800">
 
-            <!-- ক্যাটাগরি ২: সরাসরি টাকা দিয়ে পেমেন্ট অর্ডার (bKash, Nagad, Rocket) -->
+            <!-- ক্যাটাগরি ২: সরাসরি পেমেন্ট অর্ডার -->
             <div class="space-y-3">
                 <div class="flex items-center space-x-2 text-emerald-400 font-bold text-xs uppercase">
                     <i class="fa-solid fa-money-bill-wave text-sm"></i>
@@ -800,7 +878,7 @@ ADMIN_DASHBOARD_TEMPLATE = """
 
             <hr class="border-slate-800">
 
-            <!-- ক্যাটাগরি ৩: ব্যালেন্স/ওয়ালেট দিয়ে টপ-আপ অর্ডার -->
+            <!-- ক্যাটাগরি ৩: ওয়ালেট অর্ডার -->
             <div class="space-y-3">
                 <div class="flex items-center space-x-2 text-amber-400 font-bold text-xs uppercase">
                     <i class="fa-solid fa-wallet text-sm"></i>
@@ -1218,6 +1296,13 @@ def admin_dashboard():
         searched_user=None,
         search_error=None
     )
+
+@app.route('/admin/toggle-app-status')
+def toggle_app_status():
+    if not session.get('admin'):
+        return redirect(url_for('admin_login'))
+    site_settings['is_app_off'] = not site_settings.get('is_app_off', False)
+    return redirect(url_for('admin_dashboard'))
 
 @app.route('/admin/search-user', methods=['POST'])
 def search_user():
