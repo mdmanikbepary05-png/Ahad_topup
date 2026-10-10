@@ -1,7 +1,6 @@
 from flask import Flask, render_template_string, request, redirect, url_for, session
 import random
 import datetime
-import pytz
 
 app = Flask(__name__)
 app.secret_key = 'ahad_topup_secret_key_secure'
@@ -26,7 +25,7 @@ site_settings = {
     "payment_number": "01727246581",
     "telegram_link": "https://t.me/ahahackr",
     "notice_text": "⚠️ সাবধান! কেউ কোনো ভুয়া TrxID বা ভুল তথ্য দিয়ে ট্রাই করলে সাথে সাথে একাউন্ট ব্যান করা হবে! 🤬🛑\n\nকোনো সমস্যা হলে টেলিগ্রামে যোগাযোগ করুন: @ahahackr\n— আহাদ 😎✊",
-    "is_app_off": False,  # অ্যাডমিন থেকে অ্যাপ অফ রাখার সুইচ (True / False)
+    "is_app_off": False,
     
     "service_1_name": "FF LIKES",
     "service_1_icon": "https://lh3.googleusercontent.com/d/1Epgm0nOw4e3yY6ExS_aTooGYOPU9C49p",
@@ -62,7 +61,6 @@ site_settings = {
 ADMIN_USERNAME = "ahadadmin"
 ADMIN_PASSWORD = "123"
 
-# 🔒 মিডলওয়্যার: অ্যাডমিন পেজ ছাড়া বাকি সব জায়গায় নামাজ ও মেইনটেইনেন্স চেক করা
 @app.before_request
 def check_app_status():
     if request.path.startswith('/admin') or request.endpoint in ['static', 'admin_login', 'login', 'signup', 'logout']:
@@ -76,10 +74,7 @@ def check_app_status_logic():
     if site_settings.get("is_app_off"):
         return True, "🛠️ অ্যাপটির আপডেট কাজ চলছে, অনুগ্রহ করে অপেক্ষা করুন..."
     
-    # বাংলাদেশের সঠিক সময় বের করার জন্য pytz ব্যবহার করা হলো
-    bd_tz = pytz.timezone('Asia/Dhaka')
-    now_time = datetime.datetime.now(bd_tz).strftime("%H:%M")
-    
+    now_time = datetime.datetime.now().strftime("%H:%M")
     prayer_times = [
         ("04:45", "05:45", "ফজর"),
         ("13:00", "13:30", "জোহর"),
@@ -119,9 +114,7 @@ CLOSED_TEMPLATE = """
 </html>
 """
 
-# 📶 নো ইন্টারনেট পপআপ টেমপ্লেট কম্পোনেন্ট
 INTERNET_CHECKER_SCRIPT = """
-    <!-- No Internet Modal -->
     <div id="noInternetModal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md flex items-center justify-center z-50 p-4 hidden">
         <div class="bg-slate-900 border border-red-500/40 w-full max-w-sm rounded-3xl p-6 text-center space-y-4 shadow-2xl">
             <div class="w-20 h-20 bg-red-500/10 border-2 border-red-500/40 rounded-full flex items-center justify-center mx-auto text-3xl text-red-500 animate-pulse">
@@ -136,17 +129,11 @@ INTERNET_CHECKER_SCRIPT = """
             </button>
         </div>
     </div>
-
     <script>
         function checkInternetConnection() {
             const modal = document.getElementById('noInternetModal');
-            if (!navigator.onLine) {
-                modal.classList.remove('hidden');
-            } else {
-                modal.classList.add('hidden');
-            }
+            if (!navigator.onLine) { modal.classList.remove('hidden'); } else { modal.classList.add('hidden'); }
         }
-
         window.addEventListener('online', checkInternetConnection);
         window.addEventListener('offline', checkInternetConnection);
         window.addEventListener('DOMContentLoaded', checkInternetConnection);
@@ -177,7 +164,6 @@ BASE_HEAD = """
     </style>
 </head>
 <body class="pb-24">
-
     <div id="welcomeWarningModal" class="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
         <div class="bg-slate-900 border border-amber-500/50 w-full max-w-sm rounded-2xl p-5 shadow-2xl space-y-4">
             <div class="flex items-center space-x-2 text-amber-400">
@@ -244,13 +230,11 @@ INDEX_TEMPLATE = BASE_HEAD + """
             </div>
         </div>
     </header>
-
     <main class="p-4 max-w-md mx-auto space-y-4">
         <div class="bg-emerald-500/10 border border-emerald-500/30 p-2.5 rounded-xl flex items-center justify-center space-x-2 text-emerald-400">
             <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
             <span class="text-[11px] font-bold">২৪ ঘণ্টা আমাদের সার্ভিস ও অটো টপ-আপ ওপেন থাকে!</span>
         </div>
-
         <div class="w-full h-40 bg-slate-800 rounded-xl relative border border-slate-700 overflow-hidden shadow-lg">
             <div id="sliderContainer" class="w-full h-full relative">
                 {% for b in banners %}
@@ -263,7 +247,6 @@ INDEX_TEMPLATE = BASE_HEAD + """
                 {% endfor %}
             </div>
         </div>
-
         <script>
             let currentSlide = 0;
             const slides = document.querySelectorAll('.slide');
@@ -275,7 +258,6 @@ INDEX_TEMPLATE = BASE_HEAD + """
                 }, 3500);
             }
         </script>
-
         <div class="grid grid-cols-2 gap-3">
             <a href="/spin" class="bg-gradient-to-r from-amber-500 to-orange-600 p-3 rounded-2xl shadow-lg text-slate-950 flex flex-col justify-between">
                 <div class="text-xl">🎰</div>
@@ -292,14 +274,11 @@ INDEX_TEMPLATE = BASE_HEAD + """
                 </div>
             </a>
         </div>
-
         <div class="relative">
             <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3.5 text-slate-400 text-xs"></i>
             <input type="text" id="serviceSearchInput" onkeyup="filterServices()" placeholder="সার্ভিস খুঁজুন (যেমন: UID, Likes)..." class="w-full bg-slate-900 border border-slate-800 rounded-xl py-2.5 pl-10 pr-4 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500">
         </div>
-
         <h2 class="text-center font-bold tracking-wider text-slate-200 mb-2 text-lg border-b border-slate-800 pb-2">REGULAR TOPUP</h2>
-
         <div class="grid grid-cols-3 gap-3" id="servicesGrid">
             <a href="/order/1" class="service-card card-bg p-2.5 rounded-xl text-center flex flex-col items-center hover:border-emerald-500 transition">
                 <div class="w-16 h-16 bg-slate-800 rounded-lg mb-2 flex items-center justify-center border border-slate-700 overflow-hidden">
@@ -339,18 +318,13 @@ INDEX_TEMPLATE = BASE_HEAD + """
             </a>
         </div>
     </main>
-
     <script>
         function filterServices() {
             let input = document.getElementById('serviceSearchInput').value.toLowerCase();
             let cards = document.getElementsByClassName('service-card');
             for (let card of cards) {
                 let title = card.querySelector('.service-title').innerText.toLowerCase();
-                if (title.includes(input)) {
-                    card.style.display = "flex";
-                } else {
-                    card.style.display = "none";
-                }
+                if (title.includes(input)) { card.style.display = "flex"; } else { card.style.display = "none"; }
             }
         }
     </script>
@@ -361,26 +335,16 @@ SPIN_TEMPLATE = BASE_HEAD + """
         <a href="/" class="text-slate-300 mr-4 text-lg"><i class="fa-solid fa-arrow-left"></i></a>
         <h1 class="text-base font-bold uppercase tracking-wider text-slate-200"><i class="fa-solid fa-dharmachakra mr-1 text-amber-400"></i> Daily Free Spin Token</h1>
     </header>
-
     <main class="p-4 max-w-md mx-auto space-y-5 text-center">
         <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl space-y-4 shadow-xl">
             <h2 class="text-sm font-bold text-amber-400">প্রতিদিন ২৪ ঘণ্টায় ১ বার স্পিন করুন!</h2>
             <p class="text-xs text-slate-300">আপনার বর্তমান টোকেন: <strong class="text-amber-400 font-mono text-sm">🪙 {{ tokens }}</strong></p>
-            
             {% if message %}
-            <div class="bg-amber-500/20 border border-amber-500 text-amber-300 text-xs p-3 rounded-xl font-bold">
-                {{ message }}
-            </div>
+            <div class="bg-amber-500/20 border border-amber-500 text-amber-300 text-xs p-3 rounded-xl font-bold">{{ message }}</div>
             {% endif %}
-
-            <div class="w-32 h-32 bg-amber-500/10 border-4 border-amber-500 rounded-full mx-auto flex items-center justify-center text-4xl shadow-2xl animate-pulse">
-                🎰
-            </div>
-
+            <div class="w-32 h-32 bg-amber-500/10 border-4 border-amber-500 rounded-full mx-auto flex items-center justify-center text-4xl shadow-2xl animate-pulse">🎰</div>
             <form action="/play-spin" method="POST">
-                <button type="submit" class="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-slate-950 font-black py-3.5 rounded-xl text-sm shadow-lg transition transform active:scale-95">
-                    SPIN FOR TOKEN NOW
-                </button>
+                <button type="submit" class="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-slate-950 font-black py-3.5 rounded-xl text-sm shadow-lg transition transform active:scale-95">SPIN FOR TOKEN NOW</button>
             </form>
             <p class="text-[10px] text-slate-400">স্পিন করে টোকেন জমিয়ে ফ্রিতে উইকলি ও মান্থলি রিডিম করুন!</p>
         </div>
@@ -392,19 +356,14 @@ FREE_DIAMOND_TEMPLATE = BASE_HEAD + """
         <a href="/" class="text-slate-300 mr-4 text-lg"><i class="fa-solid fa-arrow-left"></i></a>
         <h1 class="text-base font-bold uppercase tracking-wider text-sky-400"><i class="fa-solid fa-gem mr-1"></i> FREE DIAMOND STORE</h1>
     </header>
-
     <main class="p-4 max-w-md mx-auto space-y-4">
         <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl flex justify-between items-center">
             <span class="text-xs text-slate-300">আপনার মোট টোকেন:</span>
             <span class="text-sm font-bold text-amber-400 font-mono">🪙 {{ tokens }} Token</span>
         </div>
-
         {% if msg %}
-        <div class="bg-emerald-500/20 border border-emerald-500 text-emerald-300 text-xs p-3 rounded-xl font-bold text-center">
-            {{ msg }}
-        </div>
+        <div class="bg-emerald-500/20 border border-emerald-500 text-emerald-300 text-xs p-3 rounded-xl font-bold text-center">{{ msg }}</div>
         {% endif %}
-
         <div class="bg-slate-900 border border-slate-800 p-4 rounded-2xl space-y-3">
             <div class="flex justify-between items-center">
                 <h3 class="text-sm font-bold text-white">Weekly Membership (Free)</h3>
@@ -414,12 +373,9 @@ FREE_DIAMOND_TEMPLATE = BASE_HEAD + """
             <form action="/redeem-diamond" method="POST" class="space-y-2">
                 <input type="hidden" name="type" value="weekly">
                 <input type="text" name="uid" required placeholder="Enter Player UID" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-xs text-white">
-                <button type="submit" class="w-full bg-sky-500 hover:bg-sky-600 text-slate-950 font-bold py-2.5 rounded-xl text-xs transition">
-                    ১ লাখ টোকেন দিয়ে রিডিম করুন
-                </button>
+                <button type="submit" class="w-full bg-sky-500 hover:bg-sky-600 text-slate-950 font-bold py-2.5 rounded-xl text-xs transition">১ লাখ টোকেন দিয়ে রিডিম করুন</button>
             </form>
         </div>
-
         <div class="bg-slate-900 border border-slate-800 p-4 rounded-2xl space-y-3">
             <div class="flex justify-between items-center">
                 <h3 class="text-sm font-bold text-white">Monthly Membership (Free)</h3>
@@ -429,9 +385,7 @@ FREE_DIAMOND_TEMPLATE = BASE_HEAD + """
             <form action="/redeem-diamond" method="POST" class="space-y-2">
                 <input type="hidden" name="type" value="monthly">
                 <input type="text" name="uid" required placeholder="Enter Player UID" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-xs text-white">
-                <button type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-2.5 rounded-xl text-xs transition">
-                    ৫ লাখ টোকেন দিয়ে রিডিম করুন
-                </button>
+                <button type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-2.5 rounded-xl text-xs transition">৫ লাখ টোকেন দিয়ে রিডিম করুন</button>
             </form>
         </div>
     </main>
@@ -442,7 +396,6 @@ SETTINGS_TEMPLATE = BASE_HEAD + """
         <a href="/" class="text-slate-300 mr-4 text-lg"><i class="fa-solid fa-arrow-left"></i></a>
         <h1 class="text-base font-bold uppercase tracking-wider text-slate-200"><i class="fa-solid fa-gear mr-1 text-emerald-400"></i> Settings & Profile</h1>
     </header>
-
     <main class="p-4 max-w-md mx-auto space-y-4">
         <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl text-center space-y-2">
             <div class="w-16 h-16 bg-emerald-500/20 text-emerald-400 rounded-full flex items-center justify-center mx-auto text-2xl font-bold border border-emerald-500/30">
@@ -464,7 +417,6 @@ SETTINGS_TEMPLATE = BASE_HEAD + """
                 </div>
             </div>
         </div>
-
         <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl space-y-3">
             <h3 class="text-xs font-bold text-amber-400 uppercase tracking-wider"><i class="fa-solid fa-share-nodes mr-1"></i> Referral Program</h3>
             <p class="text-[11px] text-slate-400">বন্ধুকে রেফার করুন এবং বোনাস পান:</p>
@@ -473,7 +425,6 @@ SETTINGS_TEMPLATE = BASE_HEAD + """
                 <button onclick="navigator.clipboard.writeText('https://ahadtopup.com/ref/{{ user.user_uid }}'); alert('Referral link copied!');" class="bg-emerald-500 text-slate-950 font-bold px-3 py-1 rounded-lg text-xs">Copy</button>
             </div>
         </div>
-
         <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl space-y-3">
             <h3 class="text-xs font-bold text-amber-400 uppercase tracking-wider"><i class="fa-solid fa-palette mr-1"></i> Theme Settings</h3>
             <div class="grid grid-cols-2 gap-3 pt-1">
@@ -485,12 +436,10 @@ SETTINGS_TEMPLATE = BASE_HEAD + """
                 </button>
             </div>
         </div>
-
         <a href="/logout" class="block w-full bg-red-500/10 border border-red-500/30 text-red-400 font-bold py-3 rounded-xl text-xs text-center hover:bg-red-500 hover:text-white transition">
             <i class="fa-solid fa-right-from-bracket mr-1"></i> LOGOUT ACCOUNT
         </a>
     </main>
-
     <script>
         function changeTheme(theme) {
             if(theme === 'light') {
@@ -509,10 +458,8 @@ ORDER_TEMPLATE = BASE_HEAD + """
         <a href="/" class="text-slate-300 mr-4 text-lg"><i class="fa-solid fa-arrow-left"></i></a>
         <h1 class="text-base font-bold uppercase tracking-wider text-slate-200">{{ service_name }}</h1>
     </header>
-
     <form action="/submit-order" method="POST" class="p-4 max-w-md mx-auto space-y-4">
         <input type="hidden" name="service" value="{{ service_name }}">
-        
         {% if service_warning %}
         <div class="bg-amber-500/10 border border-amber-500/40 p-3.5 rounded-xl space-y-1">
             <div class="flex items-center text-amber-400 font-bold text-xs">
@@ -521,12 +468,10 @@ ORDER_TEMPLATE = BASE_HEAD + """
             <p class="text-[11px] text-slate-300 leading-relaxed">{{ service_warning }}</p>
         </div>
         {% endif %}
-
         <div class="bg-slate-900 p-4 rounded-xl border border-slate-800">
             <label class="block text-xs font-semibold text-slate-400 mb-2">ENTER PLAYER UID</label>
             <input type="text" name="uid" required placeholder="Enter UID here..." class="w-full bg-slate-800 border border-slate-700 rounded-lg p-3 text-sm text-white">
         </div>
-
         <div>
             <label class="block text-xs font-semibold text-slate-400 mb-2">SELECT PACKAGE</label>
             <div class="grid grid-cols-2 gap-3">
@@ -538,12 +483,10 @@ ORDER_TEMPLATE = BASE_HEAD + """
             </div>
             <input type="hidden" name="package" id="selectedPackageInput" required>
         </div>
-
         <div class="bg-slate-900 p-4 rounded-xl border border-slate-800 space-y-2">
             <label class="block text-xs font-semibold text-slate-400">PROMO / COUPON CODE (Optional)</label>
             <input type="text" name="promo" placeholder="Enter Promo Code (e.g. AHAD50)" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-xs text-amber-400 uppercase font-bold">
         </div>
-
         <div>
             <label class="block text-xs font-semibold text-slate-400 mb-2">SELECT PAYMENT</label>
             <div class="grid grid-cols-4 gap-2">
@@ -554,7 +497,6 @@ ORDER_TEMPLATE = BASE_HEAD + """
             </div>
             <input type="hidden" name="payment" id="selectedPaymentInput" required>
         </div>
-
         <div id="paymentBox" class="hidden bg-slate-900 p-4 rounded-xl border border-emerald-500/50 space-y-3">
             <p class="text-xs text-slate-300">Send money to: <strong class="text-emerald-400">{{ settings.payment_number }}</strong></p>
             <div>
@@ -562,12 +504,8 @@ ORDER_TEMPLATE = BASE_HEAD + """
                 <input type="text" name="trxid" id="trxidInput" placeholder="Enter TrxID" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-sm text-white">
             </div>
         </div>
-
-        <button type="submit" class="w-full bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold py-3.5 rounded-xl shadow-lg transition mt-2">
-            SUBMIT ORDER
-        </button>
+        <button type="submit" class="w-full bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold py-3.5 rounded-xl shadow-lg transition mt-2">SUBMIT ORDER</button>
     </form>
-
     <script>
         function selectPackage(element, pkgName) {
             document.querySelectorAll('.package-card').forEach(card => card.style.borderColor = '#334155');
@@ -578,16 +516,9 @@ ORDER_TEMPLATE = BASE_HEAD + """
             document.querySelectorAll('.pay-btn').forEach(btn => btn.style.borderColor = '#334155');
             element.style.borderColor = '#10b981';
             document.getElementById('selectedPaymentInput').value = method;
-            
             const payBox = document.getElementById('paymentBox');
             const trxInput = document.getElementById('trxidInput');
-            if(method === 'Wallet') {
-                payBox.classList.add('hidden');
-                trxInput.required = false;
-            } else {
-                payBox.classList.remove('hidden');
-                trxInput.required = true;
-            }
+            if(method === 'Wallet') { payBox.classList.add('hidden'); trxInput.required = false; } else { payBox.classList.remove('hidden'); trxInput.required = true; }
         }
     </script>
 """ + BOTTOM_NAV
@@ -597,7 +528,6 @@ ADD_MONEY_TEMPLATE = BASE_HEAD + """
         <a href="/" class="text-slate-300 mr-4 text-lg"><i class="fa-solid fa-arrow-left"></i></a>
         <h1 class="text-base font-bold uppercase tracking-wider text-slate-200">Add Money (ওয়ালেট)</h1>
     </header>
-
     <main class="p-4 max-w-md mx-auto space-y-4">
         <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl space-y-4">
             <h2 class="text-sm font-bold text-emerald-400">টাকা অ্যাড করতে অ্যামাউন্ট দিন:</h2>
@@ -606,9 +536,7 @@ ADD_MONEY_TEMPLATE = BASE_HEAD + """
                     <label class="block text-xs font-semibold text-slate-400 mb-1">পরিমাণ (Amount in BDT)</label>
                     <input type="number" name="amount" required placeholder="উদা: 100" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-3 text-sm text-white">
                 </div>
-                <button type="submit" class="w-full bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold py-3 rounded-xl text-xs transition">
-                    প্রসিড করুন (Next)
-                </button>
+                <button type="submit" class="w-full bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold py-3 rounded-xl text-xs transition">প্রসিড করুন (Next)</button>
             </form>
         </div>
     </main>
@@ -619,7 +547,6 @@ ADD_MONEY_PAY_TEMPLATE = BASE_HEAD + """
         <a href="/add-money" class="text-slate-300 mr-4 text-lg"><i class="fa-solid fa-arrow-left"></i></a>
         <h1 class="text-base font-bold uppercase tracking-wider text-slate-200">Complete Payment</h1>
     </header>
-
     <form action="/confirm-add-money" method="POST" class="p-4 max-w-md mx-auto space-y-4">
         <input type="hidden" name="amount" value="{{ amount }}">
         <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl space-y-2 text-center">
@@ -636,9 +563,7 @@ ADD_MONEY_PAY_TEMPLATE = BASE_HEAD + """
                 <input type="text" name="trxid" required placeholder="বিকাশ TrxID দিন" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-3 text-sm text-white">
             </div>
         </div>
-        <button type="submit" class="w-full bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold py-3.5 rounded-xl transition">
-            SUBMIT TRXID
-        </button>
+        <button type="submit" class="w-full bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold py-3.5 rounded-xl transition">SUBMIT TRXID</button>
     </form>
 """ + BOTTOM_NAV
 
@@ -647,7 +572,6 @@ ORDERS_TEMPLATE = BASE_HEAD + """
         <a href="/" class="text-slate-300 mr-4 text-lg"><i class="fa-solid fa-arrow-left"></i></a>
         <h1 class="text-base font-bold uppercase tracking-wider text-slate-200">My Orders & Invoice</h1>
     </header>
-
     <main class="p-4 max-w-md mx-auto space-y-4">
         <h3 class="text-xs font-bold text-slate-400 uppercase">Topup Orders</h3>
         {% if orders %}
@@ -655,12 +579,7 @@ ORDERS_TEMPLATE = BASE_HEAD + """
             <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl space-y-2 relative">
                 <div class="flex justify-between items-center">
                     <span class="text-xs font-bold text-emerald-400">#ORD-{{ o.id }} - {{ o.service }}</span>
-                    <span class="text-[10px] px-2.5 py-1 rounded-full font-bold 
-                        {% if o.status == 'Pending' %} bg-amber-500/20 text-amber-400 border border-amber-500/30
-                        {% elif o.status == 'Completed' %} bg-emerald-500/20 text-emerald-400 border border-emerald-500/30
-                        {% else %} bg-red-500/20 text-red-400 border border-red-500/30 {% endif %}">
-                        {{ o.status }}
-                    </span>
+                    <span class="text-[10px] px-2.5 py-1 rounded-full font-bold {% if o.status == 'Pending' %} bg-amber-500/20 text-amber-400 border border-amber-500/30 {% elif o.status == 'Completed' %} bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 {% else %} bg-red-500/20 text-red-400 border border-red-500/30 {% endif %}">{{ o.status }}</span>
                 </div>
                 <p class="text-xs text-slate-300">UID: <strong>{{ o.uid }}</strong></p>
                 <p class="text-xs text-slate-300">Package: <strong>{{ o.package }}</strong></p>
@@ -671,19 +590,13 @@ ORDERS_TEMPLATE = BASE_HEAD + """
         {% else %}
             <p class="text-xs text-slate-500 text-center py-2">কোনো টপআপ অর্ডার নেই!</p>
         {% endif %}
-
         <h3 class="text-xs font-bold text-slate-400 uppercase pt-2">Add Money Requests</h3>
         {% if add_moneys %}
             {% for am in add_moneys %}
             <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl space-y-2">
                 <div class="flex justify-between items-center">
                     <span class="text-xs font-bold text-sky-400">Add Money: {{ am.amount }} ৳</span>
-                    <span class="text-xs px-2.5 py-1 rounded-full font-bold 
-                        {% if am.status == 'Pending' %} bg-amber-500/20 text-amber-400 border border-amber-500/30
-                        {% elif am.status == 'Approved' %} bg-emerald-500/20 text-emerald-400 border border-emerald-500/30
-                        {% else %} bg-red-500/20 text-red-400 border border-red-500/30 {% endif %}">
-                        {{ am.status }}
-                    </span>
+                    <span class="text-xs px-2.5 py-1 rounded-full font-bold {% if am.status == 'Pending' %} bg-amber-500/20 text-amber-400 border border-amber-500/30 {% elif am.status == 'Approved' %} bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 {% else %} bg-red-500/20 text-red-400 border border-red-500/30 {% endif %}">{{ am.status }}</span>
                 </div>
                 <p class="text-xs text-slate-300">TrxID: <strong class="text-amber-300">{{ am.trxid }}</strong></p>
             </div>
@@ -699,11 +612,9 @@ AUTH_TEMPLATE = BASE_HEAD + """
         <div class="bg-slate-900 border border-slate-800 w-full max-w-sm rounded-2xl p-6 shadow-2xl">
             <h2 class="text-xl font-bold text-center text-emerald-400 mb-1">{{ settings.site_title }}</h2>
             <p class="text-xs text-center text-slate-400 mb-6">আপনার অ্যাকাউন্টে লগইন করুন</p>
-            
             {% if error %}
             <div class="bg-red-500/20 border border-red-500 text-red-300 text-xs p-3 rounded-xl mb-4 text-center">{{ error }}</div>
             {% endif %}
-
             <form method="POST" class="space-y-4">
                 {% if is_signup %}
                 <div>
@@ -723,9 +634,7 @@ AUTH_TEMPLATE = BASE_HEAD + """
                     <label class="block text-xs font-semibold text-slate-400 mb-1">PASSWORD</label>
                     <input type="password" name="password" required class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-sm text-white">
                 </div>
-                <button type="submit" class="w-full bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold py-3 rounded-xl text-sm transition">
-                    {{ 'CREATE ACCOUNT' if is_signup else 'LOGIN' }}
-                </button>
+                <button type="submit" class="w-full bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold py-3 rounded-xl text-sm transition">{{ 'CREATE ACCOUNT' if is_signup else 'LOGIN' }}</button>
             </form>
             <div class="text-center mt-4">
                 {% if is_signup %}
@@ -760,7 +669,6 @@ ADMIN_DASHBOARD_TEMPLATE = """
                 <a href="/admin/logout" class="bg-red-500 text-white px-3 py-1.5 rounded-lg text-xs font-bold">Logout</a>
             </div>
         </div>
-
         <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl flex justify-between items-center shadow-xl">
             <div>
                 <h3 class="text-sm font-bold text-white flex items-center">
@@ -772,7 +680,6 @@ ADMIN_DASHBOARD_TEMPLATE = """
                 {{ 'ENABLE APP (ON)' if settings.is_app_off else 'DISABLE APP (OFF)' }}
             </a>
         </div>
-
         <div class="grid grid-cols-3 gap-3">
             <div class="bg-slate-900 border border-slate-800 p-4 rounded-2xl text-center">
                 <p class="text-[10px] text-slate-400 font-bold uppercase">Total Users</p>
@@ -787,39 +694,31 @@ ADMIN_DASHBOARD_TEMPLATE = """
                 <h3 class="text-xl font-black text-amber-400 mt-1">{{ pending_orders }}</h3>
             </div>
         </div>
-
         <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl space-y-4 shadow-xl">
             <div class="flex justify-between items-center border-b border-slate-800 pb-2">
                 <h2 class="text-sm font-bold text-sky-400 uppercase tracking-wider"><i class="fa-solid fa-users-gear mr-1.5"></i> Registered Users UID Interface</h2>
                 <span class="text-xs bg-sky-500/20 text-sky-300 font-bold px-2.5 py-1 rounded-full">Total: {{ total_users }} Users</span>
             </div>
-
             <form action="/admin/search-user" method="POST" class="flex space-x-2">
                 <input type="text" name="search_term" placeholder="Search by User UID or Username..." required class="flex-1 bg-slate-800 border border-slate-700 rounded-xl p-2.5 text-xs text-white uppercase">
                 <button type="submit" class="bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold px-4 py-2.5 rounded-xl text-xs">Search UID</button>
             </form>
-
             {% if searched_user %}
             <div class="bg-slate-800 p-4 rounded-xl border border-amber-500/50 space-y-2">
                 <div class="flex justify-between items-center">
                     <span class="text-xs font-bold text-emerald-400">{{ searched_user.name }}</span>
-                    <span class="text-[10px] px-2 py-0.5 rounded-full font-bold {% if searched_user.is_banned %} bg-red-500/20 text-red-400 border border-red-500/30 {% else %} bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 {% endif %}">
-                        {{ 'BANNED' if searched_user.is_banned else 'ACTIVE' }}
-                    </span>
+                    <span class="text-[10px] px-2 py-0.5 rounded-full font-bold {% if searched_user.is_banned %} bg-red-500/20 text-red-400 border border-red-500/30 {% else %} bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 {% endif %}">{{ 'BANNED' if searched_user.is_banned else 'ACTIVE' }}</span>
                 </div>
                 <p class="text-xs text-slate-300">Username: <strong>{{ searched_user.username }}</strong></p>
                 <p class="text-xs text-slate-300">User UID: <strong class="text-amber-300">{{ searched_user.user_uid }}</strong></p>
                 <p class="text-xs text-slate-300">Wallet Balance: <strong class="text-emerald-400">{{ searched_user.wallet }} ৳</strong> | Spin Tokens: <strong class="text-amber-400 font-mono">🪙 {{ searched_user.tokens }}</strong></p>
                 <div class="pt-2">
-                    <a href="/admin/toggle-ban/{{ searched_user.username }}" class="block w-full text-center font-bold py-2 rounded-lg text-xs {% if searched_user.is_banned %} bg-emerald-500 text-slate-950 {% else %} bg-red-500 text-white {% endif %}">
-                        {{ 'UNBAN THIS USER' if searched_user.is_banned else 'BAN THIS USER' }}
-                    </a>
+                    <a href="/admin/toggle-ban/{{ searched_user.username }}" class="block w-full text-center font-bold py-2 rounded-lg text-xs {% if searched_user.is_banned %} bg-emerald-500 text-slate-950 {% else %} bg-red-500 text-white {% endif %}">{{ 'UNBAN THIS USER' if searched_user.is_banned else 'BAN THIS USER' }}</a>
                 </div>
             </div>
             {% elif search_error %}
             <p class="text-xs text-red-400 text-center py-1 font-bold">{{ search_error }}</p>
             {% endif %}
-
             <div class="space-y-2 max-h-56 overflow-y-auto pr-1">
                 {% for u in all_users %}
                 <div class="bg-slate-800 p-3 rounded-xl border border-slate-700 flex justify-between items-center text-xs">
@@ -827,17 +726,13 @@ ADMIN_DASHBOARD_TEMPLATE = """
                         <p class="font-bold text-white">{{ u.name }} <span class="text-amber-300 font-mono">({{ u.user_uid }})</span></p>
                         <p class="text-[10px] text-slate-400">Mobile: {{ u.username }} | Wallet: {{ u.wallet }}৳ | Tokens: 🪙{{ u.tokens }}</p>
                     </div>
-                    <a href="/admin/toggle-ban/{{ u.username }}" class="px-3 py-1.5 rounded-lg text-[10px] font-bold {% if u.is_banned %} bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 {% else %} bg-red-500/20 text-red-400 border border-red-500/30 {% endif %}">
-                        {{ 'Unban' if u.is_banned else 'Ban' }}
-                    </a>
+                    <a href="/admin/toggle-ban/{{ u.username }}" class="px-3 py-1.5 rounded-lg text-[10px] font-bold {% if u.is_banned %} bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 {% else %} bg-red-500/20 text-red-400 border border-red-500/30 {% endif %}">{{ 'Unban' if u.is_banned else 'Ban' }}</a>
                 </div>
                 {% endfor %}
             </div>
         </div>
-
         <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl space-y-4 shadow-xl">
             <h2 class="text-sm font-bold text-amber-400 uppercase tracking-wider border-b border-slate-800 pb-2"><i class="fa-solid fa-list-check mr-1.5"></i> Order Management (Category Wise)</h2>
-
             <div class="space-y-3 pt-1">
                 <div class="flex items-center space-x-2 text-sky-400 font-bold text-xs uppercase">
                     <i class="fa-solid fa-gem text-sm"></i>
@@ -849,9 +744,7 @@ ADMIN_DASHBOARD_TEMPLATE = """
                     <div class="bg-slate-800/80 p-3.5 rounded-xl border border-sky-500/30 space-y-2">
                         <div class="flex justify-between items-center">
                             <span class="text-xs font-bold text-sky-300">#ORD-{{ o.id }} ({{ o.package }})</span>
-                            <span class="text-[10px] px-2.5 py-0.5 rounded-full font-bold {% if o.status == 'Pending' %} bg-amber-500/20 text-amber-400 {% elif o.status == 'Completed' %} bg-emerald-500/20 text-emerald-400 {% else %} bg-red-500/20 text-red-400 {% endif %}">
-                                {{ o.status }}
-                            </span>
+                            <span class="text-[10px] px-2.5 py-0.5 rounded-full font-bold {% if o.status == 'Pending' %} bg-amber-500/20 text-amber-400 {% elif o.status == 'Completed' %} bg-emerald-500/20 text-emerald-400 {% else %} bg-red-500/20 text-red-400 {% endif %}">{{ o.status }}</span>
                         </div>
                         <p class="text-xs text-slate-300">User: <strong class="text-white">{{ o.username }}</strong> | Game UID: <strong class="text-amber-300">{{ o.uid }}</strong></p>
                         <p class="text-xs text-slate-300">Deducted Tokens: <strong class="text-amber-400 font-mono">🪙 {{ o.trxid }}</strong></p>
@@ -867,9 +760,7 @@ ADMIN_DASHBOARD_TEMPLATE = """
                     <p class="text-[11px] text-slate-500 italic bg-slate-800/40 p-2.5 rounded-xl">কোনো ফ্রি ডায়মন্ড রিডিম রিকোয়েস্ট নেই।</p>
                 {% endif %}
             </div>
-
             <hr class="border-slate-800">
-
             <div class="space-y-3">
                 <div class="flex items-center space-x-2 text-emerald-400 font-bold text-xs uppercase">
                     <i class="fa-solid fa-money-bill-wave text-sm"></i>
@@ -881,9 +772,7 @@ ADMIN_DASHBOARD_TEMPLATE = """
                     <div class="bg-slate-800/80 p-3.5 rounded-xl border border-emerald-500/30 space-y-2">
                         <div class="flex justify-between items-center">
                             <span class="text-xs font-bold text-emerald-300">#ORD-{{ o.id }} - {{ o.service }}</span>
-                            <span class="text-[10px] px-2.5 py-0.5 rounded-full font-bold {% if o.status == 'Pending' %} bg-amber-500/20 text-amber-400 {% elif o.status == 'Completed' %} bg-emerald-500/20 text-emerald-400 {% else %} bg-red-500/20 text-red-400 {% endif %}">
-                                {{ o.status }}
-                            </span>
+                            <span class="text-[10px] px-2.5 py-0.5 rounded-full font-bold {% if o.status == 'Pending' %} bg-amber-500/20 text-amber-400 {% elif o.status == 'Completed' %} bg-emerald-500/20 text-emerald-400 {% else %} bg-red-500/20 text-red-400 {% endif %}">{{ o.status }}</span>
                         </div>
                         <p class="text-xs text-slate-300">User: <strong class="text-white">{{ o.username }}</strong> | Game UID: <strong class="text-white">{{ o.uid }}</strong></p>
                         <p class="text-xs text-slate-300">Package: <strong class="text-white">{{ o.package }}</strong></p>
@@ -900,9 +789,7 @@ ADMIN_DASHBOARD_TEMPLATE = """
                     <p class="text-[11px] text-slate-500 italic bg-slate-800/40 p-2.5 rounded-xl">কোনো সরাসরি পেমেন্টের অর্ডার নেই।</p>
                 {% endif %}
             </div>
-
             <hr class="border-slate-800">
-
             <div class="space-y-3">
                 <div class="flex items-center space-x-2 text-amber-400 font-bold text-xs uppercase">
                     <i class="fa-solid fa-wallet text-sm"></i>
@@ -914,9 +801,7 @@ ADMIN_DASHBOARD_TEMPLATE = """
                     <div class="bg-slate-800/80 p-3.5 rounded-xl border border-amber-500/30 space-y-2">
                         <div class="flex justify-between items-center">
                             <span class="text-xs font-bold text-amber-300">#ORD-{{ o.id }} - {{ o.service }}</span>
-                            <span class="text-[10px] px-2.5 py-0.5 rounded-full font-bold {% if o.status == 'Pending' %} bg-amber-500/20 text-amber-400 {% elif o.status == 'Completed' %} bg-emerald-500/20 text-emerald-400 {% else %} bg-red-500/20 text-red-400 {% endif %}">
-                                {{ o.status }}
-                            </span>
+                            <span class="text-[10px] px-2.5 py-0.5 rounded-full font-bold {% if o.status == 'Pending' %} bg-amber-500/20 text-amber-400 {% elif o.status == 'Completed' %} bg-emerald-500/20 text-emerald-400 {% else %} bg-red-500/20 text-red-400 {% endif %}">{{ o.status }}</span>
                         </div>
                         <p class="text-xs text-slate-300">User: <strong class="text-white">{{ o.username }}</strong> | Game UID: <strong class="text-white">{{ o.uid }}</strong></p>
                         <p class="text-xs text-slate-300">Package: <strong class="text-white">{{ o.package }}</strong></p>
@@ -934,7 +819,6 @@ ADMIN_DASHBOARD_TEMPLATE = """
                 {% endif %}
             </div>
         </div>
-
         <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl space-y-4 shadow-xl">
             <h2 class="text-sm font-bold text-amber-400 uppercase tracking-wider"><i class="fa-solid fa-sliders mr-1.5"></i> ওয়েবসাইট ও সার্ভিস কাস্টমাইজ করুন</h2>
             <form action="/admin/update-settings" method="POST" class="space-y-3">
@@ -954,10 +838,8 @@ ADMIN_DASHBOARD_TEMPLATE = """
                     <label class="block text-xs font-semibold text-slate-400 mb-1">Popup Notice / Warning Text</label>
                     <textarea name="notice_text" rows="4" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-sm text-white">{{ settings.notice_text }}</textarea>
                 </div>
-
                 <hr class="border-slate-800 my-2">
                 <h3 class="text-xs font-bold text-emerald-400 uppercase">৬টি সার্ভিস কার্ড, প্যাকেজ ও ওয়ার্নিং কাস্টমাইজার</h3>
-                
                 <div class="space-y-3">
                     {% for i in range(1, 7) %}
                     <div class="bg-slate-800/50 p-3 rounded-xl border border-slate-800 space-y-2">
@@ -971,13 +853,9 @@ ADMIN_DASHBOARD_TEMPLATE = """
                     </div>
                     {% endfor %}
                 </div>
-
-                <button type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-3 rounded-xl text-xs transition shadow-lg mt-4">
-                    SAVE & UPDATE WEBSITE
-                </button>
+                <button type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-3 rounded-xl text-xs transition shadow-lg mt-4">SAVE & UPDATE WEBSITE</button>
             </form>
         </div>
-
         <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl space-y-3">
             <h2 class="text-sm font-bold text-sky-400 uppercase tracking-wider"><i class="fa-solid fa-images mr-1"></i> স্লাইডার ব্যানার ম্যানেজার</h2>
             <form action="/admin/add-banner" method="POST" class="space-y-2">
@@ -994,7 +872,6 @@ ADMIN_DASHBOARD_TEMPLATE = """
                 {% endfor %}
             </div>
         </div>
-
     </div>
 </body>
 </html>
@@ -1022,9 +899,7 @@ ADMIN_LOGIN_TEMPLATE = """
                 <label class="block text-xs font-semibold text-slate-400 mb-1">PASSWORD</label>
                 <input type="password" name="password" required class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-sm text-white">
             </div>
-            <button type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-3 rounded-xl text-sm transition">
-                LOGIN
-            </button>
+            <button type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-3 rounded-xl text-sm transition">LOGIN</button>
         </form>
     </div>
 </body>
@@ -1033,11 +908,9 @@ ADMIN_LOGIN_TEMPLATE = """
 
 @app.route('/')
 def home():
-    if 'user' not in session:
-        return redirect(url_for('login'))
+    if 'user' not in session: return redirect(url_for('login'))
     uname = session['user']
-    if uname not in users_db:
-        return redirect(url_for('logout'))
+    if uname not in users_db: return redirect(url_for('logout'))
     user = users_db[uname]
     if user.get('is_banned'):
         session.pop('user', None)
@@ -1046,23 +919,18 @@ def home():
 
 @app.route('/spin')
 def spin_page():
-    if 'user' not in session:
-        return redirect(url_for('login'))
+    if 'user' not in session: return redirect(url_for('login'))
     uname = session['user']
     user = users_db.get(uname, {})
     return render_template_string(SPIN_TEMPLATE, message=None, settings=site_settings, tokens=user.get('tokens', 0))
 
 @app.route('/play-spin', methods=['POST'])
 def play_spin():
-    if 'user' not in session:
-        return redirect(url_for('login'))
+    if 'user' not in session: return redirect(url_for('login'))
     uname = session['user']
     user = users_db[uname]
-    
-    bd_tz = pytz.timezone('Asia/Dhaka')
-    now = datetime.datetime.now(bd_tz)
+    now = datetime.datetime.now()
     last_spin = user.get('last_spin')
-    
     if last_spin:
         time_diff = now - last_spin
         if time_diff.total_seconds() < 86400:
@@ -1070,57 +938,40 @@ def play_spin():
             mins_left = int(((86400 - time_diff.total_seconds()) % 3600) // 60)
             msg = f"আজকের স্পিন শেষ! আবার {hours_left} ঘণ্টা {mins_left} মিনিট পর ট্রাই করুন।"
             return render_template_string(SPIN_TEMPLATE, message=msg, settings=site_settings, tokens=user.get('tokens', 0))
-            
     win_token = random.choice([50, 100, 200, 500, 1000, 2000])
     user['tokens'] = user.get('tokens', 0) + win_token
     user['last_spin'] = now
-    
     msg = f"অভিনন্দন! আপনি চাকা ঘুরে পেয়েছেন 🪙 {win_token} টোকেন বোনাস!"
     return render_template_string(SPIN_TEMPLATE, message=msg, settings=site_settings, tokens=user.get('tokens', 0))
 
 @app.route('/free-diamond')
 def free_diamond_page():
-    if 'user' not in session:
-        return redirect(url_for('login'))
+    if 'user' not in session: return redirect(url_for('login'))
     uname = session['user']
     user = users_db.get(uname, {})
     return render_template_string(FREE_DIAMOND_TEMPLATE, settings=site_settings, tokens=user.get('tokens', 0), msg=None)
 
 @app.route('/redeem-diamond', methods=['POST'])
 def redeem_diamond():
-    if 'user' not in session:
-        return redirect(url_for('login'))
+    if 'user' not in session: return redirect(url_for('login'))
     uname = session['user']
     user = users_db[uname]
-    
     rtype = request.form.get('type')
     uid = request.form.get('uid')
-    
     needed_tokens = 100000 if rtype == 'weekly' else 500000
     pkg_name = "FREE Weekly Membership" if rtype == 'weekly' else "FREE Monthly Membership"
-    
     if user.get('tokens', 0) < needed_tokens:
         msg = f"আপনার পর্যাপ্ত টোকেন নেই! প্রয়োজন {needed_tokens} টোকেন।"
         return render_template_string(FREE_DIAMOND_TEMPLATE, settings=site_settings, tokens=user.get('tokens', 0), msg=msg)
-        
     user['tokens'] -= needed_tokens
-    
     order_id = len(orders_db) + 1
-    bd_tz = pytz.timezone('Asia/Dhaka')
-    now_str = datetime.datetime.now(bd_tz).strftime("%I:%M %p, %d %b")
+    now_str = datetime.datetime.now().strftime("%I:%M %p, %d %b")
     order_data = {
-        'id': order_id,
-        'username': uname,
-        'service': 'FREE DIAMOND STORE',
-        'uid': uid,
-        'package': pkg_name,
-        'payment': 'Redeemed Token',
-        'trxid': f'{needed_tokens}',
-        'status': 'Pending',
-        'time': now_str
+        'id': order_id, 'username': uname, 'service': 'FREE DIAMOND STORE',
+        'uid': uid, 'package': pkg_name, 'payment': 'Redeemed Token',
+        'trxid': f'{needed_tokens}', 'status': 'Pending', 'time': now_str
     }
     orders_db.append(order_data)
-    
     msg = f"সফলভাবে {pkg_name} এর জন্য রিডিম রিকোয়েস্ট পাঠানো হয়েছে!"
     return render_template_string(FREE_DIAMOND_TEMPLATE, settings=site_settings, tokens=user.get('tokens', 0), msg=msg)
 
@@ -1131,13 +982,11 @@ def login():
         uname = request.form.get('username').strip()
         pwd = request.form.get('password')
         if uname in users_db and users_db[uname].get('password') == pwd:
-            if users_db[uname].get('is_banned'):
-                error = 'আপনার অ্যাকাউন্টটি ব্যান করা হয়েছে!'
+            if users_db[uname].get('is_banned'): error = 'আপনার অ্যাকাউন্টটি ব্যান করা হয়েছে!'
             else:
                 session['user'] = uname
                 return redirect(url_for('home'))
-        else:
-            error = 'ভুল ইউজারনেম বা পাসওয়ার্ড!'
+        else: error = 'ভুল ইউজারনেম বা পাসওয়ার্ড!'
     return render_template_string(AUTH_TEMPLATE, is_signup=False, error=error, settings=site_settings)
 
 @app.route('/signup', methods=['GET', 'POST'])
@@ -1148,20 +997,12 @@ def signup():
         email = request.form.get('email').strip()
         uname = request.form.get('username').strip()
         pwd = request.form.get('password')
-        if uname in users_db:
-            error = 'এই অ্যাকাউন্টটি আগেই রেজিস্টার্ড!'
+        if uname in users_db: error = 'এই অ্যাকাউন্টটি আগেই রেজিস্টার্ড!'
         else:
             generated_uid = f"UID-{random.randint(100000, 999999)}"
             users_db[uname] = {
-                'name': name,
-                'email': email,
-                'username': uname,
-                'password': pwd,
-                'user_uid': generated_uid,
-                'wallet': 0.0,
-                'tokens': 0,
-                'last_spin': None,
-                'is_banned': False
+                'name': name, 'email': email, 'username': uname, 'password': pwd,
+                'user_uid': generated_uid, 'wallet': 0.0, 'tokens': 0, 'last_spin': None, 'is_banned': False
             }
             session['user'] = uname
             return redirect(url_for('home'))
@@ -1174,37 +1015,30 @@ def logout():
 
 @app.route('/add-money')
 def add_money():
-    if 'user' not in session:
-        return redirect(url_for('login'))
+    if 'user' not in session: return redirect(url_for('login'))
     return render_template_string(ADD_MONEY_TEMPLATE, settings=site_settings)
 
 @app.route('/submit-add-money', methods=['POST'])
 def submit_add_money():
-    if 'user' not in session:
-        return redirect(url_for('login'))
+    if 'user' not in session: return redirect(url_for('login'))
     amount = request.form.get('amount')
     return render_template_string(ADD_MONEY_PAY_TEMPLATE, amount=amount, settings=site_settings)
 
 @app.route('/confirm-add-money', methods=['POST'])
 def confirm_add_money():
-    if 'user' not in session:
-        return redirect(url_for('login'))
+    if 'user' not in session: return redirect(url_for('login'))
     req_id = len(add_money_db) + 1
     am_data = {
-        'id': req_id,
-        'username': session['user'],
+        'id': req_id, 'username': session['user'],
         'amount': float(request.form.get('amount')),
-        'trxid': request.form.get('trxid'),
-        'status': 'Pending'
+        'trxid': request.form.get('trxid'), 'status': 'Pending'
     }
     add_money_db.append(am_data)
     return redirect(url_for('my_orders'))
 
 @app.route('/order/<sid>')
 def order_page(sid):
-    if 'user' not in session:
-        return redirect(url_for('login'))
-    
+    if 'user' not in session: return redirect(url_for('login'))
     services_map = {
         '1': {'name': site_settings['service_1_name'], 'pkgs': site_settings['service_1_pkgs'], 'warning': site_settings['service_1_warning']},
         '2': {'name': site_settings['service_2_name'], 'pkgs': site_settings['service_2_pkgs'], 'warning': site_settings['service_2_warning']},
@@ -1213,78 +1047,51 @@ def order_page(sid):
         '5': {'name': site_settings['service_5_name'], 'pkgs': site_settings['service_5_pkgs'], 'warning': site_settings['service_5_warning']},
         '6': {'name': site_settings['service_6_name'], 'pkgs': site_settings['service_6_pkgs'], 'warning': site_settings['service_6_warning']}
     }
-    
     srv = services_map.get(sid)
-    if not srv:
-        return redirect(url_for('home'))
-        
+    if not srv: return redirect(url_for('home'))
     pkgs_list = [p.strip() for p in srv['pkgs'].split(',') if p.strip()]
     return render_template_string(ORDER_TEMPLATE, service_name=srv['name'], packages=pkgs_list, service_warning=srv['warning'], settings=site_settings)
 
 @app.route('/submit-order', methods=['POST'])
 def submit_order():
-    if 'user' not in session:
-        return redirect(url_for('login'))
-    
+    if 'user' not in session: return redirect(url_for('login'))
     uname = session['user']
-    if uname not in users_db:
-        return redirect(url_for('logout'))
+    if uname not in users_db: return redirect(url_for('logout'))
     user = users_db[uname]
-    
     package_str = request.form.get('package')
     payment_method = request.form.get('payment')
     trxid = request.form.get('trxid', 'N/A')
     promo = request.form.get('promo', '').strip().upper()
-    
-    discount = 0
-    if promo in promo_codes:
-        discount = promo_codes[promo]
-
+    discount = promo_codes.get(promo, 0)
     if payment_method == 'Wallet':
-        try:
-            price = float(package_str.split('-')[-1].replace('৳', '').strip())
-        except:
-            price = 0.0
-            
+        try: price = float(package_str.split('-')[-1].replace('৳', '').strip())
+        except: price = 0.0
         final_price = max(0, price - discount)
-            
-        if user.get('wallet', 0.0) < final_price:
-            return f"ওয়ালেটে পর্যাপ্ত ব্যালেন্স নেই! প্রয়োজন: {final_price} ৳"
+        if user.get('wallet', 0.0) < final_price: return f"ওয়ালেটে পর্যাপ্ত ব্যালেন্স নেই! প্রয়োজন: {final_price} ৳"
         user['wallet'] -= final_price
         trxid = 'Wallet Paid'
-
     order_id = len(orders_db) + 1
-    bd_tz = pytz.timezone('Asia/Dhaka')
-    now_str = datetime.datetime.now(bd_tz).strftime("%I:%M %p, %d %b")
+    now_str = datetime.datetime.now().strftime("%I:%M %p, %d %b")
     order_data = {
-        'id': order_id,
-        'username': uname,
-        'service': request.form.get('service'),
-        'uid': request.form.get('uid'),
-        'package': package_str,
-        'payment': payment_method,
-        'trxid': trxid,
-        'status': 'Pending',
-        'time': now_str
+        'id': order_id, 'username': uname, 'service': request.form.get('service'),
+        'uid': request.form.get('uid'), 'package': package_str, 'payment': payment_method,
+        'trxid': trxid, 'status': 'Pending', 'time': now_str
     }
     orders_db.append(order_data)
     return redirect(url_for('my_orders'))
 
 @app.route('/orders')
 def my_orders():
-    if 'user' not in session:
-        return redirect(url_for('login'))
+    if 'user' not in session: return redirect(url_for('login'))
     u_orders = [o for o in orders_db if o['username'] == session['user']]
     u_am = [am for am in add_money_db if am['username'] == session['user']]
     return render_template_string(ORDERS_TEMPLATE, orders=u_orders, add_moneys=u_am, settings=site_settings)
 
 @app.route('/settings')
 def settings_page():
-    if 'user' not in session:
-        return redirect(url_for('login'))
+    if 'user' not in session: return redirect(url_for('login'))
     uname = session['user']
-    if uname not in users_db:
-        return redirect(url_for('logout'))
+    if uname not in users_db: return redirect(url_for('logout'))
     u_info = users_db[uname]
     return render_template_string(SETTINGS_TEMPLATE, user=u_info, settings=site_settings)
 
@@ -1300,84 +1107,45 @@ def admin_login():
 
 @app.route('/admin/dashboard')
 def admin_dashboard():
-    if not session.get('admin'):
-        return redirect(url_for('admin_login'))
-    
-    tot_users = len(users_db)
-    tot_orders = len(orders_db)
-    pend_orders = len([o for o in orders_db if o['status'] == 'Pending'])
-    
+    if not session.get('admin'): return redirect(url_for('admin_login'))
     return render_template_string(
-        ADMIN_DASHBOARD_TEMPLATE, 
-        orders=orders_db, 
-        add_moneys=add_money_db, 
-        banners=banners_db, 
-        settings=site_settings,
-        promos=promo_codes,
-        total_users=tot_users,
-        total_orders=tot_orders,
-        pending_orders=pend_orders,
-        all_users=list(users_db.values()),
-        searched_user=None,
-        search_error=None
+        ADMIN_DASHBOARD_TEMPLATE, orders=orders_db, add_moneys=add_money_db, banners=banners_db, 
+        settings=site_settings, promos=promo_codes, total_users=len(users_db), total_orders=len(orders_db), 
+        pending_orders=len([o for o in orders_db if o['status'] == 'Pending']), all_users=list(users_db.values()), 
+        searched_user=None, search_error=None
     )
 
 @app.route('/admin/toggle-app-status')
 def toggle_app_status():
-    if not session.get('admin'):
-        return redirect(url_for('admin_login'))
+    if not session.get('admin'): return redirect(url_for('admin_login'))
     site_settings['is_app_off'] = not site_settings.get('is_app_off', False)
     return redirect(url_for('admin_dashboard'))
 
 @app.route('/admin/search-user', methods=['POST'])
 def search_user():
-    if not session.get('admin'):
-        return redirect(url_for('admin_login'))
-    
+    if not session.get('admin'): return redirect(url_for('admin_login'))
     s_term = request.form.get('search_term').strip().upper()
-    found_u = None
-    for u in users_db.values():
-        if u.get('user_uid', '').upper() == s_term or u.get('username', '').upper() == s_term:
-            found_u = u
-            break
-            
-    tot_users = len(users_db)
-    tot_orders = len(orders_db)
-    pend_orders = len([o for o in orders_db if o['status'] == 'Pending'])
-
+    found_u = next((u for u in users_db.values() if u.get('user_uid', '').upper() == s_term or u.get('username', '').upper() == s_term), None)
     return render_template_string(
-        ADMIN_DASHBOARD_TEMPLATE, 
-        orders=orders_db, 
-        add_moneys=add_money_db, 
-        banners=banners_db, 
-        settings=site_settings,
-        promos=promo_codes,
-        total_users=tot_users,
-        total_orders=tot_orders,
-        pending_orders=pend_orders,
-        all_users=list(users_db.values()),
-        searched_user=found_u,
-        search_error=None if found_u else "কোনো ইউজার পাওয়া যায়নি!"
+        ADMIN_DASHBOARD_TEMPLATE, orders=orders_db, add_moneys=add_money_db, banners=banners_db, 
+        settings=site_settings, promos=promo_codes, total_users=len(users_db), total_orders=len(orders_db), 
+        pending_orders=len([o for o in orders_db if o['status'] == 'Pending']), all_users=list(users_db.values()), 
+        searched_user=found_u, search_error=None if found_u else "কোনো ইউজার পাওয়া যায়নি!"
     )
 
 @app.route('/admin/toggle-ban/<uname>')
 def toggle_ban(uname):
-    if not session.get('admin'):
-        return redirect(url_for('admin_login'))
-    if uname in users_db:
-        users_db[uname]['is_banned'] = not users_db[uname].get('is_banned', False)
+    if not session.get('admin'): return redirect(url_for('admin_login'))
+    if uname in users_db: users_db[uname]['is_banned'] = not users_db[uname].get('is_banned', False)
     return redirect(url_for('admin_dashboard'))
 
 @app.route('/admin/update-settings', methods=['POST'])
 def update_settings():
-    if not session.get('admin'):
-        return redirect(url_for('admin_login'))
-    
+    if not session.get('admin'): return redirect(url_for('admin_login'))
     site_settings['site_title'] = request.form.get('site_title').strip()
     site_settings['telegram_link'] = request.form.get('telegram_link').strip()
     site_settings['payment_number'] = request.form.get('payment_number').strip()
     site_settings['notice_text'] = request.form.get('notice_text').strip()
-    
     for i in range(1, 7):
         site_settings[f'service_{i}_name'] = request.form.get(f'service_{i}_name').strip()
         icon_url = request.form.get(f'service_{i}_icon').strip()
@@ -1385,46 +1153,34 @@ def update_settings():
             try:
                 fid = icon_url.split('/d/')[1].split('/')[0]
                 icon_url = f"https://lh3.googleusercontent.com/d/{fid}"
-            except:
-                pass
+            except: pass
         site_settings[f'service_{i}_icon'] = icon_url
         site_settings[f'service_{i}_pkgs'] = request.form.get(f'service_{i}_pkgs').strip()
         site_settings[f'service_{i}_warning'] = request.form.get(f'service_{i}_warning').strip()
-        
     return redirect(url_for('admin_dashboard'))
 
 @app.route('/admin/add-banner', methods=['POST'])
 def add_banner():
-    if not session.get('admin'):
-        return redirect(url_for('admin_login'))
+    if not session.get('admin'): return redirect(url_for('admin_login'))
     raw_url = request.form.get('image_url').strip()
     if 'drive.google.com' in raw_url:
         try:
             file_id = raw_url.split('/d/')[1].split('/')[0]
             raw_url = f"https://lh3.googleusercontent.com/d/{file_id}"
-        except:
-            pass
-
-    new_b = {
-        'id': len(banners_db) + 1,
-        'image_url': raw_url,
-        'caption': request.form.get('caption').strip()
-    }
-    banners_db.append(new_b)
+        except: pass
+    banners_db.append({'id': len(banners_db) + 1, 'image_url': raw_url, 'caption': request.form.get('caption').strip()})
     return redirect(url_for('admin_dashboard'))
 
 @app.route('/admin/delete-banner/<int:bid>')
 def delete_banner(bid):
-    if not session.get('admin'):
-        return redirect(url_for('admin_login'))
+    if not session.get('admin'): return redirect(url_for('admin_login'))
     global banners_db
     banners_db = [b for b in banners_db if b['id'] != bid]
     return redirect(url_for('admin_dashboard'))
 
 @app.route('/admin/order-action/<action>/<int:oid>')
 def order_action(action, oid):
-    if not session.get('admin'):
-        return redirect(url_for('admin_login'))
+    if not session.get('admin'): return redirect(url_for('admin_login'))
     for o in orders_db:
         if o['id'] == oid:
             o['status'] = 'Completed' if action == 'complete' else 'Rejected'
