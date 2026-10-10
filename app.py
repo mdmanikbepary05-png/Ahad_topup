@@ -8,54 +8,54 @@ users_db = {}
 orders_db = []
 add_money_db = []
 
+# তোর দেওয়া ড্রাইভ লিংক দিয়ে স্থায়ী স্লাইডার ব্যানার লিস্ট
 banners_db = [
-    {"id": 1, "image_url": "https://lh3.googleusercontent.com/d/1ldbBCEdoUUmtQ1_69KxB9agbp6xXxCUL", "caption": "ফ্রি ফায়ার ইনস্ট্যান্ট অটো টপ-আপ"},
-    {"id": 2, "image_url": "https://lh3.googleusercontent.com/d/1ooA0FOZTeDXb99ZoKmEv-u8XlBclamFa", "caption": "১০০% ট্রাস্টেড ও দ্রুত সার্ভিস"},
-    {"id": 3, "image_url": "https://lh3.googleusercontent.com/d/1jbB56j3MXlpC4ERjQN233O5vb3_0wcxg", "caption": "নতুন স্পেশাল অফার"}
+    {"id": 1, "image_url": "https://lh3.googleusercontent.com/d/1TFlAfznm-h_XvxBWm3nLCqouvCb1hVS6", "caption": "ফ্রি ফায়ার ইনস্ট্যান্ট অটো টপ-আপ"},
+    {"id": 2, "image_url": "https://lh3.googleusercontent.com/d/1KSmxyifb-7fMI2CM__GYkEHwGiaoGslr", "caption": "১০০% ট্রাস্টেড ও দ্রুত সার্ভিস"}
 ]
 
-# ফুল ডাইনামিক ওয়েবসাইট ও সার্ভিস সেটিংস (সার্ভিস অনুযায়ী আলাদা ওয়ার্নিং সহ)
+# তোর দেওয়া ড্রাইভের সঠিক লিংক দিয়ে পাকা ও স্থায়ী ৬টি সার্ভিস আইকন ও সেটিংস
 site_settings = {
     "site_title": "AHAD TOPUP",
     "payment_number": "01727246581",
     "telegram_link": "https://t.me/ahahackr",
     "notice_text": "⚠️ জরুরি ঘোষণা: কোনো ভুয়া TrxID বা ভুল তথ্য দিলে অ্যাকাউন্ট চিরতরে ব্যান করা হবে।",
     
-    # সার্ভিস ১
+    # সার্ভিস ১ (FF LIKES)
     "service_1_name": "FF LIKES",
-    "service_1_icon": "https://images.unsplash.com/photo-1560253023-3ec5d502959f?w=200&auto=format&fit=crop&q=80",
+    "service_1_icon": "https://lh3.googleusercontent.com/d/1Epgm0nOw4e3yY6ExS_aTooGYOPU9C49p",
     "service_1_pkgs": "100 Likes - 30 ৳, 500 Likes - 130 ৳, 1000 Likes - 250 ৳",
     "service_1_warning": "সঠিক ইউজারনেম বা আইডি দিন। লাইক ডেলিভারিতে ২৪ ঘণ্টা পর্যন্ত সময় লাগতে পারে।",
 
-    # সার্ভিস ২
+    # সার্ভিস ২ (UID TOPUP)
     "service_2_name": "UID TOPUP",
-    "service_2_icon": "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=200&auto=format&fit=crop&q=80",
+    "service_2_icon": "https://lh3.googleusercontent.com/d/1jbB56j3MXlpC4ERjQN233O5vb3_0wcxg",
     "service_2_pkgs": "100 Diamonds - 85 ৳, 310 Diamonds - 250 ৳, 520 Diamonds - 410 ৳",
     "service_2_warning": "সঠিক Player UID প্রদান করুন। ভুল UID-তে ডায়মন্ড গেলে কর্তৃপক্ষ দায়ী নয়।",
 
-    # সার্ভিস ৩
+    # সার্ভিস ৩ (UNIPIN VOUCHER)
     "service_3_name": "UNIPIN VOUCHER",
-    "service_3_icon": "https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?w=200&auto=format&fit=crop&q=80",
+    "service_3_icon": "https://lh3.googleusercontent.com/d/1pNofYB4QRXAsprIlDjKYUVooB9MSPGSL",
     "service_3_pkgs": "Unipin 50 BDT - 50 ৳, Unipin 100 BDT - 100 ৳",
     "service_3_warning": "ইউনপিন ভাউচার কোড সফলভাবে পেমেন্ট হওয়ার পর My Codes অপশনে পেয়ে যাবেন।",
 
-    # সার্ভিস ৪
+    # সার্ভিস ৪ (WEEKLY MONTHLY)
     "service_4_name": "WEEKLY MONTHLY",
-    "service_4_icon": "https://images.unsplash.com/photo-1612287233202-b51f3ed6f67c?w=200&auto=format&fit=crop&q=80",
+    "service_4_icon": "https://lh3.googleusercontent.com/d/1FGhbD63WLtCGWg66yxXKdqmAaMOxlD-u",
     "service_4_pkgs": "Weekly Membership - 165 ৳, Monthly Membership - 520 ৳",
-    "service_4_warning": "উইকলি বা মান্থলি নেওয়ার আগে গেমের ইন-গেম রুলস ও লিমি트 চেক করে নিন।",
+    "service_4_warning": "উইকলি বা মান্থলি নেওয়ার আগে গেমের ইন-গেম রুলস ও লিমিট চেক করে নিন।",
 
-    # সার্ভিস ৫
+    # সার্ভিস ৫ (LEVEL UP PASS)
     "service_5_name": "LEVEL UP PASS",
-    "service_5_icon": "https://images.unsplash.com/photo-1538481199705-c710c4e965fc?w=200&auto=format&fit=crop&q=80",
+    "service_5_icon": "https://lh3.googleusercontent.com/d/1MBjQL62p6XDsYfzZDo-onhdH95-HjOVS",
     "service_5_pkgs": "Level Up Pass - 95 ৳",
     "service_5_warning": "আইডিতে লেভেল আপ পাস আগে কেনা থাকলে পুনরায় অর্ডার করবেন না।",
 
-    # সার্ভিস ৬
+    # সার্ভিস ৬ (WEEKLY LITE)
     "service_6_name": "WEEKLY LITE",
-    "service_6_icon": "https://images.unsplash.com/photo-1579373903781-fd5c0c30c4cd?w=200&auto=format&fit=crop&q=80",
+    "service_6_icon": "https://lh3.googleusercontent.com/d/1z6mxPGvtlJH6KjdrKzArryHz0nIGIA1L",
     "service_6_pkgs": "Weekly Lite Pass - 80 ৳",
-    "service_6_warning": "সঠিক তথ্য দিয়ে পেমেন্ট কনফার্ম করুন। কোনো সমস্যা হলে টেলিগ্রামে যোগাযোগ করুন।"
+    "service_6_warning": "সঠিক তথ্য দিয়ে পেমেন্ট কনফার্ম করুন। কোনো সমস্যা হলে টেলিগ্রামে যোগাযোগ করুন."
 }
 
 ADMIN_USERNAME = "ahadadmin"
@@ -273,7 +273,6 @@ ORDER_TEMPLATE = BASE_HEAD + """
     <form action="/submit-order" method="POST" class="p-4 max-w-md mx-auto space-y-4">
         <input type="hidden" name="service" value="{{ service_name }}">
         
-        <!-- সার্ভিস অনুযায়ী ওয়ার্নিং নোটিশ -->
         {% if service_warning %}
         <div class="bg-amber-500/10 border border-amber-500/40 p-3.5 rounded-xl space-y-1">
             <div class="flex items-center text-amber-400 font-bold text-xs">
@@ -469,7 +468,6 @@ AUTH_TEMPLATE = BASE_HEAD + """
 </html>
 """
 
-# অ্যাডমিন ড্যাশবোর্ড (সার্ভিস ওয়ার্নিং এডিটর সহ)
 ADMIN_DASHBOARD_TEMPLATE = """
 <!DOCTYPE html>
 <html lang="bn">
@@ -491,7 +489,6 @@ ADMIN_DASHBOARD_TEMPLATE = """
             </div>
         </div>
 
-        <!-- ওয়েবসাইট ও সার্ভিস সেটিংস আপডেট ফর্ম -->
         <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl space-y-4 shadow-xl">
             <h2 class="text-sm font-bold text-amber-400 uppercase tracking-wider"><i class="fa-solid fa-sliders mr-1.5"></i> ওয়েবসাইট ও সার্ভিস কাস্টমাইজ করুন</h2>
             <form action="/admin/update-settings" method="POST" class="space-y-3">
@@ -523,8 +520,8 @@ ADMIN_DASHBOARD_TEMPLATE = """
                             <input type="text" name="service_{{ i }}_name" value="{{ settings['service_' ~ i ~ '_name'] }}" class="bg-slate-800 border border-slate-700 rounded p-2 text-xs text-white" placeholder="নাম">
                             <input type="text" name="service_{{ i }}_icon" value="{{ settings['service_' ~ i ~ '_icon'] }}" class="bg-slate-800 border border-slate-700 rounded p-2 text-xs text-white" placeholder="ছবির লিংক">
                         </div>
-                        <input type="text" name="service_{{ i }}_pkgs" value="{{ settings['service_' ~ i ~ '_pkgs'] }}" class="w-full bg-slate-800 border border-slate-700 rounded p-2 text-xs text-white" placeholder="প্যাকেজসমূহ (যেমন: 100 Diamonds - 85 ৳)">
-                        <input type="text" name="service_{{ i }}_warning" value="{{ settings['service_' ~ i ~ '_warning'] }}" class="w-full bg-slate-800 border border-slate-700 rounded p-2 text-xs text-amber-200" placeholder="এই সার্ভিসের জন্য বিশেষ ওয়ার্নিং টেক্সট...">
+                        <input type="text" name="service_{{ i }}_pkgs" value="{{ settings['service_' ~ i ~ '_pkgs'] }}" class="w-full bg-slate-800 border border-slate-700 rounded p-2 text-xs text-white" placeholder="প্যাকেজসমূহ">
+                        <input type="text" name="service_{{ i }}_warning" value="{{ settings['service_' ~ i ~ '_warning'] }}" class="w-full bg-slate-800 border border-slate-700 rounded p-2 text-xs text-amber-200" placeholder="এই সার্ভিসের জন্য বিশেষ ওয়ার্নিং...">
                     </div>
                     {% endfor %}
                 </div>
@@ -535,7 +532,6 @@ ADMIN_DASHBOARD_TEMPLATE = """
             </form>
         </div>
 
-        <!-- ব্যানার ম্যানেজমেন্ট -->
         <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl space-y-4 shadow-xl">
             <h2 class="text-sm font-bold text-amber-400 uppercase tracking-wider"><i class="fa-solid fa-images mr-1.5"></i> স্লাইডার ব্যানার ম্যানেজ করুন</h2>
             <form action="/admin/add-banner" method="POST" class="space-y-3">
@@ -563,7 +559,6 @@ ADMIN_DASHBOARD_TEMPLATE = """
             </div>
         </div>
 
-        <!-- Add Money Requests -->
         <h2 class="text-sm font-bold text-sky-400 uppercase tracking-wider">Pending Add Money Requests</h2>
         {% if add_moneys %}
             {% for am in add_moneys %}
@@ -582,7 +577,6 @@ ADMIN_DASHBOARD_TEMPLATE = """
             <p class="text-xs text-slate-500">কোনো পেন্ডিং অ্যাড মানি রিকোয়েস্ট নেই।</p>
         {% endif %}
 
-        <!-- Topup Orders -->
         <h2 class="text-sm font-bold text-amber-400 uppercase tracking-wider pt-4">Pending Topup Orders</h2>
         {% if orders %}
             {% for o in orders %}
@@ -824,7 +818,16 @@ def update_settings():
     
     for i in range(1, 7):
         site_settings[f'service_{i}_name'] = request.form.get(f'service_{i}_name').strip()
-        site_settings[f'service_{i}_icon'] = request.form.get(f'service_{i}_icon').strip()
+        
+        icon_url = request.form.get(f'service_{i}_icon').strip()
+        if 'drive.google.com' in icon_url:
+            try:
+                fid = icon_url.split('/d/')[1].split('/')[0]
+                icon_url = f"https://lh3.googleusercontent.com/d/{fid}"
+            except:
+                pass
+        site_settings[f'service_{i}_icon'] = icon_url
+        
         site_settings[f'service_{i}_pkgs'] = request.form.get(f'service_{i}_pkgs').strip()
         site_settings[f'service_{i}_warning'] = request.form.get(f'service_{i}_warning').strip()
         
