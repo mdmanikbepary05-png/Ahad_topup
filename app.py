@@ -8,54 +8,48 @@ users_db = {}
 orders_db = []
 add_money_db = []
 
-# তোর দেওয়া ড্রাইভ লিংক দিয়ে স্থায়ী স্লাইডার ব্যানার লিস্ট
+# ড্রাইভ লিংক দিয়ে স্থায়ী স্লাইডার ব্যানার
 banners_db = [
     {"id": 1, "image_url": "https://lh3.googleusercontent.com/d/1TFlAfznm-h_XvxBWm3nLCqouvCb1hVS6", "caption": "ফ্রি ফায়ার ইনস্ট্যান্ট অটো টপ-আপ"},
     {"id": 2, "image_url": "https://lh3.googleusercontent.com/d/1KSmxyifb-7fMI2CM__GYkEHwGiaoGslr", "caption": "১০০% ট্রাস্টেড ও দ্রুত সার্ভিস"}
 ]
 
-# তোর দেওয়া ড্রাইভের সঠিক লিংক দিয়ে পাকা ও স্থায়ী ৬টি সার্ভিস আইকন ও সেটিংস
+# ড্রাইভ লিংক দিয়ে ৬টি সার্ভিস আইকন ও কাস্টম সেটিংস
 site_settings = {
     "site_title": "AHAD TOPUP",
     "payment_number": "01727246581",
     "telegram_link": "https://t.me/ahahackr",
-    "notice_text": "⚠️ জরুরি ঘোষণা: কোনো ভুয়া TrxID বা ভুল তথ্য দিলে অ্যাকাউন্ট চিরতরে ব্যান করা হবে।",
+    "notice_text": "⚠️ সাবধান! কেউ কোনো ভুয়া TrxID বা ভুল তথ্য দিয়ে বাটপারি বা ফাজলামো করার চেষ্টা করলে সাথে সাথে অ্যাকাউন্ট এবং ডিভাইস চিরতরে ব্যান করা হবে! 😡🔥 ভুল ইউজারনেম, ভুল UID বা ভুয়া ট্রানজেকশন দিলে অর্ডার তো রিজেক্ট হবেই, সাথে একাউন্টও লক করে দেওয়া হবে। নিজে ভালো হয়ে যাও, না হলে সিস্টেম থেকে পাকাপাকিভাবে আউট করে দেওয়া হবে! 🤬🛑\n\nকোনো প্রকার সমস্যায় পড়লে সরাসরি যোগাযোগ করো: যোগাযোগ@ahahackr (টেলিগ্রাম সাপোর্ট আইডি)।\n— আহাদ 😎✊",
     
-    # সার্ভিস ১ (FF LIKES)
     "service_1_name": "FF LIKES",
     "service_1_icon": "https://lh3.googleusercontent.com/d/1Epgm0nOw4e3yY6ExS_aTooGYOPU9C49p",
     "service_1_pkgs": "100 Likes - 30 ৳, 500 Likes - 130 ৳, 1000 Likes - 250 ৳",
     "service_1_warning": "সঠিক ইউজারনেম বা আইডি দিন। লাইক ডেলিভারিতে ২৪ ঘণ্টা পর্যন্ত সময় লাগতে পারে।",
 
-    # সার্ভিস ২ (UID TOPUP)
     "service_2_name": "UID TOPUP",
     "service_2_icon": "https://lh3.googleusercontent.com/d/1jbB56j3MXlpC4ERjQN233O5vb3_0wcxg",
     "service_2_pkgs": "100 Diamonds - 85 ৳, 310 Diamonds - 250 ৳, 520 Diamonds - 410 ৳",
     "service_2_warning": "সঠিক Player UID প্রদান করুন। ভুল UID-তে ডায়মন্ড গেলে কর্তৃপক্ষ দায়ী নয়।",
 
-    # সার্ভিস ৩ (UNIPIN VOUCHER)
     "service_3_name": "UNIPIN VOUCHER",
     "service_3_icon": "https://lh3.googleusercontent.com/d/1pNofYB4QRXAsprIlDjKYUVooB9MSPGSL",
     "service_3_pkgs": "Unipin 50 BDT - 50 ৳, Unipin 100 BDT - 100 ৳",
     "service_3_warning": "ইউনপিন ভাউচার কোড সফলভাবে পেমেন্ট হওয়ার পর My Codes অপশনে পেয়ে যাবেন।",
 
-    # সার্ভিস ৪ (WEEKLY MONTHLY)
     "service_4_name": "WEEKLY MONTHLY",
     "service_4_icon": "https://lh3.googleusercontent.com/d/1FGhbD63WLtCGWg66yxXKdqmAaMOxlD-u",
     "service_4_pkgs": "Weekly Membership - 165 ৳, Monthly Membership - 520 ৳",
     "service_4_warning": "উইকলি বা মান্থলি নেওয়ার আগে গেমের ইন-গেম রুলস ও লিমিট চেক করে নিন।",
 
-    # সার্ভিস ৫ (LEVEL UP PASS)
     "service_5_name": "LEVEL UP PASS",
     "service_5_icon": "https://lh3.googleusercontent.com/d/1MBjQL62p6XDsYfzZDo-onhdH95-HjOVS",
     "service_5_pkgs": "Level Up Pass - 95 ৳",
     "service_5_warning": "আইডিতে লেভেল আপ পাস আগে কেনা থাকলে পুনরায় অর্ডার করবেন না।",
 
-    # সার্ভিস ৬ (WEEKLY LITE)
     "service_6_name": "WEEKLY LITE",
     "service_6_icon": "https://lh3.googleusercontent.com/d/1z6mxPGvtlJH6KjdrKzArryHz0nIGIA1L",
     "service_6_pkgs": "Weekly Lite Pass - 80 ৳",
-    "service_6_warning": "সঠিক তথ্য দিয়ে পেমেন্ট কনফার্ম করুন। কোনো সমস্যা হলে টেলিগ্রামে যোগাযোগ করুন."
+    "service_6_warning": "সঠিক তথ্য দিয়ে পেমেন্ট কনফার্ম করুন। কোনো সমস্যা হলে টেলিগ্রামে যোগাযোগ করুন।"
 }
 
 ADMIN_USERNAME = "ahadadmin"
@@ -71,12 +65,32 @@ BASE_HEAD = """
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { background-color: #0f172a; color: #f8fafc; font-family: sans-serif; }
+        body { background-color: #0f172a; color: #f8fafc; font-family: sans-serif; transition: background-color 0.3s, color 0.3s; }
         .card-bg { background: linear-gradient(135deg, #1e293b, #0f172a); border: 1px solid #334155; }
         .floating-support {
             position: fixed; bottom: 85px; right: 20px; background-color: #0088cc; color: white;
             width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center;
             justify-content: center; font-size: 24px; box-shadow: 0 4px 10px rgba(0,0,0,0.4); z-index: 50;
+        }
+
+        /* Sun / Light Mode Style */
+        body.light-mode {
+            background-color: #f1f5f9 !important;
+            color: #0f172a !important;
+        }
+        body.light-mode .bg-slate-900 {
+            background-color: #ffffff !important;
+            border-color: #e2e8f0 !important;
+            color: #0f172a !important;
+        }
+        body.light-mode .card-bg {
+            background: linear-gradient(135deg, #ffffff, #f8fafc) !important;
+            border-color: #cbd5e1 !important;
+        }
+        body.light-mode text-slate-200, 
+        body.light-mode text-slate-300, 
+        body.light-mode text-white {
+            color: #0f172a !important;
         }
     </style>
 </head>
@@ -88,7 +102,7 @@ BASE_HEAD = """
                 <i class="fa-solid fa-triangle-exclamation text-xl"></i>
                 <h3 class="font-bold text-base">জরুরী সতর্কতা ও নোটিশ</h3>
             </div>
-            <p class="text-xs text-slate-300 leading-relaxed">{{ settings.notice_text }}</p>
+            <p class="text-xs text-slate-300 leading-relaxed whitespace-pre-line">{{ settings.notice_text }}</p>
             <button onclick="closeWarningModal()" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-2.5 rounded-xl text-xs transition">
                 বুঝেছি (OK)
             </button>
@@ -96,6 +110,14 @@ BASE_HEAD = """
     </div>
     <script>
         function closeWarningModal() { document.getElementById('welcomeWarningModal').style.display = 'none'; }
+        
+        // সেভ করা থিম রান করানো
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = localStorage.getItem('site_theme');
+            if(savedTheme === 'light') {
+                document.body.classList.add('light-mode');
+            }
+        });
     </script>
 """
 
@@ -119,9 +141,9 @@ BOTTOM_NAV = """
             <i class="fa-solid fa-code text-lg"></i>
             <span class="text-[10px] mt-1 font-medium">My Codes</span>
         </a>
-        <a href="/account" class="flex flex-col items-center text-slate-400 hover:text-slate-200">
-            <i class="fa-solid fa-user text-lg"></i>
-            <span class="text-[10px] mt-1 font-medium">My Account</span>
+        <a href="/settings" class="flex flex-col items-center text-slate-400 hover:text-slate-200">
+            <i class="fa-solid fa-gear text-lg"></i>
+            <span class="text-[10px] mt-1 font-medium">Settings</span>
         </a>
     </nav>
     <a href="{{ settings.telegram_link }}" target="_blank" class="floating-support" title="Telegram Support">
@@ -212,6 +234,75 @@ INDEX_TEMPLATE = BASE_HEAD + """
             </a>
         </div>
     </main>
+""" + BOTTOM_NAV
+
+SETTINGS_TEMPLATE = BASE_HEAD + """
+    <header class="flex items-center p-4 bg-slate-900 border-b border-slate-800 sticky top-0 z-40">
+        <a href="/" class="text-slate-300 mr-4 text-lg"><i class="fa-solid fa-arrow-left"></i></a>
+        <h1 class="text-base font-bold uppercase tracking-wider text-slate-200"><i class="fa-solid fa-gear mr-1 text-emerald-400"></i> Settings & Profile</h1>
+    </header>
+
+    <main class="p-4 max-w-md mx-auto space-y-4">
+        <!-- ইউজার প্রোফাইল বিবরণ -->
+        <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl text-center space-y-2">
+            <div class="w-16 h-16 bg-emerald-500/20 text-emerald-400 rounded-full flex items-center justify-center mx-auto text-2xl font-bold border border-emerald-500/30">
+                {{ user.name[0].upper() }}
+            </div>
+            <h2 class="text-base font-bold text-white">{{ user.name }}</h2>
+            <p class="text-xs text-slate-400">{{ user.username }}</p>
+            <div class="bg-slate-800 p-3 rounded-xl border border-slate-700 flex justify-between items-center">
+                <span class="text-xs text-slate-300">Wallet Balance:</span>
+                <span class="text-sm font-bold text-emerald-400">{{ user.wallet }} ৳</span>
+            </div>
+        </div>
+
+        <!-- থিম ও ডিসপ্লে সেটিংস (Sun / Night Option) -->
+        <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl space-y-3">
+            <h3 class="text-xs font-bold text-amber-400 uppercase tracking-wider"><i class="fa-solid fa-palette mr-1"></i> Theme Settings</h3>
+            <p class="text-[11px] text-slate-400">ইন্টারফেসের আলো বা কালার মোড পরিবর্তন করুন:</p>
+            
+            <div class="grid grid-cols-2 gap-3 pt-1">
+                <button onclick="changeTheme('light')" class="bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-2.5 rounded-xl text-xs flex items-center justify-center shadow">
+                    <i class="fa-solid fa-sun mr-1.5 text-base"></i> Sun (Light)
+                </button>
+                <button onclick="changeTheme('dark')" class="bg-slate-800 hover:bg-slate-700 text-white font-bold py-2.5 rounded-xl text-xs flex items-center justify-center border border-slate-700">
+                    <i class="fa-solid fa-moon mr-1.5 text-base"></i> Night (Dark)
+                </button>
+            </div>
+        </div>
+
+        <!-- অর্ডার ও লেনদেন পরিসংখ্যান -->
+        <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl space-y-3">
+            <h3 class="text-xs font-bold text-sky-400 uppercase tracking-wider"><i class="fa-solid fa-chart-pie mr-1"></i> Activity Summary</h3>
+            <div class="grid grid-cols-2 gap-3">
+                <div class="bg-slate-800/60 p-3 rounded-xl border border-slate-700 text-center">
+                    <p class="text-[10px] text-slate-400 uppercase">Total Orders</p>
+                    <p class="text-lg font-bold text-emerald-400">{{ total_orders }}</p>
+                </div>
+                <div class="bg-slate-800/60 p-3 rounded-xl border border-slate-700 text-center">
+                    <p class="text-[10px] text-slate-400 uppercase">Add Money Requests</p>
+                    <p class="text-lg font-bold text-sky-400">{{ total_add_money }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- লগআউট অপশন -->
+        <a href="/logout" class="block w-full bg-red-500/10 border border-red-500/30 text-red-400 font-bold py-3 rounded-xl text-xs text-center hover:bg-red-500 hover:text-white transition">
+            <i class="fa-solid fa-right-from-bracket mr-1"></i> LOGOUT ACCOUNT
+        </a>
+    </main>
+
+    <script>
+        function changeTheme(theme) {
+            if(theme === 'light') {
+                document.body.classList.add('light-mode');
+                localStorage.setItem('site_theme', 'light');
+            } else {
+                document.body.classList.remove('light-mode');
+                localStorage.setItem('site_theme', 'dark');
+            }
+        }
+    </script>
 """ + BOTTOM_NAV
 
 ADD_MONEY_TEMPLATE = BASE_HEAD + """
@@ -398,30 +489,6 @@ ORDERS_TEMPLATE = BASE_HEAD + """
     </main>
 """ + BOTTOM_NAV
 
-ACCOUNT_TEMPLATE = BASE_HEAD + """
-    <header class="flex items-center p-4 bg-slate-900 border-b border-slate-800 sticky top-0 z-40">
-        <a href="/" class="text-slate-300 mr-4 text-lg"><i class="fa-solid fa-arrow-left"></i></a>
-        <h1 class="text-base font-bold uppercase tracking-wider text-slate-200">My Account</h1>
-    </header>
-
-    <main class="p-4 max-w-md mx-auto space-y-4">
-        <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl text-center space-y-2">
-            <div class="w-16 h-16 bg-emerald-500/20 text-emerald-400 rounded-full flex items-center justify-center mx-auto text-2xl font-bold">
-                {{ user.name[0].upper() }}
-            </div>
-            <h2 class="text-base font-bold text-white">{{ user.name }}</h2>
-            <p class="text-xs text-slate-400">{{ user.username }}</p>
-            <div class="bg-slate-800 p-3 rounded-xl border border-slate-700 flex justify-between items-center">
-                <span class="text-xs text-slate-300">Wallet Balance:</span>
-                <span class="text-sm font-bold text-emerald-400">{{ user.wallet }} ৳</span>
-            </div>
-            <a href="/logout" class="block bg-red-500/10 border border-red-500/30 text-red-400 font-bold py-2.5 rounded-xl text-xs hover:bg-red-500 hover:text-white transition mt-2">
-                LOGOUT ACCOUNT
-            </a>
-        </div>
-    </main>
-""" + BOTTOM_NAV
-
 AUTH_TEMPLATE = BASE_HEAD + """
     <div class="flex items-center justify-center min-h-screen p-4">
         <div class="bg-slate-900 border border-slate-800 w-full max-w-sm rounded-2xl p-6 shadow-2xl">
@@ -506,7 +573,7 @@ ADMIN_DASHBOARD_TEMPLATE = """
                 </div>
                 <div>
                     <label class="block text-xs font-semibold text-slate-400 mb-1">Popup Notice / Warning Text</label>
-                    <textarea name="notice_text" rows="2" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-sm text-white">{{ settings.notice_text }}</textarea>
+                    <textarea name="notice_text" rows="4" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-sm text-white">{{ settings.notice_text }}</textarea>
                 </div>
 
                 <hr class="border-slate-800 my-2">
@@ -778,17 +845,19 @@ def codes():
         return redirect(url_for('login'))
     return render_template_string(ORDERS_TEMPLATE, orders=[], add_moneys=[], settings=site_settings)
 
-@app.route('/account')
-def account():
+@app.route('/settings')
+def settings_page():
     if 'user' not in session:
         return redirect(url_for('login'))
     uname = session['user']
     if uname not in users_db:
         users_db[uname] = {'name': uname, 'username': uname, 'wallet': 0.0}
     u_info = users_db[uname]
-    if 'wallet' not in u_info:
-        u_info['wallet'] = 0.0
-    return render_template_string(ACCOUNT_TEMPLATE, user=u_info, settings=site_settings)
+    
+    tot_orders = len([o for o in orders_db if o['username'] == uname])
+    tot_am = len([am for am in add_money_db if am['username'] == uname])
+    
+    return render_template_string(SETTINGS_TEMPLATE, user=u_info, total_orders=tot_orders, total_add_money=tot_am, settings=site_settings)
 
 @app.route('/admin', methods=['GET', 'POST'])
 def admin_login():
