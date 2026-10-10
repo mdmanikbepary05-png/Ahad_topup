@@ -125,9 +125,9 @@ BOTTOM_NAV = """
             <i class="fa-solid fa-dharmachakra text-lg"></i>
             <span class="text-[10px] mt-1 font-medium">Spin & Win</span>
         </a>
-        <a href="/free-diamond" class="flex flex-col items-center text-sky-400 hover:text-sky-300">
-            <i class="fa-solid fa-gem text-lg"></i>
-            <span class="text-[10px] mt-1 font-medium">Free Diamond</span>
+        <a href="/settings" class="flex flex-col items-center text-slate-400 hover:text-slate-200">
+            <i class="fa-solid fa-gear text-lg"></i>
+            <span class="text-[10px] mt-1 font-medium">Settings</span>
         </a>
     </nav>
     <a href="{{ settings.telegram_link }}" target="_blank" class="floating-support" title="Telegram Support">
@@ -308,7 +308,6 @@ FREE_DIAMOND_TEMPLATE = BASE_HEAD + """
         </div>
         {% endif %}
 
-        <!-- উইকলি মেম্বারশিপ অপশন -->
         <div class="bg-slate-900 border border-slate-800 p-4 rounded-2xl space-y-3">
             <div class="flex justify-between items-center">
                 <h3 class="text-sm font-bold text-white">Weekly Membership (Free)</h3>
@@ -324,7 +323,6 @@ FREE_DIAMOND_TEMPLATE = BASE_HEAD + """
             </form>
         </div>
 
-        <!-- মান্থলি মেম্বারশিপ অপশন -->
         <div class="bg-slate-900 border border-slate-800 p-4 rounded-2xl space-y-3">
             <div class="flex justify-between items-center">
                 <h3 class="text-sm font-bold text-white">Monthly Membership (Free)</h3>
@@ -340,6 +338,73 @@ FREE_DIAMOND_TEMPLATE = BASE_HEAD + """
             </form>
         </div>
     </main>
+""" + BOTTOM_NAV
+
+SETTINGS_TEMPLATE = BASE_HEAD + """
+    <header class="flex items-center p-4 bg-slate-900 border-b border-slate-800 sticky top-0 z-40">
+        <a href="/" class="text-slate-300 mr-4 text-lg"><i class="fa-solid fa-arrow-left"></i></a>
+        <h1 class="text-base font-bold uppercase tracking-wider text-slate-200"><i class="fa-solid fa-gear mr-1 text-emerald-400"></i> Settings & Profile</h1>
+    </header>
+
+    <main class="p-4 max-w-md mx-auto space-y-4">
+        <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl text-center space-y-2">
+            <div class="w-16 h-16 bg-emerald-500/20 text-emerald-400 rounded-full flex items-center justify-center mx-auto text-2xl font-bold border border-emerald-500/30">
+                {{ user.name[0].upper() }}
+            </div>
+            <h2 class="text-base font-bold text-white">{{ user.name }}</h2>
+            <p class="text-xs text-slate-400">Username: {{ user.username }}</p>
+            <div class="inline-block bg-amber-500/20 border border-amber-500/40 text-amber-300 px-3 py-1 rounded-full text-xs font-mono font-bold">
+                USER UID: {{ user.user_uid }}
+            </div>
+            <div class="grid grid-cols-2 gap-2 mt-2">
+                <div class="bg-slate-800 p-2.5 rounded-xl border border-slate-700">
+                    <p class="text-[10px] text-slate-400">Wallet Balance</p>
+                    <p class="text-sm font-bold text-emerald-400">{{ user.wallet }} ৳</p>
+                </div>
+                <div class="bg-slate-800 p-2.5 rounded-xl border border-slate-700">
+                    <p class="text-[10px] text-slate-400">Total Tokens</p>
+                    <p class="text-sm font-bold text-amber-400 font-mono">🪙 {{ user.tokens }}</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl space-y-3">
+            <h3 class="text-xs font-bold text-amber-400 uppercase tracking-wider"><i class="fa-solid fa-share-nodes mr-1"></i> Referral Program</h3>
+            <p class="text-[11px] text-slate-400">বন্ধুকে রেফার করুন এবং বোনাস পান:</p>
+            <div class="bg-slate-800 p-2.5 rounded-xl border border-slate-700 flex justify-between items-center">
+                <span class="text-xs font-mono text-emerald-400 select-all">https://ahadtopup.com/ref/{{ user.user_uid }}</span>
+                <button onclick="navigator.clipboard.writeText('https://ahadtopup.com/ref/{{ user.user_uid }}'); alert('Referral link copied!');" class="bg-emerald-500 text-slate-950 font-bold px-3 py-1 rounded-lg text-xs">Copy</button>
+            </div>
+        </div>
+
+        <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl space-y-3">
+            <h3 class="text-xs font-bold text-amber-400 uppercase tracking-wider"><i class="fa-solid fa-palette mr-1"></i> Theme Settings</h3>
+            <div class="grid grid-cols-2 gap-3 pt-1">
+                <button onclick="changeTheme('light')" class="bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-2.5 rounded-xl text-xs flex items-center justify-center shadow">
+                    <i class="fa-solid fa-sun mr-1.5 text-base"></i> Sun (Light)
+                </button>
+                <button onclick="changeTheme('dark')" class="bg-slate-800 hover:bg-slate-700 text-white font-bold py-2.5 rounded-xl text-xs flex items-center justify-center border border-slate-700">
+                    <i class="fa-solid fa-moon mr-1.5 text-base"></i> Night (Dark)
+                </button>
+            </div>
+        </div>
+
+        <a href="/logout" class="block w-full bg-red-500/10 border border-red-500/30 text-red-400 font-bold py-3 rounded-xl text-xs text-center hover:bg-red-500 hover:text-white transition">
+            <i class="fa-solid fa-right-from-bracket mr-1"></i> LOGOUT ACCOUNT
+        </a>
+    </main>
+
+    <script>
+        function changeTheme(theme) {
+            if(theme === 'light') {
+                document.body.classList.add('light-mode');
+                localStorage.setItem('site_theme', 'light');
+            } else {
+                document.body.classList.remove('light-mode');
+                localStorage.setItem('site_theme', 'dark');
+            }
+        }
+    </script>
 """ + BOTTOM_NAV
 
 ORDER_TEMPLATE = BASE_HEAD + """
@@ -425,73 +490,6 @@ ORDER_TEMPLATE = BASE_HEAD + """
             } else {
                 payBox.classList.remove('hidden');
                 trxInput.required = true;
-            }
-        }
-    </script>
-""" + BOTTOM_NAV
-
-SETTINGS_TEMPLATE = BASE_HEAD + """
-    <header class="flex items-center p-4 bg-slate-900 border-b border-slate-800 sticky top-0 z-40">
-        <a href="/" class="text-slate-300 mr-4 text-lg"><i class="fa-solid fa-arrow-left"></i></a>
-        <h1 class="text-base font-bold uppercase tracking-wider text-slate-200"><i class="fa-solid fa-gear mr-1 text-emerald-400"></i> Settings & Profile</h1>
-    </header>
-
-    <main class="p-4 max-w-md mx-auto space-y-4">
-        <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl text-center space-y-2">
-            <div class="w-16 h-16 bg-emerald-500/20 text-emerald-400 rounded-full flex items-center justify-center mx-auto text-2xl font-bold border border-emerald-500/30">
-                {{ user.name[0].upper() }}
-            </div>
-            <h2 class="text-base font-bold text-white">{{ user.name }}</h2>
-            <p class="text-xs text-slate-400">Username: {{ user.username }}</p>
-            <div class="inline-block bg-amber-500/20 border border-amber-500/40 text-amber-300 px-3 py-1 rounded-full text-xs font-mono font-bold">
-                USER UID: {{ user.user_uid }}
-            </div>
-            <div class="grid grid-cols-2 gap-2 mt-2">
-                <div class="bg-slate-800 p-2.5 rounded-xl border border-slate-700">
-                    <p class="text-[10px] text-slate-400">Wallet Balance</p>
-                    <p class="text-sm font-bold text-emerald-400">{{ user.wallet }} ৳</p>
-                </div>
-                <div class="bg-slate-800 p-2.5 rounded-xl border border-slate-700">
-                    <p class="text-[10px] text-slate-400">Total Tokens</p>
-                    <p class="text-sm font-bold text-amber-400 font-mono">🪙 {{ user.tokens }}</p>
-                </div>
-            </div>
-        </div>
-
-        <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl space-y-3">
-            <h3 class="text-xs font-bold text-amber-400 uppercase tracking-wider"><i class="fa-solid fa-share-nodes mr-1"></i> Referral Program</h3>
-            <p class="text-[11px] text-slate-400">বন্ধুকে রেফার করুন এবং বোনাস পান:</p>
-            <div class="bg-slate-800 p-2.5 rounded-xl border border-slate-700 flex justify-between items-center">
-                <span class="text-xs font-mono text-emerald-400 select-all">https://ahadtopup.com/ref/{{ user.user_uid }}</span>
-                <button onclick="navigator.clipboard.writeText('https://ahadtopup.com/ref/{{ user.user_uid }}'); alert('Referral link copied!');" class="bg-emerald-500 text-slate-950 font-bold px-3 py-1 rounded-lg text-xs">Copy</button>
-            </div>
-        </div>
-
-        <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl space-y-3">
-            <h3 class="text-xs font-bold text-amber-400 uppercase tracking-wider"><i class="fa-solid fa-palette mr-1"></i> Theme Settings</h3>
-            <div class="grid grid-cols-2 gap-3 pt-1">
-                <button onclick="changeTheme('light')" class="bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-2.5 rounded-xl text-xs flex items-center justify-center shadow">
-                    <i class="fa-solid fa-sun mr-1.5 text-base"></i> Sun (Light)
-                </button>
-                <button onclick="changeTheme('dark')" class="bg-slate-800 hover:bg-slate-700 text-white font-bold py-2.5 rounded-xl text-xs flex items-center justify-center border border-slate-700">
-                    <i class="fa-solid fa-moon mr-1.5 text-base"></i> Night (Dark)
-                </button>
-            </div>
-        </div>
-
-        <a href="/logout" class="block w-full bg-red-500/10 border border-red-500/30 text-red-400 font-bold py-3 rounded-xl text-xs text-center hover:bg-red-500 hover:text-white transition">
-            <i class="fa-solid fa-right-from-bracket mr-1"></i> LOGOUT ACCOUNT
-        </a>
-    </main>
-
-    <script>
-        function changeTheme(theme) {
-            if(theme === 'light') {
-                document.body.classList.add('light-mode');
-                localStorage.setItem('site_theme', 'light');
-            } else {
-                document.body.classList.remove('light-mode');
-                localStorage.setItem('site_theme', 'dark');
             }
         }
     </script>
@@ -681,6 +679,68 @@ ADMIN_DASHBOARD_TEMPLATE = """
             </div>
         </div>
 
+        <!-- ওয়েবসাইট কাস্টমাইজেশন (নাম, ছবি, ওয়ার্নিং, সার্ভিস চেঞ্জার) -->
+        <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl space-y-4 shadow-xl">
+            <h2 class="text-sm font-bold text-amber-400 uppercase tracking-wider"><i class="fa-solid fa-sliders mr-1.5"></i> ওয়েবসাইট ও সার্ভিস কাস্টমাইজ করুন</h2>
+            <form action="/admin/update-settings" method="POST" class="space-y-3">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 mb-1">Website Title</label>
+                    <input type="text" name="site_title" value="{{ settings.site_title }}" required class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-sm text-white">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 mb-1">Telegram Support Link</label>
+                    <input type="text" name="telegram_link" value="{{ settings.telegram_link }}" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-sm text-white">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 mb-1">Payment Number (bKash/Nagad/Rocket)</label>
+                    <input type="text" name="payment_number" value="{{ settings.payment_number }}" required class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-sm text-white">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 mb-1">Popup Notice / Warning Text</label>
+                    <textarea name="notice_text" rows="4" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-sm text-white">{{ settings.notice_text }}</textarea>
+                </div>
+
+                <hr class="border-slate-800 my-2">
+                <h3 class="text-xs font-bold text-emerald-400 uppercase">৬টি সার্ভিস কার্ড, প্যাকেজ ও ওয়ার্নিং কাস্টমাইজার</h3>
+                
+                <div class="space-y-3">
+                    {% for i in range(1, 7) %}
+                    <div class="bg-slate-800/50 p-3 rounded-xl border border-slate-800 space-y-2">
+                        <p class="text-xs font-bold text-amber-300">Service {{ i }}</p>
+                        <div class="grid grid-cols-2 gap-2">
+                            <input type="text" name="service_{{ i }}_name" value="{{ settings['service_' ~ i ~ '_name'] }}" class="bg-slate-800 border border-slate-700 rounded p-2 text-xs text-white" placeholder="নাম">
+                            <input type="text" name="service_{{ i }}_icon" value="{{ settings['service_' ~ i ~ '_icon'] }}" class="bg-slate-800 border border-slate-700 rounded p-2 text-xs text-white" placeholder="ছবির লিংক">
+                        </div>
+                        <input type="text" name="service_{{ i }}_pkgs" value="{{ settings['service_' ~ i ~ '_pkgs'] }}" class="w-full bg-slate-800 border border-slate-700 rounded p-2 text-xs text-white" placeholder="প্যাকেজসমূহ">
+                        <input type="text" name="service_{{ i }}_warning" value="{{ settings['service_' ~ i ~ '_warning'] }}" class="w-full bg-slate-800 border border-slate-700 rounded p-2 text-xs text-amber-200" placeholder="এই সার্ভিসের জন্য বিশেষ ওয়ার্নিং...">
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <button type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-3 rounded-xl text-xs transition shadow-lg mt-4">
+                    SAVE & UPDATE WEBSITE
+                </button>
+            </form>
+        </div>
+
+        <!-- ব্যানার স্লাইডার ম্যানেজার -->
+        <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl space-y-3">
+            <h2 class="text-sm font-bold text-sky-400 uppercase tracking-wider"><i class="fa-solid fa-images mr-1"></i> স্লাইডার ব্যানার ম্যানেজার</h2>
+            <form action="/admin/add-banner" method="POST" class="space-y-2">
+                <input type="text" name="image_url" placeholder="ছবির লিংক (Google Drive / Direct URL)" required class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-xs text-white">
+                <input type="text" name="caption" placeholder="ক্যাপশন (যেমন: ৫০% ডিসকাউন্ট)" required class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-xs text-white">
+                <button type="submit" class="w-full bg-sky-500 text-slate-950 font-bold py-2 rounded-lg text-xs">+ নতুন ব্যানার অ্যাড করুন</button>
+            </form>
+            <div class="space-y-2 pt-2">
+                {% for b in banners %}
+                <div class="bg-slate-800 p-2 rounded-xl border border-slate-700 flex justify-between items-center text-xs">
+                    <span class="truncate max-w-[200px] text-slate-300">{{ b.caption }}</span>
+                    <a href="/admin/delete-banner/{{ b.id }}" class="text-red-400 font-bold hover:underline">Delete</a>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
         <!-- ইউজার সার্চ ও ব্যান -->
         <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl space-y-3">
             <h2 class="text-sm font-bold text-amber-400 uppercase tracking-wider"><i class="fa-solid fa-user-shield mr-1.5"></i> Search User UID For Ban / Details</h2>
@@ -714,25 +774,7 @@ ADMIN_DASHBOARD_TEMPLATE = """
             {% endif %}
         </div>
 
-        <!-- রেজিস্টার্ড অল ইউজার লিস্ট -->
-        <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl space-y-3">
-            <h2 class="text-sm font-bold text-sky-400 uppercase tracking-wider"><i class="fa-solid fa-users mr-1"></i> Registered Users List</h2>
-            <div class="space-y-2 max-h-48 overflow-y-auto pr-1">
-                {% for u in all_users %}
-                <div class="bg-slate-800 p-2.5 rounded-xl border border-slate-700 flex justify-between items-center text-xs">
-                    <div>
-                        <p class="font-bold text-white">{{ u.name }} (<span class="text-amber-300">{{ u.user_uid }}</span>)</p>
-                        <p class="text-[10px] text-slate-400">{{ u.username }} | Wallet: {{ u.wallet }}৳ | Tokens: 🪙{{ u.tokens }}</p>
-                    </div>
-                    <a href="/admin/toggle-ban/{{ u.username }}" class="px-2.5 py-1 rounded text-[10px] font-bold {% if u.is_banned %} bg-emerald-500/20 text-emerald-400 {% else %} bg-red-500/20 text-red-400 {% endif %}">
-                        {{ 'Unban' if u.is_banned else 'Ban' }}
-                    </a>
-                </div>
-                {% endfor %}
-            </div>
-        </div>
-
-        <!-- পেন্ডিং অর্ডার -->
+        <!-- পেন্ডিং অর্ডারসমূহ -->
         <h2 class="text-sm font-bold text-amber-400 uppercase tracking-wider pt-2">Pending Orders (Topup & Free Diamond)</h2>
         {% if orders %}
             {% for o in orders %}
@@ -797,7 +839,7 @@ def home():
     user = users_db[uname]
     if user.get('is_banned'):
         session.pop('user', None)
-        return "আপনার অ্যাকাউন্টটি অ্যাডমিন কর্তৃক ব্যান করা হয়েছে!"
+        return "আপনার অ্যাকাউন্টটি ব্যান করা হয়েছে!"
     return render_template_string(INDEX_TEMPLATE, settings=site_settings, banners=banners_db, wallet_balance=user.get('wallet', 0.0), tokens=user.get('tokens', 0))
 
 @app.route('/spin')
@@ -818,16 +860,14 @@ def play_spin():
     now = datetime.datetime.now()
     last_spin = user.get('last_spin')
     
-    # ২৪ ঘণ্টার সিকিউরিটি চেক
     if last_spin:
         time_diff = now - last_spin
-        if time_diff.total_seconds() < 86400: # ২৪ ঘণ্টা = ৮৬৪০০ সেকেন্ড
+        if time_diff.total_seconds() < 86400:
             hours_left = int((86400 - time_diff.total_seconds()) // 3600)
             mins_left = int(((86400 - time_diff.total_seconds()) % 3600) // 60)
             msg = f"আজকের স্পিন শেষ! আবার {hours_left} ঘণ্টা {mins_left} মিনিট পর ট্রাই করুন।"
             return render_template_string(SPIN_TEMPLATE, message=msg, settings=site_settings, tokens=user.get('tokens', 0))
             
-    # র‍্যান্ডম টোকেন বোনাস জেনারেট (৫০ থেকে ২০০০ টোকেন)
     win_token = random.choice([50, 100, 200, 500, 1000, 2000])
     user['tokens'] = user.get('tokens', 0) + win_token
     user['last_spin'] = now
@@ -860,10 +900,8 @@ def redeem_diamond():
         msg = f"আপনার পর্যাপ্ত টোকেন নেই! প্রয়োজন {needed_tokens} টোকেন।"
         return render_template_string(FREE_DIAMOND_TEMPLATE, settings=site_settings, tokens=user.get('tokens', 0), msg=msg)
         
-    # টোকেন কেটে নেওয়া
     user['tokens'] -= needed_tokens
     
-    # ব্যাকএন্ডে অর্ডার ক্রিয়েট হওয়া
     order_id = len(orders_db) + 1
     now_str = datetime.datetime.now().strftime("%I:%M %p, %d %b")
     order_data = {
@@ -1043,7 +1081,6 @@ def settings_page():
     if uname not in users_db:
         return redirect(url_for('logout'))
     u_info = users_db[uname]
-    
     return render_template_string(SETTINGS_TEMPLATE, user=u_info, settings=site_settings)
 
 @app.route('/admin', methods=['GET', 'POST'])
@@ -1117,6 +1154,59 @@ def toggle_ban(uname):
         return redirect(url_for('admin_login'))
     if uname in users_db:
         users_db[uname]['is_banned'] = not users_db[uname].get('is_banned', False)
+    return redirect(url_for('admin_dashboard'))
+
+@app.route('/admin/update-settings', methods=['POST'])
+def update_settings():
+    if not session.get('admin'):
+        return redirect(url_for('admin_login'))
+    
+    site_settings['site_title'] = request.form.get('site_title').strip()
+    site_settings['telegram_link'] = request.form.get('telegram_link').strip()
+    site_settings['payment_number'] = request.form.get('payment_number').strip()
+    site_settings['notice_text'] = request.form.get('notice_text').strip()
+    
+    for i in range(1, 7):
+        site_settings[f'service_{i}_name'] = request.form.get(f'service_{i}_name').strip()
+        icon_url = request.form.get(f'service_{i}_icon').strip()
+        if 'drive.google.com' in icon_url:
+            try:
+                fid = icon_url.split('/d/')[1].split('/')[0]
+                icon_url = f"https://lh3.googleusercontent.com/d/{fid}"
+            except:
+                pass
+        site_settings[f'service_{i}_icon'] = icon_url
+        site_settings[f'service_{i}_pkgs'] = request.form.get(f'service_{i}_pkgs').strip()
+        site_settings[f'service_{i}_warning'] = request.form.get(f'service_{i}_warning').strip()
+        
+    return redirect(url_for('admin_dashboard'))
+
+@app.route('/admin/add-banner', methods=['POST'])
+def add_banner():
+    if not session.get('admin'):
+        return redirect(url_for('admin_login'))
+    raw_url = request.form.get('image_url').strip()
+    if 'drive.google.com' in raw_url:
+        try:
+            file_id = raw_url.split('/d/')[1].split('/')[0]
+            raw_url = f"https://lh3.googleusercontent.com/d/{file_id}"
+        except:
+            pass
+
+    new_b = {
+        'id': len(banners_db) + 1,
+        'image_url': raw_url,
+        'caption': request.form.get('caption').strip()
+    }
+    banners_db.append(new_b)
+    return redirect(url_for('admin_dashboard'))
+
+@app.route('/admin/delete-banner/<int:bid>')
+def delete_banner(bid):
+    if not session.get('admin'):
+        return redirect(url_for('admin_login'))
+    global banners_db
+    banners_db = [b for b in banners_db if b['id'] != bid]
     return redirect(url_for('admin_dashboard'))
 
 @app.route('/admin/order-action/<action>/<int:oid>')
