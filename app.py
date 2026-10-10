@@ -115,6 +115,44 @@ CLOSED_TEMPLATE = """
 </html>
 """
 
+# 📶 নো ইন্টারনেট পপআপ টেমপ্লেট কম্পোনেন্ট (সব পেজে স্বয়ংক্রিয়ভাবে কাজ করবে)
+INTERNET_CHECKER_SCRIPT = """
+    <!-- No Internet Modal -->
+    <div id="noInternetModal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md flex items-center justify-center z-50 p-4 hidden">
+        <div class="bg-slate-900 border border-red-500/40 w-full max-w-sm rounded-3xl p-6 text-center space-y-4 shadow-2xl">
+            <div class="w-20 h-20 bg-red-500/10 border-2 border-red-500/40 rounded-full flex items-center justify-center mx-auto text-3xl text-red-500 animate-pulse">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <h2 class="text-base font-bold text-red-400 uppercase tracking-wider">ইন্টারনেট সংযোগ নেই!</h2>
+            <div class="bg-slate-800/80 p-3.5 rounded-2xl border border-slate-700">
+                <p class="text-xs text-slate-300 leading-relaxed font-medium">আপনার ফোনে কোনো ইন্টারনেট সংযোগ পাওয়া যাচ্ছে না। দয়া করে আপনার ওয়াইফাই বা মোবাইল ডাটা চালু করুন।</p>
+            </div>
+            <button onclick="window.location.reload();" class="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-3 rounded-xl text-xs transition shadow-lg">
+                আবার চেষ্টা করুন (Retry)
+            </button>
+        </div>
+    </div>
+
+    <script>
+        function checkInternetConnection() {
+            const modal = document.getElementById('noInternetModal');
+            if (!navigator.onLine) {
+                modal.classList.remove('hidden');
+            } else {
+                modal.classList.add('hidden');
+            }
+        }
+
+        window.addEventListener('online', checkInternetConnection);
+        window.addEventListener('offline', checkInternetConnection);
+        
+        // পেজ লোড হওয়ার সাথে সাথে একবার চেক করবে
+        window.addEventListener('DOMContentLoaded', checkInternetConnection);
+        // প্রতি ৫ সেকেন্ড পর পর ব্যাকগ্রাউন্ডে নেট কানেকশন চেক করবে
+        setInterval(checkInternetConnection, 5000);
+    </script>
+"""
+
 BASE_HEAD = """
 <!DOCTYPE html>
 <html lang="bn">
@@ -188,6 +226,7 @@ BOTTOM_NAV = """
     <a href="{{ settings.telegram_link }}" target="_blank" class="floating-support" title="Telegram Support">
         <i class="fa-brands fa-telegram-plane"></i>
     </a>
+    """ + INTERNET_CHECKER_SCRIPT + """
 </body>
 </html>
 """
