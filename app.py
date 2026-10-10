@@ -10,54 +10,51 @@ users_db = {}
 orders_db = []
 add_money_db = []
 
-# প্রোমো কোড ডাটাবেস
 promo_codes = {
-    "AHAD50": 50,  # ৫০ টাকা ছাড়
-    "FREE20": 20   # ২০ টাকা ছাড়
+    "AHAD50": 50,
+    "FREE20": 20
 }
 
-# ড্রাইভ লিংক দিয়ে স্থায়ী স্লাইডার ব্যানার
 banners_db = [
     {"id": 1, "image_url": "https://lh3.googleusercontent.com/d/1TFlAfznm-h_XvxBWm3nLCqouvCb1hVS6", "caption": "ফ্রি ফায়ার ইনস্ট্যান্ট অটো টপ-আপ"},
     {"id": 2, "image_url": "https://lh3.googleusercontent.com/d/1KSmxyifb-7fMI2CM__GYkEHwGiaoGslr", "caption": "১০০% ট্রাস্টেড ও দ্রুত সার্ভিস"}
 ]
 
-# সাইট ও সার্ভিস সেটিংস
 site_settings = {
     "site_title": "AHAD TOPUP",
     "payment_number": "01727246581",
     "telegram_link": "https://t.me/ahahackr",
-    "notice_text": "⚠️ সাবধান! কেউ কোনো ভুয়া TrxID বা ভুল তথ্য দিয়ে বাটপারি বা ফাজলামো করার চেষ্টা করলে সাথে সাথে অ্যাকাউন্ট এবং ডিভাইস চিরতরে ব্যান করা হবে! 😡🔥 ভুল ইউজারনেম, ভুল UID বা ভুয়া ট্রানজেকশন দিলে অর্ডার তো রিজেক্ট হবেই, সাথে একাউন্টও লক করে দেওয়া হবে। নিজে ভালো হয়ে যাও, না হলে সিস্টেম থেকে পাকাপাকিভাবে আউট করে দেওয়া হবে! 🤬🛑\n\nকোনো প্রকার সমস্যায় পড়লে সরাসরি যোগাযোগ করো: যোগাযোগ@ahahackr (টেলিগ্রাম সাপোর্ট আইডি)।\n— আহাদ 😎✊",
+    "notice_text": "⚠️ সাবধান! কেউ কোনো ভুয়া TrxID বা ভুল তথ্য দিয়ে ট্রাই করলে সাথে সাথে একাউন্ট ব্যান করা হবে! 🤬🛑\n\nকোনো সমস্যা হলে টেলিগ্রামে যোগাযোগ করুন: @ahahackr\n— আহাদ 😎✊",
     
     "service_1_name": "FF LIKES",
     "service_1_icon": "https://lh3.googleusercontent.com/d/1Epgm0nOw4e3yY6ExS_aTooGYOPU9C49p",
     "service_1_pkgs": "100 Likes - 30 ৳, 500 Likes - 130 ৳, 1000 Likes - 250 ৳",
-    "service_1_warning": "সঠিক ইউজারনেম বা আইডি দিন। লাইক ডেলিভারিতে ২৪ ঘণ্টা পর্যন্ত সময় লাগতে পারে।",
+    "service_1_warning": "সঠিক ইউজারনেম বা আইডি দিন।",
 
     "service_2_name": "UID TOPUP",
     "service_2_icon": "https://lh3.googleusercontent.com/d/1jbB56j3MXlpC4ERjQN233O5vb3_0wcxg",
     "service_2_pkgs": "100 Diamonds - 85 ৳, 310 Diamonds - 250 ৳, 520 Diamonds - 410 ৳",
-    "service_2_warning": "সঠিক Player UID প্রদান করুন। ভুল UID-তে ডায়মন্ড গেলে কর্তৃপক্ষ দায়ী নয়।",
+    "service_2_warning": "সঠিক Player UID প্রদান করুন।",
 
     "service_3_name": "UNIPIN VOUCHER",
     "service_3_icon": "https://lh3.googleusercontent.com/d/1pNofYB4QRXAsprIlDjKYUVooB9MSPGSL",
     "service_3_pkgs": "Unipin 50 BDT - 50 ৳, Unipin 100 BDT - 100 ৳",
-    "service_3_warning": "ইউনপিন ভাউচার কোড সফলভাবে পেমেন্ট হওয়ার পর My Codes অপশনে পেয়ে যাবেন।",
+    "service_3_warning": "ভাউচার কোড সফলভাবে পেমেন্ট হওয়ার পর My Codes-এ পেয়ে যাবেন।",
 
     "service_4_name": "WEEKLY MONTHLY",
     "service_4_icon": "https://lh3.googleusercontent.com/d/1FGhbD63WLtCGWg66yxXKdqmAaMOxlD-u",
     "service_4_pkgs": "Weekly Membership - 165 ৳, Monthly Membership - 520 ৳",
-    "service_4_warning": "উইকলি বা মান্থলি নেওয়ার আগে গেমের ইন-গেম রুলস ও লিমিট চেক করে নিন।",
+    "service_4_warning": "ইন-গেম রুলস মেনে অর্ডার করুন।",
 
     "service_5_name": "LEVEL UP PASS",
     "service_5_icon": "https://lh3.googleusercontent.com/d/1MBjQL62p6XDsYfzZDo-onhdH95-HjOVS",
     "service_5_pkgs": "Level Up Pass - 95 ৳",
-    "service_5_warning": "আইডিতে লেভেল আপ পাস আগে কেনা থাকলে পুনরায় অর্ডার করবেন না।",
+    "service_5_warning": "আইডিতে লেভেল আপ পাস আগে কেনা থাকলে অর্ডার করবেন না।",
 
     "service_6_name": "WEEKLY LITE",
     "service_6_icon": "https://lh3.googleusercontent.com/d/1z6mxPGvtlJH6KjdrKzArryHz0nIGIA1L",
     "service_6_pkgs": "Weekly Lite Pass - 80 ৳",
-    "service_6_warning": "সঠিক তথ্য দিয়ে পেমেন্ট কনফার্ম করুন। কোনো সমস্যা হলে টেলিগ্রামে যোগাযোগ করুন।"
+    "service_6_warning": "সঠিক তথ্য দিয়ে পেমেন্ট কনফার্ম করুন।"
 }
 
 ADMIN_USERNAME = "ahadadmin"
@@ -80,20 +77,9 @@ BASE_HEAD = """
             width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center;
             justify-content: center; font-size: 24px; box-shadow: 0 4px 10px rgba(0,0,0,0.4); z-index: 50;
         }
-
-        body.light-mode {
-            background-color: #f1f5f9 !important;
-            color: #0f172a !important;
-        }
-        body.light-mode .bg-slate-900 {
-            background-color: #ffffff !important;
-            border-color: #e2e8f0 !important;
-            color: #0f172a !important;
-        }
-        body.light-mode .card-bg {
-            background: linear-gradient(135deg, #ffffff, #f8fafc) !important;
-            border-color: #cbd5e1 !important;
-        }
+        body.light-mode { background-color: #f1f5f9 !important; color: #0f172a !important; }
+        body.light-mode .bg-slate-900 { background-color: #ffffff !important; border-color: #e2e8f0 !important; color: #0f172a !important; }
+        body.light-mode .card-bg { background: linear-gradient(135deg, #ffffff, #f8fafc) !important; border-color: #cbd5e1 !important; }
     </style>
 </head>
 <body class="pb-24">
@@ -112,12 +98,9 @@ BASE_HEAD = """
     </div>
     <script>
         function closeWarningModal() { document.getElementById('welcomeWarningModal').style.display = 'none'; }
-        
         window.addEventListener('DOMContentLoaded', () => {
             const savedTheme = localStorage.getItem('site_theme');
-            if(savedTheme === 'light') {
-                document.body.classList.add('light-mode');
-            }
+            if(savedTheme === 'light') { document.body.classList.add('light-mode'); }
         });
     </script>
 """
@@ -142,9 +125,9 @@ BOTTOM_NAV = """
             <i class="fa-solid fa-dharmachakra text-lg"></i>
             <span class="text-[10px] mt-1 font-medium">Spin & Win</span>
         </a>
-        <a href="/settings" class="flex flex-col items-center text-slate-400 hover:text-slate-200">
-            <i class="fa-solid fa-gear text-lg"></i>
-            <span class="text-[10px] mt-1 font-medium">Settings</span>
+        <a href="/free-diamond" class="flex flex-col items-center text-sky-400 hover:text-sky-300">
+            <i class="fa-solid fa-gem text-lg"></i>
+            <span class="text-[10px] mt-1 font-medium">Free Diamond</span>
         </a>
     </nav>
     <a href="{{ settings.telegram_link }}" target="_blank" class="floating-support" title="Telegram Support">
@@ -157,13 +140,12 @@ BOTTOM_NAV = """
 INDEX_TEMPLATE = BASE_HEAD + """
     <header class="flex justify-between items-center p-4 bg-slate-900 border-b border-slate-800 sticky top-0 z-40">
         <span class="text-xl font-bold tracking-wider text-emerald-400">{{ settings.site_title }}</span>
-        <div class="flex items-center space-x-3">
-            <a href="{{ settings.telegram_link }}" target="_blank" class="bg-sky-500/20 border border-sky-500/50 text-sky-400 px-3 py-1.5 rounded-full text-xs font-bold flex items-center">
-                <i class="fa-brands fa-telegram mr-1 text-sm"></i> Telegram
-            </a>
-            <div class="flex items-center bg-emerald-600/20 border border-emerald-500/50 px-3 py-1.5 rounded-full">
-                <i class="fa-solid fa-wallet text-emerald-400 mr-1.5"></i>
-                <span class="text-sm font-semibold text-emerald-300">{{ wallet_balance }} ৳</span>
+        <div class="flex items-center space-x-2">
+            <div class="flex items-center bg-amber-500/20 border border-amber-500/40 px-2.5 py-1 rounded-full text-amber-300 font-bold text-xs">
+                🪙 <span class="ml-1">{{ tokens }}</span>
+            </div>
+            <div class="flex items-center bg-emerald-600/20 border border-emerald-500/50 px-2.5 py-1 rounded-full text-emerald-300 font-bold text-xs">
+                ৳ <span class="ml-1">{{ wallet_balance }}</span>
             </div>
         </div>
     </header>
@@ -195,19 +177,25 @@ INDEX_TEMPLATE = BASE_HEAD + """
             }
         </script>
 
-        <!-- স্পিন অ্যান্ড উইন ব্যানার -->
-        <a href="/spin" class="block bg-gradient-to-r from-amber-500 to-orange-600 p-3 rounded-2xl shadow-lg text-slate-950 flex justify-between items-center">
-            <div class="flex items-center space-x-3">
-                <div class="w-10 h-10 bg-black/20 rounded-full flex items-center justify-center text-xl">🎰</div>
+        <!-- স্পিন অ্যান্ড ফ্রি ডায়মন্ড কুইক লিংক -->
+        <div class="grid grid-cols-2 gap-3">
+            <a href="/spin" class="bg-gradient-to-r from-amber-500 to-orange-600 p-3 rounded-2xl shadow-lg text-slate-950 flex flex-col justify-between">
+                <div class="text-xl">🎰</div>
                 <div>
-                    <h3 class="font-black text-xs uppercase">Daily Spin & Win Bonus</h3>
-                    <p class="text-[10px] font-medium opacity-90">প্রতিদিন ফ্রিতে চাকা ঘুরিয়ে জিতুন টাকা!</p>
+                    <h3 class="font-black text-xs uppercase">Daily Spin</h3>
+                    <p class="text-[9px] font-bold opacity-90">টোকেন জিতুন ফ্রিতে!</p>
                 </div>
-            </div>
-            <span class="bg-black/80 text-amber-400 font-bold px-3 py-1.5 rounded-xl text-[10px]">SPIN NOW</span>
-        </a>
+            </a>
+            <a href="/free-diamond" class="bg-gradient-to-r from-sky-500 to-blue-600 p-3 rounded-2xl shadow-lg text-white flex flex-col justify-between">
+                <div class="text-xl">💎</div>
+                <div>
+                    <h3 class="font-black text-xs uppercase">Free Diamond</h3>
+                    <p class="text-[9px] font-bold opacity-90">টোকেন দিয়ে ডায়মন্ড নিন!</p>
+                </div>
+            </a>
+        </div>
 
-        <!-- লাইভ সার্চ বার -->
+        <!-- সার্চ বার -->
         <div class="relative">
             <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3.5 text-slate-400 text-xs"></i>
             <input type="text" id="serviceSearchInput" onkeyup="filterServices()" placeholder="সার্ভিস খুঁজুন (যেমন: UID, Likes)..." class="w-full bg-slate-900 border border-slate-800 rounded-xl py-2.5 pl-10 pr-4 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500">
@@ -274,15 +262,16 @@ INDEX_TEMPLATE = BASE_HEAD + """
 SPIN_TEMPLATE = BASE_HEAD + """
     <header class="flex items-center p-4 bg-slate-900 border-b border-slate-800 sticky top-0 z-40">
         <a href="/" class="text-slate-300 mr-4 text-lg"><i class="fa-solid fa-arrow-left"></i></a>
-        <h1 class="text-base font-bold uppercase tracking-wider text-slate-200"><i class="fa-solid fa-dharmachakra mr-1 text-amber-400"></i> Daily Spin & Win</h1>
+        <h1 class="text-base font-bold uppercase tracking-wider text-slate-200"><i class="fa-solid fa-dharmachakra mr-1 text-amber-400"></i> Daily Free Spin Token</h1>
     </header>
 
     <main class="p-4 max-w-md mx-auto space-y-5 text-center">
         <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl space-y-4 shadow-xl">
-            <h2 class="text-sm font-bold text-amber-400">ভাগ্য পরীক্ষা করুন ও বোনাস জিতুন!</h2>
+            <h2 class="text-sm font-bold text-amber-400">প্রতিদিন ২৪ ঘণ্টায় ১ বার স্পিন করুন!</h2>
+            <p class="text-xs text-slate-300">আপনার বর্তমান টোকেন: <strong class="text-amber-400 font-mono text-sm">🪙 {{ tokens }}</strong></p>
             
             {% if message %}
-            <div class="bg-emerald-500/20 border border-emerald-500 text-emerald-300 text-xs p-3 rounded-xl font-bold">
+            <div class="bg-amber-500/20 border border-amber-500 text-amber-300 text-xs p-3 rounded-xl font-bold">
                 {{ message }}
             </div>
             {% endif %}
@@ -293,10 +282,62 @@ SPIN_TEMPLATE = BASE_HEAD + """
 
             <form action="/play-spin" method="POST">
                 <button type="submit" class="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-slate-950 font-black py-3.5 rounded-xl text-sm shadow-lg transition transform active:scale-95">
-                    SPIN WHEEL NOW
+                    SPIN FOR TOKEN NOW
                 </button>
             </form>
-            <p class="text-[10px] text-slate-400">প্রতিবার স্পিনে জিতুন ১ থেকে ১০ টাকা পর্যন্ত সরাসরি ওয়ালেটে!</p>
+            <p class="text-[10px] text-slate-400">স্পিন করে টোকেন জমিয়ে ফ্রিতে উইকলি ও মান্থলি রিডিম করুন!</p>
+        </div>
+    </main>
+""" + BOTTOM_NAV
+
+FREE_DIAMOND_TEMPLATE = BASE_HEAD + """
+    <header class="flex items-center p-4 bg-slate-900 border-b border-slate-800 sticky top-0 z-40">
+        <a href="/" class="text-slate-300 mr-4 text-lg"><i class="fa-solid fa-arrow-left"></i></a>
+        <h1 class="text-base font-bold uppercase tracking-wider text-sky-400"><i class="fa-solid fa-gem mr-1"></i> FREE DIAMOND STORE</h1>
+    </header>
+
+    <main class="p-4 max-w-md mx-auto space-y-4">
+        <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl flex justify-between items-center">
+            <span class="text-xs text-slate-300">আপনার মোট টোকেন:</span>
+            <span class="text-sm font-bold text-amber-400 font-mono">🪙 {{ tokens }} Token</span>
+        </div>
+
+        {% if msg %}
+        <div class="bg-emerald-500/20 border border-emerald-500 text-emerald-300 text-xs p-3 rounded-xl font-bold text-center">
+            {{ msg }}
+        </div>
+        {% endif %}
+
+        <!-- উইকলি মেম্বারশিপ অপশন -->
+        <div class="bg-slate-900 border border-slate-800 p-4 rounded-2xl space-y-3">
+            <div class="flex justify-between items-center">
+                <h3 class="text-sm font-bold text-white">Weekly Membership (Free)</h3>
+                <span class="bg-amber-500/20 text-amber-300 border border-amber-500/40 text-[10px] font-bold px-2.5 py-1 rounded-full">১,০০,০০০ Token</span>
+            </div>
+            <p class="text-[11px] text-slate-400">১ লাখ টোকেন জমিয়ে ফ্রিতে নিন উইকলি মেম্বারশিপ!</p>
+            <form action="/redeem-diamond" method="POST" class="space-y-2">
+                <input type="hidden" name="type" value="weekly">
+                <input type="text" name="uid" required placeholder="Enter Player UID" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-xs text-white">
+                <button type="submit" class="w-full bg-sky-500 hover:bg-sky-600 text-slate-950 font-bold py-2.5 rounded-xl text-xs transition">
+                    ১ লাখ টোকেন দিয়ে রিডিম করুন
+                </button>
+            </form>
+        </div>
+
+        <!-- মান্থলি মেম্বারশিপ অপশন -->
+        <div class="bg-slate-900 border border-slate-800 p-4 rounded-2xl space-y-3">
+            <div class="flex justify-between items-center">
+                <h3 class="text-sm font-bold text-white">Monthly Membership (Free)</h3>
+                <span class="bg-amber-500/20 text-amber-300 border border-amber-500/40 text-[10px] font-bold px-2.5 py-1 rounded-full">৫,০০,০০০ Token</span>
+            </div>
+            <p class="text-[11px] text-slate-400">৫ লাখ টোকেন জমিয়ে ফ্রিতে কিনুন মান্থলি মেম্বারশিপ!</p>
+            <form action="/redeem-diamond" method="POST" class="space-y-2">
+                <input type="hidden" name="type" value="monthly">
+                <input type="text" name="uid" required placeholder="Enter Player UID" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-xs text-white">
+                <button type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-2.5 rounded-xl text-xs transition">
+                    ৫ লাখ টোকেন দিয়ে রিডিম করুন
+                </button>
+            </form>
         </div>
     </main>
 """ + BOTTOM_NAV
@@ -396,7 +437,6 @@ SETTINGS_TEMPLATE = BASE_HEAD + """
     </header>
 
     <main class="p-4 max-w-md mx-auto space-y-4">
-        <!-- ইউজার প্রোফাইল ও ইউজার UID -->
         <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl text-center space-y-2">
             <div class="w-16 h-16 bg-emerald-500/20 text-emerald-400 rounded-full flex items-center justify-center mx-auto text-2xl font-bold border border-emerald-500/30">
                 {{ user.name[0].upper() }}
@@ -406,15 +446,21 @@ SETTINGS_TEMPLATE = BASE_HEAD + """
             <div class="inline-block bg-amber-500/20 border border-amber-500/40 text-amber-300 px-3 py-1 rounded-full text-xs font-mono font-bold">
                 USER UID: {{ user.user_uid }}
             </div>
-            <div class="bg-slate-800 p-3 rounded-xl border border-slate-700 flex justify-between items-center mt-2">
-                <span class="text-xs text-slate-300">Wallet Balance:</span>
-                <span class="text-sm font-bold text-emerald-400">{{ user.wallet }} ৳</span>
+            <div class="grid grid-cols-2 gap-2 mt-2">
+                <div class="bg-slate-800 p-2.5 rounded-xl border border-slate-700">
+                    <p class="text-[10px] text-slate-400">Wallet Balance</p>
+                    <p class="text-sm font-bold text-emerald-400">{{ user.wallet }} ৳</p>
+                </div>
+                <div class="bg-slate-800 p-2.5 rounded-xl border border-slate-700">
+                    <p class="text-[10px] text-slate-400">Total Tokens</p>
+                    <p class="text-sm font-bold text-amber-400 font-mono">🪙 {{ user.tokens }}</p>
+                </div>
             </div>
         </div>
 
         <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl space-y-3">
             <h3 class="text-xs font-bold text-amber-400 uppercase tracking-wider"><i class="fa-solid fa-share-nodes mr-1"></i> Referral Program</h3>
-            <p class="text-[11px] text-slate-400">বন্ধুকে রেফার করুন এবং বোনাস ট্রাই করুন:</p>
+            <p class="text-[11px] text-slate-400">বন্ধুকে রেফার করুন এবং বোনাস পান:</p>
             <div class="bg-slate-800 p-2.5 rounded-xl border border-slate-700 flex justify-between items-center">
                 <span class="text-xs font-mono text-emerald-400 select-all">https://ahadtopup.com/ref/{{ user.user_uid }}</span>
                 <button onclick="navigator.clipboard.writeText('https://ahadtopup.com/ref/{{ user.user_uid }}'); alert('Referral link copied!');" class="bg-emerald-500 text-slate-950 font-bold px-3 py-1 rounded-lg text-xs">Copy</button>
@@ -430,20 +476,6 @@ SETTINGS_TEMPLATE = BASE_HEAD + """
                 <button onclick="changeTheme('dark')" class="bg-slate-800 hover:bg-slate-700 text-white font-bold py-2.5 rounded-xl text-xs flex items-center justify-center border border-slate-700">
                     <i class="fa-solid fa-moon mr-1.5 text-base"></i> Night (Dark)
                 </button>
-            </div>
-        </div>
-
-        <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl space-y-3">
-            <h3 class="text-xs font-bold text-sky-400 uppercase tracking-wider"><i class="fa-solid fa-chart-pie mr-1"></i> Activity Summary</h3>
-            <div class="grid grid-cols-2 gap-3">
-                <div class="bg-slate-800/60 p-3 rounded-xl border border-slate-700 text-center">
-                    <p class="text-[10px] text-slate-400 uppercase">Total Orders</p>
-                    <p class="text-lg font-bold text-emerald-400">{{ total_orders }}</p>
-                </div>
-                <div class="bg-slate-800/60 p-3 rounded-xl border border-slate-700 text-center">
-                    <p class="text-[10px] text-slate-400 uppercase">Add Money Requests</p>
-                    <p class="text-lg font-bold text-sky-400">{{ total_add_money }}</p>
-                </div>
             </div>
         </div>
 
@@ -634,7 +666,6 @@ ADMIN_DASHBOARD_TEMPLATE = """
             </div>
         </div>
 
-        <!-- ড্যাশবোর্ড ওভারভিউ -->
         <div class="grid grid-cols-3 gap-3">
             <div class="bg-slate-900 border border-slate-800 p-4 rounded-2xl text-center">
                 <p class="text-[10px] text-slate-400 font-bold uppercase">Total Users</p>
@@ -650,7 +681,7 @@ ADMIN_DASHBOARD_TEMPLATE = """
             </div>
         </div>
 
-        <!-- নতুন ইউজার সার্চ ও ব্যান করার সেকশন (SEARCH USER UID FOR BAN/DETAILS) -->
+        <!-- ইউজার সার্চ ও ব্যান -->
         <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl space-y-3">
             <h2 class="text-sm font-bold text-amber-400 uppercase tracking-wider"><i class="fa-solid fa-user-shield mr-1.5"></i> Search User UID For Ban / Details</h2>
             <form action="/admin/search-user" method="POST" class="flex space-x-2">
@@ -668,7 +699,7 @@ ADMIN_DASHBOARD_TEMPLATE = """
                 </div>
                 <p class="text-xs text-slate-300">Username: <strong>{{ searched_user.username }}</strong></p>
                 <p class="text-xs text-slate-300">User UID: <strong class="text-amber-300">{{ searched_user.user_uid }}</strong></p>
-                <p class="text-xs text-slate-300">Wallet: <strong class="text-emerald-400">{{ searched_user.wallet }} ৳</strong></p>
+                <p class="text-xs text-slate-300">Wallet: <strong class="text-emerald-400">{{ searched_user.wallet }} ৳</strong> | Tokens: <strong class="text-amber-400 font-mono">🪙 {{ searched_user.tokens }}</strong></p>
                 
                 <div class="pt-2 flex space-x-2">
                     {% if searched_user.is_banned %}
@@ -683,7 +714,7 @@ ADMIN_DASHBOARD_TEMPLATE = """
             {% endif %}
         </div>
 
-        <!-- রেজিস্টার্ড অল ইউজার লিস্ট (UID সহ) -->
+        <!-- রেজিস্টার্ড অল ইউজার লিস্ট -->
         <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl space-y-3">
             <h2 class="text-sm font-bold text-sky-400 uppercase tracking-wider"><i class="fa-solid fa-users mr-1"></i> Registered Users List</h2>
             <div class="space-y-2 max-h-48 overflow-y-auto pr-1">
@@ -691,7 +722,7 @@ ADMIN_DASHBOARD_TEMPLATE = """
                 <div class="bg-slate-800 p-2.5 rounded-xl border border-slate-700 flex justify-between items-center text-xs">
                     <div>
                         <p class="font-bold text-white">{{ u.name }} (<span class="text-amber-300">{{ u.user_uid }}</span>)</p>
-                        <p class="text-[10px] text-slate-400">{{ u.username }} | Wallet: {{ u.wallet }}৳</p>
+                        <p class="text-[10px] text-slate-400">{{ u.username }} | Wallet: {{ u.wallet }}৳ | Tokens: 🪙{{ u.tokens }}</p>
                     </div>
                     <a href="/admin/toggle-ban/{{ u.username }}" class="px-2.5 py-1 rounded text-[10px] font-bold {% if u.is_banned %} bg-emerald-500/20 text-emerald-400 {% else %} bg-red-500/20 text-red-400 {% endif %}">
                         {{ 'Unban' if u.is_banned else 'Ban' }}
@@ -701,86 +732,8 @@ ADMIN_DASHBOARD_TEMPLATE = """
             </div>
         </div>
 
-        <!-- প্রমো কোড ম্যানেজার -->
-        <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl space-y-3">
-            <h2 class="text-sm font-bold text-emerald-400 uppercase tracking-wider"><i class="fa-solid fa-ticket mr-1"></i> প্রমো কোড তৈরি করুন</h2>
-            <form action="/admin/add-promo" method="POST" class="flex space-x-2">
-                <input type="text" name="code" placeholder="কোড (যেমন: EID2026)" required class="flex-1 bg-slate-800 border border-slate-700 rounded-lg p-2 text-xs text-white uppercase">
-                <input type="number" name="discount" placeholder="ডিসকাউন্ট ৳" required class="w-28 bg-slate-800 border border-slate-700 rounded-lg p-2 text-xs text-white">
-                <button type="submit" class="bg-emerald-500 text-slate-950 font-bold px-4 py-2 rounded-lg text-xs">+ যুক্ত করুন</button>
-            </form>
-            <div class="flex flex-wrap gap-2 pt-2">
-                {% for code, disc in promos.items() %}
-                <span class="bg-slate-800 border border-slate-700 text-amber-300 px-3 py-1 rounded-full text-xs font-bold">{{ code }} ({{ disc }}৳ ছাড়)</span>
-                {% endfor %}
-            </div>
-        </div>
-
-        <!-- ওয়েবসাইট কাস্টমাইজেশন -->
-        <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl space-y-4 shadow-xl">
-            <h2 class="text-sm font-bold text-amber-400 uppercase tracking-wider"><i class="fa-solid fa-sliders mr-1.5"></i> ওয়েবসাইট ও সার্ভিস কাস্টমাইজ করুন</h2>
-            <form action="/admin/update-settings" method="POST" class="space-y-3">
-                <div>
-                    <label class="block text-xs font-semibold text-slate-400 mb-1">Website Title</label>
-                    <input type="text" name="site_title" value="{{ settings.site_title }}" required class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-sm text-white">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-slate-400 mb-1">Telegram Support Link</label>
-                    <input type="text" name="telegram_link" value="{{ settings.telegram_link }}" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-sm text-white">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-slate-400 mb-1">Payment Number (bKash/Nagad/Rocket)</label>
-                    <input type="text" name="payment_number" value="{{ settings.payment_number }}" required class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-sm text-white">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-slate-400 mb-1">Popup Notice / Warning Text</label>
-                    <textarea name="notice_text" rows="4" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-sm text-white">{{ settings.notice_text }}</textarea>
-                </div>
-
-                <hr class="border-slate-800 my-2">
-                <h3 class="text-xs font-bold text-emerald-400 uppercase">৬টি সার্ভিস কার্ড, প্যাকেজ ও ওয়ার্নিং কাস্টমাইজার</h3>
-                
-                <div class="space-y-3">
-                    {% for i in range(1, 7) %}
-                    <div class="bg-slate-800/50 p-3 rounded-xl border border-slate-800 space-y-2">
-                        <p class="text-xs font-bold text-amber-300">Service {{ i }}</p>
-                        <div class="grid grid-cols-2 gap-2">
-                            <input type="text" name="service_{{ i }}_name" value="{{ settings['service_' ~ i ~ '_name'] }}" class="bg-slate-800 border border-slate-700 rounded p-2 text-xs text-white" placeholder="নাম">
-                            <input type="text" name="service_{{ i }}_icon" value="{{ settings['service_' ~ i ~ '_icon'] }}" class="bg-slate-800 border border-slate-700 rounded p-2 text-xs text-white" placeholder="ছবির লিংক">
-                        </div>
-                        <input type="text" name="service_{{ i }}_pkgs" value="{{ settings['service_' ~ i ~ '_pkgs'] }}" class="w-full bg-slate-800 border border-slate-700 rounded p-2 text-xs text-white" placeholder="প্যাকেজসমূহ">
-                        <input type="text" name="service_{{ i }}_warning" value="{{ settings['service_' ~ i ~ '_warning'] }}" class="w-full bg-slate-800 border border-slate-700 rounded p-2 text-xs text-amber-200" placeholder="এই সার্ভিসের জন্য বিশেষ ওয়ার্নিং...">
-                    </div>
-                    {% endfor %}
-                </div>
-
-                <button type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-3 rounded-xl text-xs transition shadow-lg mt-4">
-                    SAVE & UPDATE WEBSITE
-                </button>
-            </form>
-        </div>
-
-        <!-- পেন্ডিং অ্যাড মানি -->
-        <h2 class="text-sm font-bold text-sky-400 uppercase tracking-wider">Pending Add Money Requests</h2>
-        {% if add_moneys %}
-            {% for am in add_moneys %}
-                {% if am.status == 'Pending' %}
-                <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl space-y-2">
-                    <p class="text-xs text-slate-300">User: <strong class="text-white">{{ am.username }}</strong> | Amount: <strong class="text-emerald-400">{{ am.amount }} ৳</strong></p>
-                    <p class="text-xs text-slate-300">TrxID: <strong class="text-amber-300">{{ am.trxid }}</strong></p>
-                    <div class="flex space-x-2 pt-1">
-                        <a href="/admin/add-money-action/approve/{{ am.id }}" class="flex-1 bg-emerald-500 text-slate-950 font-bold py-2 rounded-lg text-xs text-center">Approve</a>
-                        <a href="/admin/add-money-action/reject/{{ am.id }}" class="flex-1 bg-red-500 text-white font-bold py-2 rounded-lg text-xs text-center">Reject</a>
-                    </div>
-                </div>
-                {% endif %}
-            {% endfor %}
-        {% else %}
-            <p class="text-xs text-slate-500">কোনো পেন্ডিং অ্যাড মানি রিকোয়েস্ট নেই।</p>
-        {% endif %}
-
         <!-- পেন্ডিং অর্ডার -->
-        <h2 class="text-sm font-bold text-amber-400 uppercase tracking-wider pt-4">Pending Topup Orders</h2>
+        <h2 class="text-sm font-bold text-amber-400 uppercase tracking-wider pt-2">Pending Orders (Topup & Free Diamond)</h2>
         {% if orders %}
             {% for o in orders %}
                 {% if o.status == 'Pending' %}
@@ -844,24 +797,90 @@ def home():
     user = users_db[uname]
     if user.get('is_banned'):
         session.pop('user', None)
-        return "আপনার অ্যাকাউন্টটি অ্যাডমিন কর্তৃক ব্যান করা হয়েছে! যোগাযোগের জন্য টেলিগ্রামে কথা বলুন।"
-    return render_template_string(INDEX_TEMPLATE, settings=site_settings, banners=banners_db, wallet_balance=user.get('wallet', 0.0))
+        return "আপনার অ্যাকাউন্টটি অ্যাডমিন কর্তৃক ব্যান করা হয়েছে!"
+    return render_template_string(INDEX_TEMPLATE, settings=site_settings, banners=banners_db, wallet_balance=user.get('wallet', 0.0), tokens=user.get('tokens', 0))
 
 @app.route('/spin')
 def spin_page():
     if 'user' not in session:
         return redirect(url_for('login'))
-    return render_template_string(SPIN_TEMPLATE, message=None, settings=site_settings)
+    uname = session['user']
+    user = users_db.get(uname, {})
+    return render_template_string(SPIN_TEMPLATE, message=None, settings=site_settings, tokens=user.get('tokens', 0))
 
 @app.route('/play-spin', methods=['POST'])
 def play_spin():
     if 'user' not in session:
         return redirect(url_for('login'))
     uname = session['user']
-    win_amount = random.randint(1, 10)
-    users_db[uname]['wallet'] += win_amount
-    msg = f"অভিনন্দন! আপনি চাকা ঘুরে পেয়েছেন {win_amount} ৳ বোনাস!"
-    return render_template_string(SPIN_TEMPLATE, message=msg, settings=site_settings)
+    user = users_db[uname]
+    
+    now = datetime.datetime.now()
+    last_spin = user.get('last_spin')
+    
+    # ২৪ ঘণ্টার সিকিউরিটি চেক
+    if last_spin:
+        time_diff = now - last_spin
+        if time_diff.total_seconds() < 86400: # ২৪ ঘণ্টা = ৮৬৪০০ সেকেন্ড
+            hours_left = int((86400 - time_diff.total_seconds()) // 3600)
+            mins_left = int(((86400 - time_diff.total_seconds()) % 3600) // 60)
+            msg = f"আজকের স্পিন শেষ! আবার {hours_left} ঘণ্টা {mins_left} মিনিট পর ট্রাই করুন।"
+            return render_template_string(SPIN_TEMPLATE, message=msg, settings=site_settings, tokens=user.get('tokens', 0))
+            
+    # র‍্যান্ডম টোকেন বোনাস জেনারেট (৫০ থেকে ২০০০ টোকেন)
+    win_token = random.choice([50, 100, 200, 500, 1000, 2000])
+    user['tokens'] = user.get('tokens', 0) + win_token
+    user['last_spin'] = now
+    
+    msg = f"অভিনন্দন! আপনি চাকা ঘুরে পেয়েছেন 🪙 {win_token} টোকেন বোনাস!"
+    return render_template_string(SPIN_TEMPLATE, message=msg, settings=site_settings, tokens=user.get('tokens', 0))
+
+@app.route('/free-diamond')
+def free_diamond_page():
+    if 'user' not in session:
+        return redirect(url_for('login'))
+    uname = session['user']
+    user = users_db.get(uname, {})
+    return render_template_string(FREE_DIAMOND_TEMPLATE, settings=site_settings, tokens=user.get('tokens', 0), msg=None)
+
+@app.route('/redeem-diamond', methods=['POST'])
+def redeem_diamond():
+    if 'user' not in session:
+        return redirect(url_for('login'))
+    uname = session['user']
+    user = users_db[uname]
+    
+    rtype = request.form.get('type')
+    uid = request.form.get('uid')
+    
+    needed_tokens = 100000 if rtype == 'weekly' else 500000
+    pkg_name = "FREE Weekly Membership" if rtype == 'weekly' else "FREE Monthly Membership"
+    
+    if user.get('tokens', 0) < needed_tokens:
+        msg = f"আপনার পর্যাপ্ত টোকেন নেই! প্রয়োজন {needed_tokens} টোকেন।"
+        return render_template_string(FREE_DIAMOND_TEMPLATE, settings=site_settings, tokens=user.get('tokens', 0), msg=msg)
+        
+    # টোকেন কেটে নেওয়া
+    user['tokens'] -= needed_tokens
+    
+    # ব্যাকএন্ডে অর্ডার ক্রিয়েট হওয়া
+    order_id = len(orders_db) + 1
+    now_str = datetime.datetime.now().strftime("%I:%M %p, %d %b")
+    order_data = {
+        'id': order_id,
+        'username': uname,
+        'service': 'FREE DIAMOND STORE',
+        'uid': uid,
+        'package': pkg_name,
+        'payment': 'Redeemed Token',
+        'trxid': f'{needed_tokens} Tokens',
+        'status': 'Pending',
+        'time': now_str
+    }
+    orders_db.append(order_data)
+    
+    msg = f"সফলভাবে {pkg_name} এর জন্য রিডিম রিকোয়েস্ট পাঠানো হয়েছে!"
+    return render_template_string(FREE_DIAMOND_TEMPLATE, settings=site_settings, tokens=user.get('tokens', 0), msg=msg)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -871,7 +890,7 @@ def login():
         pwd = request.form.get('password')
         if uname in users_db and users_db[uname].get('password') == pwd:
             if users_db[uname].get('is_banned'):
-                error = 'আপনার অ্যাকাউন্টটি ব্যান করা হয়েছে! কর্তৃপক্ষের সাথে যোগাযোগ করুন।'
+                error = 'আপনার অ্যাকাউন্টটি ব্যান করা হয়েছে!'
             else:
                 session['user'] = uname
                 return redirect(url_for('home'))
@@ -890,7 +909,6 @@ def signup():
         if uname in users_db:
             error = 'এই অ্যাকাউন্টটি আগেই রেজিস্টার্ড!'
         else:
-            # ইউনিক ইউজার UID জেনারেট করা
             generated_uid = f"UID-{random.randint(100000, 999999)}"
             users_db[uname] = {
                 'name': name,
@@ -899,6 +917,8 @@ def signup():
                 'password': pwd,
                 'user_uid': generated_uid,
                 'wallet': 0.0,
+                'tokens': 0,
+                'last_spin': None,
                 'is_banned': False
             }
             session['user'] = uname
@@ -1024,10 +1044,7 @@ def settings_page():
         return redirect(url_for('logout'))
     u_info = users_db[uname]
     
-    tot_orders = len([o for o in orders_db if o['username'] == uname])
-    tot_am = len([am for am in add_money_db if am['username'] == uname])
-    
-    return render_template_string(SETTINGS_TEMPLATE, user=u_info, total_orders=tot_orders, total_add_money=tot_am, settings=site_settings)
+    return render_template_string(SETTINGS_TEMPLATE, user=u_info, settings=site_settings)
 
 @app.route('/admin', methods=['GET', 'POST'])
 def admin_login():
@@ -1070,7 +1087,6 @@ def search_user():
     
     s_term = request.form.get('search_term').strip().upper()
     found_u = None
-    
     for u in users_db.values():
         if u.get('user_uid', '').upper() == s_term or u.get('username', '').upper() == s_term:
             found_u = u
@@ -1103,71 +1119,6 @@ def toggle_ban(uname):
         users_db[uname]['is_banned'] = not users_db[uname].get('is_banned', False)
     return redirect(url_for('admin_dashboard'))
 
-@app.route('/admin/add-promo', methods=['POST'])
-def add_promo():
-    if not session.get('admin'):
-        return redirect(url_for('admin_login'))
-    code = request.form.get('code').strip().upper()
-    discount = float(request.form.get('discount'))
-    promo_codes[code] = discount
-    return redirect(url_for('admin_dashboard'))
-
-@app.route('/admin/update-settings', methods=['POST'])
-def update_settings():
-    if not session.get('admin'):
-        return redirect(url_for('admin_login'))
-    
-    site_settings['site_title'] = request.form.get('site_title').strip()
-    site_settings['telegram_link'] = request.form.get('telegram_link').strip()
-    site_settings['payment_number'] = request.form.get('payment_number').strip()
-    site_settings['notice_text'] = request.form.get('notice_text').strip()
-    
-    for i in range(1, 7):
-        site_settings[f'service_{i}_name'] = request.form.get(f'service_{i}_name').strip()
-        
-        icon_url = request.form.get(f'service_{i}_icon').strip()
-        if 'drive.google.com' in icon_url:
-            try:
-                fid = icon_url.split('/d/')[1].split('/')[0]
-                icon_url = f"https://lh3.googleusercontent.com/d/{fid}"
-            except:
-                pass
-        site_settings[f'service_{i}_icon'] = icon_url
-        
-        site_settings[f'service_{i}_pkgs'] = request.form.get(f'service_{i}_pkgs').strip()
-        site_settings[f'service_{i}_warning'] = request.form.get(f'service_{i}_warning').strip()
-        
-    return redirect(url_for('admin_dashboard'))
-
-@app.route('/admin/add-banner', methods=['POST'])
-def add_banner():
-    if not session.get('admin'):
-        return redirect(url_for('admin_login'))
-    
-    raw_url = request.form.get('image_url').strip()
-    if 'drive.google.com' in raw_url:
-        try:
-            file_id = raw_url.split('/d/')[1].split('/')[0]
-            raw_url = f"https://lh3.googleusercontent.com/d/{file_id}"
-        except:
-            pass
-
-    new_b = {
-        'id': len(banners_db) + 1,
-        'image_url': raw_url,
-        'caption': request.form.get('caption').strip()
-    }
-    banners_db.append(new_b)
-    return redirect(url_for('admin_dashboard'))
-
-@app.route('/admin/delete-banner/<int:bid>')
-def delete_banner(bid):
-    if not session.get('admin'):
-        return redirect(url_for('admin_login'))
-    global banners_db
-    banners_db = [b for b in banners_db if b['id'] != bid]
-    return redirect(url_for('admin_dashboard'))
-
 @app.route('/admin/order-action/<action>/<int:oid>')
 def order_action(action, oid):
     if not session.get('admin'):
@@ -1175,22 +1126,6 @@ def order_action(action, oid):
     for o in orders_db:
         if o['id'] == oid:
             o['status'] = 'Completed' if action == 'complete' else 'Rejected'
-            break
-    return redirect(url_for('admin_dashboard'))
-
-@app.route('/admin/add-money-action/<action>/<int:aid>')
-def add_money_action(action, aid):
-    if not session.get('admin'):
-        return redirect(url_for('admin_login'))
-    for am in add_money_db:
-        if am['id'] == aid:
-            if action == 'approve' and am['status'] == 'Pending':
-                am['status'] = 'Approved'
-                uname = am['username']
-                if uname in users_db:
-                    users_db[uname]['wallet'] += am['amount']
-            elif action == 'reject':
-                am['status'] = 'Rejected'
             break
     return redirect(url_for('admin_dashboard'))
 
