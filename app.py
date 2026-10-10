@@ -61,16 +61,21 @@ site_settings = {
 ADMIN_USERNAME = "ahadadmin"
 ADMIN_PASSWORD = "123"
 
-# 🕌 ৫ ওয়াক্ত নামাজের অটো-অফ টাইম ফিল্টার
-def check_prayer_or_maintenance():
-    # অ্যাডমিন যদি নিজে অ্যাপ অফ করে রাখে
+# 🔒 মিডলওয়্যার: অ্যাডমিন পেজ ছাড়া বাকি সব জায়গায় নামাজ ও মেইনটেইনেন্স চেক করা
+@app.before_request
+def check_app_status():
+    if request.path.startswith('/admin') or request.endpoint in ['static', 'admin_login', 'login', 'signup', 'logout']:
+        return
+        
+    is_closed, reason_msg = check_app_status_logic()
+    if is_closed:
+        return render_template_string(CLOSED_TEMPLATE, reason=reason_msg)
+
+def check_app_status_logic():
     if site_settings.get("is_app_off"):
         return True, "🛠️ অ্যাপটির আপডেট কাজ চলছে, অনুগ্রহ করে অপেক্ষা করুন..."
     
-    # বর্তমান লোকাল সময় চেক (HH:MM ফরম্যাটে)
     now_time = datetime.datetime.now().strftime("%H:%M")
-    
-    # ৫ ওয়াক্ত নামাজের নির্ধারিত অফ টাইম রেঞ্জ
     prayer_times = [
         ("04:45", "05:45", "ফজর"),
         ("13:00", "13:30", "জোহর"),
@@ -84,15 +89,6 @@ def check_prayer_or_maintenance():
             return True, f"🕌 পবিত্র {name} নামাজের জন্য অ্যাপ সাময়িকভাবে বন্ধ রয়েছে। নামাজের ওয়াক্ত শেষে আবার চালু হবে।"
             
     return False, ""
-
-# 🔒 মিডলওয়্যার: সব রিকোয়েস্ট চেক করার জন্য
-@app.before_request
-def check_app_status():
-    # অ্যাডমিন প্যানেল এবং স্ট্যাটিক রুট ছাড়া বাকি সব পেজে অফ স্ক্রিন দেখাবে
-    if request.endpoint and not request.endpoint.startswith('admin') and request.endpoint not in ['static', 'app_closed']:
-        is_closed, reason_msg = check_prayer_or_maintenance()
-        if is_closed:
-            return render_template_string(CLOSED_TEMPLATE, reason=reason_msg)
 
 CLOSED_TEMPLATE = """
 <!DOCTYPE html>
