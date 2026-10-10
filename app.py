@@ -1,6 +1,7 @@
 from flask import Flask, render_template_string, request, redirect, url_for, session
 import random
 import datetime
+import pytz
 
 app = Flask(__name__)
 app.secret_key = 'ahad_topup_secret_key_secure'
@@ -75,7 +76,10 @@ def check_app_status_logic():
     if site_settings.get("is_app_off"):
         return True, "🛠️ অ্যাপটির আপডেট কাজ চলছে, অনুগ্রহ করে অপেক্ষা করুন..."
     
-    now_time = datetime.datetime.now().strftime("%H:%M")
+    # বাংলাদেশের সঠিক সময় বের করার জন্য pytz ব্যবহার করা হলো
+    bd_tz = pytz.timezone('Asia/Dhaka')
+    now_time = datetime.datetime.now(bd_tz).strftime("%H:%M")
+    
     prayer_times = [
         ("04:45", "05:45", "ফজর"),
         ("13:00", "13:30", "জোহর"),
@@ -115,7 +119,7 @@ CLOSED_TEMPLATE = """
 </html>
 """
 
-# 📶 নো ইন্টারনেট পপআপ টেমপ্লেট কম্পোনেন্ট (সব পেজে স্বয়ংক্রিয়ভাবে কাজ করবে)
+# 📶 নো ইন্টারনেট পপআপ টেমপ্লেট কম্পোনেন্ট
 INTERNET_CHECKER_SCRIPT = """
     <!-- No Internet Modal -->
     <div id="noInternetModal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md flex items-center justify-center z-50 p-4 hidden">
@@ -145,10 +149,7 @@ INTERNET_CHECKER_SCRIPT = """
 
         window.addEventListener('online', checkInternetConnection);
         window.addEventListener('offline', checkInternetConnection);
-        
-        // পেজ লোড হওয়ার সাথে সাথে একবার চেক করবে
         window.addEventListener('DOMContentLoaded', checkInternetConnection);
-        // প্রতি ৫ সেকেন্ড পর পর ব্যাকগ্রাউন্ডে নেট কানেকশন চেক করবে
         setInterval(checkInternetConnection, 5000);
     </script>
 """
@@ -245,13 +246,11 @@ INDEX_TEMPLATE = BASE_HEAD + """
     </header>
 
     <main class="p-4 max-w-md mx-auto space-y-4">
-        <!-- ২৪ ঘণ্টা সার্ভিস ব্যাজ -->
         <div class="bg-emerald-500/10 border border-emerald-500/30 p-2.5 rounded-xl flex items-center justify-center space-x-2 text-emerald-400">
             <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
             <span class="text-[11px] font-bold">২৪ ঘণ্টা আমাদের সার্ভিস ও অটো টপ-আপ ওপেন থাকে!</span>
         </div>
 
-        <!-- স্লাইডার ব্যানার -->
         <div class="w-full h-40 bg-slate-800 rounded-xl relative border border-slate-700 overflow-hidden shadow-lg">
             <div id="sliderContainer" class="w-full h-full relative">
                 {% for b in banners %}
@@ -277,7 +276,6 @@ INDEX_TEMPLATE = BASE_HEAD + """
             }
         </script>
 
-        <!-- স্পিন অ্যান্ড ফ্রি ডায়মন্ড কুইক লিংক -->
         <div class="grid grid-cols-2 gap-3">
             <a href="/spin" class="bg-gradient-to-r from-amber-500 to-orange-600 p-3 rounded-2xl shadow-lg text-slate-950 flex flex-col justify-between">
                 <div class="text-xl">🎰</div>
@@ -295,7 +293,6 @@ INDEX_TEMPLATE = BASE_HEAD + """
             </a>
         </div>
 
-        <!-- সার্চ বার -->
         <div class="relative">
             <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3.5 text-slate-400 text-xs"></i>
             <input type="text" id="serviceSearchInput" onkeyup="filterServices()" placeholder="সার্ভিস খুঁজুন (যেমন: UID, Likes)..." class="w-full bg-slate-900 border border-slate-800 rounded-xl py-2.5 pl-10 pr-4 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500">
@@ -764,7 +761,6 @@ ADMIN_DASHBOARD_TEMPLATE = """
             </div>
         </div>
 
-        <!-- 🔴 অ্যাপ ম্যানুয়াল অফ / আপডেট মোড সুইচ -->
         <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl flex justify-between items-center shadow-xl">
             <div>
                 <h3 class="text-sm font-bold text-white flex items-center">
@@ -792,14 +788,12 @@ ADMIN_DASHBOARD_TEMPLATE = """
             </div>
         </div>
 
-        <!-- ১. রেজিস্টার্ড ইউজারের UID ডাটাবেস সেকশন -->
         <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl space-y-4 shadow-xl">
             <div class="flex justify-between items-center border-b border-slate-800 pb-2">
                 <h2 class="text-sm font-bold text-sky-400 uppercase tracking-wider"><i class="fa-solid fa-users-gear mr-1.5"></i> Registered Users UID Interface</h2>
                 <span class="text-xs bg-sky-500/20 text-sky-300 font-bold px-2.5 py-1 rounded-full">Total: {{ total_users }} Users</span>
             </div>
 
-            <!-- ইউজার সার্চ বার -->
             <form action="/admin/search-user" method="POST" class="flex space-x-2">
                 <input type="text" name="search_term" placeholder="Search by User UID or Username..." required class="flex-1 bg-slate-800 border border-slate-700 rounded-xl p-2.5 text-xs text-white uppercase">
                 <button type="submit" class="bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold px-4 py-2.5 rounded-xl text-xs">Search UID</button>
@@ -826,7 +820,6 @@ ADMIN_DASHBOARD_TEMPLATE = """
             <p class="text-xs text-red-400 text-center py-1 font-bold">{{ search_error }}</p>
             {% endif %}
 
-            <!-- সব রেজিস্টার্ড ইউজারের UID লিস্ট -->
             <div class="space-y-2 max-h-56 overflow-y-auto pr-1">
                 {% for u in all_users %}
                 <div class="bg-slate-800 p-3 rounded-xl border border-slate-700 flex justify-between items-center text-xs">
@@ -842,11 +835,9 @@ ADMIN_DASHBOARD_TEMPLATE = """
             </div>
         </div>
 
-        <!-- ২. ক্যাটাগরি ওয়াইজ অর্ডার ম্যানেজমেন্ট -->
         <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl space-y-4 shadow-xl">
             <h2 class="text-sm font-bold text-amber-400 uppercase tracking-wider border-b border-slate-800 pb-2"><i class="fa-solid fa-list-check mr-1.5"></i> Order Management (Category Wise)</h2>
 
-            <!-- ক্যাটাগরি ১: ফ্রি ডায়মন্ড উইথড্র অপশন -->
             <div class="space-y-3 pt-1">
                 <div class="flex items-center space-x-2 text-sky-400 font-bold text-xs uppercase">
                     <i class="fa-solid fa-gem text-sm"></i>
@@ -879,7 +870,6 @@ ADMIN_DASHBOARD_TEMPLATE = """
 
             <hr class="border-slate-800">
 
-            <!-- ক্যাটাগরি ২: সরাসরি পেমেন্ট অর্ডার -->
             <div class="space-y-3">
                 <div class="flex items-center space-x-2 text-emerald-400 font-bold text-xs uppercase">
                     <i class="fa-solid fa-money-bill-wave text-sm"></i>
@@ -913,7 +903,6 @@ ADMIN_DASHBOARD_TEMPLATE = """
 
             <hr class="border-slate-800">
 
-            <!-- ক্যাটাগরি ৩: ওয়ালেট অর্ডার -->
             <div class="space-y-3">
                 <div class="flex items-center space-x-2 text-amber-400 font-bold text-xs uppercase">
                     <i class="fa-solid fa-wallet text-sm"></i>
@@ -946,7 +935,6 @@ ADMIN_DASHBOARD_TEMPLATE = """
             </div>
         </div>
 
-        <!-- ৩. ওয়েবসাইট কাস্টমাইজেশন সেকশন -->
         <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl space-y-4 shadow-xl">
             <h2 class="text-sm font-bold text-amber-400 uppercase tracking-wider"><i class="fa-solid fa-sliders mr-1.5"></i> ওয়েবসাইট ও সার্ভিস কাস্টমাইজ করুন</h2>
             <form action="/admin/update-settings" method="POST" class="space-y-3">
@@ -990,7 +978,6 @@ ADMIN_DASHBOARD_TEMPLATE = """
             </form>
         </div>
 
-        <!-- ৪. স্লাইডার ব্যানার সেকশন -->
         <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl space-y-3">
             <h2 class="text-sm font-bold text-sky-400 uppercase tracking-wider"><i class="fa-solid fa-images mr-1"></i> স্লাইডার ব্যানার ম্যানেজার</h2>
             <form action="/admin/add-banner" method="POST" class="space-y-2">
@@ -1072,7 +1059,8 @@ def play_spin():
     uname = session['user']
     user = users_db[uname]
     
-    now = datetime.datetime.now()
+    bd_tz = pytz.timezone('Asia/Dhaka')
+    now = datetime.datetime.now(bd_tz)
     last_spin = user.get('last_spin')
     
     if last_spin:
@@ -1118,7 +1106,8 @@ def redeem_diamond():
     user['tokens'] -= needed_tokens
     
     order_id = len(orders_db) + 1
-    now_str = datetime.datetime.now().strftime("%I:%M %p, %d %b")
+    bd_tz = pytz.timezone('Asia/Dhaka')
+    now_str = datetime.datetime.now(bd_tz).strftime("%I:%M %p, %d %b")
     order_data = {
         'id': order_id,
         'username': uname,
@@ -1265,7 +1254,8 @@ def submit_order():
         trxid = 'Wallet Paid'
 
     order_id = len(orders_db) + 1
-    now_str = datetime.datetime.now().strftime("%I:%M %p, %d %b")
+    bd_tz = pytz.timezone('Asia/Dhaka')
+    now_str = datetime.datetime.now(bd_tz).strftime("%I:%M %p, %d %b")
     order_data = {
         'id': order_id,
         'username': uname,
