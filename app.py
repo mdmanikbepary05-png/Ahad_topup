@@ -396,13 +396,17 @@ SETTINGS_TEMPLATE = BASE_HEAD + """
     </header>
 
     <main class="p-4 max-w-md mx-auto space-y-4">
+        <!-- ইউজার প্রোফাইল ও ইউজার UID -->
         <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl text-center space-y-2">
             <div class="w-16 h-16 bg-emerald-500/20 text-emerald-400 rounded-full flex items-center justify-center mx-auto text-2xl font-bold border border-emerald-500/30">
                 {{ user.name[0].upper() }}
             </div>
             <h2 class="text-base font-bold text-white">{{ user.name }}</h2>
-            <p class="text-xs text-slate-400">{{ user.username }}</p>
-            <div class="bg-slate-800 p-3 rounded-xl border border-slate-700 flex justify-between items-center">
+            <p class="text-xs text-slate-400">Username: {{ user.username }}</p>
+            <div class="inline-block bg-amber-500/20 border border-amber-500/40 text-amber-300 px-3 py-1 rounded-full text-xs font-mono font-bold">
+                USER UID: {{ user.user_uid }}
+            </div>
+            <div class="bg-slate-800 p-3 rounded-xl border border-slate-700 flex justify-between items-center mt-2">
                 <span class="text-xs text-slate-300">Wallet Balance:</span>
                 <span class="text-sm font-bold text-emerald-400">{{ user.wallet }} ৳</span>
             </div>
@@ -412,8 +416,8 @@ SETTINGS_TEMPLATE = BASE_HEAD + """
             <h3 class="text-xs font-bold text-amber-400 uppercase tracking-wider"><i class="fa-solid fa-share-nodes mr-1"></i> Referral Program</h3>
             <p class="text-[11px] text-slate-400">বন্ধুকে রেফার করুন এবং বোনাস ট্রাই করুন:</p>
             <div class="bg-slate-800 p-2.5 rounded-xl border border-slate-700 flex justify-between items-center">
-                <span class="text-xs font-mono text-emerald-400 select-all">https://ahadtopup.com/ref/{{ user.username }}</span>
-                <button onclick="navigator.clipboard.writeText('https://ahadtopup.com/ref/{{ user.username }}'); alert('Referral link copied!');" class="bg-emerald-500 text-slate-950 font-bold px-3 py-1 rounded-lg text-xs">Copy</button>
+                <span class="text-xs font-mono text-emerald-400 select-all">https://ahadtopup.com/ref/{{ user.user_uid }}</span>
+                <button onclick="navigator.clipboard.writeText('https://ahadtopup.com/ref/{{ user.user_uid }}'); alert('Referral link copied!');" class="bg-emerald-500 text-slate-950 font-bold px-3 py-1 rounded-lg text-xs">Copy</button>
             </div>
         </div>
 
@@ -630,7 +634,7 @@ ADMIN_DASHBOARD_TEMPLATE = """
             </div>
         </div>
 
-        <!-- প্রিমিয়াম অ্যানালিটিক্স ড্যাশবোর্ড -->
+        <!-- ড্যাশবোর্ড ওভারভিউ -->
         <div class="grid grid-cols-3 gap-3">
             <div class="bg-slate-900 border border-slate-800 p-4 rounded-2xl text-center">
                 <p class="text-[10px] text-slate-400 font-bold uppercase">Total Users</p>
@@ -646,7 +650,58 @@ ADMIN_DASHBOARD_TEMPLATE = """
             </div>
         </div>
 
-        <!-- কাস্টম প্রমো কোড ম্যানেজার -->
+        <!-- নতুন ইউজার সার্চ ও ব্যান করার সেকশন (SEARCH USER UID FOR BAN/DETAILS) -->
+        <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl space-y-3">
+            <h2 class="text-sm font-bold text-amber-400 uppercase tracking-wider"><i class="fa-solid fa-user-shield mr-1.5"></i> Search User UID For Ban / Details</h2>
+            <form action="/admin/search-user" method="POST" class="flex space-x-2">
+                <input type="text" name="search_term" placeholder="Enter User UID or Username..." required class="flex-1 bg-slate-800 border border-slate-700 rounded-xl p-2.5 text-xs text-white uppercase">
+                <button type="submit" class="bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold px-4 py-2.5 rounded-xl text-xs">Search</button>
+            </form>
+
+            {% if searched_user %}
+            <div class="bg-slate-800/80 p-4 rounded-xl border border-amber-500/40 space-y-2 mt-3">
+                <div class="flex justify-between items-center">
+                    <span class="text-xs font-bold text-emerald-400">{{ searched_user.name }}</span>
+                    <span class="text-[10px] px-2 py-0.5 rounded-full font-bold {% if searched_user.is_banned %} bg-red-500/20 text-red-400 border border-red-500/30 {% else %} bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 {% endif %}">
+                        {{ 'BANNED' if searched_user.is_banned else 'ACTIVE' }}
+                    </span>
+                </div>
+                <p class="text-xs text-slate-300">Username: <strong>{{ searched_user.username }}</strong></p>
+                <p class="text-xs text-slate-300">User UID: <strong class="text-amber-300">{{ searched_user.user_uid }}</strong></p>
+                <p class="text-xs text-slate-300">Wallet: <strong class="text-emerald-400">{{ searched_user.wallet }} ৳</strong></p>
+                
+                <div class="pt-2 flex space-x-2">
+                    {% if searched_user.is_banned %}
+                    <a href="/admin/toggle-ban/{{ searched_user.username }}" class="flex-1 bg-emerald-500 text-slate-950 font-bold py-2 rounded-lg text-xs text-center">UNBAN USER</a>
+                    {% else %}
+                    <a href="/admin/toggle-ban/{{ searched_user.username }}" class="flex-1 bg-red-500 text-white font-bold py-2 rounded-lg text-xs text-center">BAN USER</a>
+                    {% endif %}
+                </div>
+            </div>
+            {% elif search_error %}
+            <p class="text-xs text-red-400 text-center py-1">{{ search_error }}</p>
+            {% endif %}
+        </div>
+
+        <!-- রেজিস্টার্ড অল ইউজার লিস্ট (UID সহ) -->
+        <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl space-y-3">
+            <h2 class="text-sm font-bold text-sky-400 uppercase tracking-wider"><i class="fa-solid fa-users mr-1"></i> Registered Users List</h2>
+            <div class="space-y-2 max-h-48 overflow-y-auto pr-1">
+                {% for u in all_users %}
+                <div class="bg-slate-800 p-2.5 rounded-xl border border-slate-700 flex justify-between items-center text-xs">
+                    <div>
+                        <p class="font-bold text-white">{{ u.name }} (<span class="text-amber-300">{{ u.user_uid }}</span>)</p>
+                        <p class="text-[10px] text-slate-400">{{ u.username }} | Wallet: {{ u.wallet }}৳</p>
+                    </div>
+                    <a href="/admin/toggle-ban/{{ u.username }}" class="px-2.5 py-1 rounded text-[10px] font-bold {% if u.is_banned %} bg-emerald-500/20 text-emerald-400 {% else %} bg-red-500/20 text-red-400 {% endif %}">
+                        {{ 'Unban' if u.is_banned else 'Ban' }}
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- প্রমো কোড ম্যানেজার -->
         <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl space-y-3">
             <h2 class="text-sm font-bold text-emerald-400 uppercase tracking-wider"><i class="fa-solid fa-ticket mr-1"></i> প্রমো কোড তৈরি করুন</h2>
             <form action="/admin/add-promo" method="POST" class="flex space-x-2">
@@ -785,11 +840,12 @@ def home():
         return redirect(url_for('login'))
     uname = session['user']
     if uname not in users_db:
-        users_db[uname] = {'name': uname, 'username': uname, 'wallet': 0.0}
+        return redirect(url_for('logout'))
     user = users_db[uname]
-    if 'wallet' not in user:
-        user['wallet'] = 0.0
-    return render_template_string(INDEX_TEMPLATE, settings=site_settings, banners=banners_db, wallet_balance=user['wallet'])
+    if user.get('is_banned'):
+        session.pop('user', None)
+        return "আপনার অ্যাকাউন্টটি অ্যাডমিন কর্তৃক ব্যান করা হয়েছে! যোগাযোগের জন্য টেলিগ্রামে কথা বলুন।"
+    return render_template_string(INDEX_TEMPLATE, settings=site_settings, banners=banners_db, wallet_balance=user.get('wallet', 0.0))
 
 @app.route('/spin')
 def spin_page():
@@ -814,9 +870,13 @@ def login():
         uname = request.form.get('username').strip()
         pwd = request.form.get('password')
         if uname in users_db and users_db[uname].get('password') == pwd:
-            session['user'] = uname
-            return redirect(url_for('home'))
-        error = 'ভুল ইউজারনেম বা পাসওয়ার্ড!'
+            if users_db[uname].get('is_banned'):
+                error = 'আপনার অ্যাকাউন্টটি ব্যান করা হয়েছে! কর্তৃপক্ষের সাথে যোগাযোগ করুন।'
+            else:
+                session['user'] = uname
+                return redirect(url_for('home'))
+        else:
+            error = 'ভুল ইউজারনেম বা পাসওয়ার্ড!'
     return render_template_string(AUTH_TEMPLATE, is_signup=False, error=error, settings=site_settings)
 
 @app.route('/signup', methods=['GET', 'POST'])
@@ -830,7 +890,17 @@ def signup():
         if uname in users_db:
             error = 'এই অ্যাকাউন্টটি আগেই রেজিস্টার্ড!'
         else:
-            users_db[uname] = {'name': name, 'email': email, 'username': uname, 'password': pwd, 'wallet': 0.0}
+            # ইউনিক ইউজার UID জেনারেট করা
+            generated_uid = f"UID-{random.randint(100000, 999999)}"
+            users_db[uname] = {
+                'name': name,
+                'email': email,
+                'username': uname,
+                'password': pwd,
+                'user_uid': generated_uid,
+                'wallet': 0.0,
+                'is_banned': False
+            }
             session['user'] = uname
             return redirect(url_for('home'))
     return render_template_string(AUTH_TEMPLATE, is_signup=True, error=error, settings=site_settings)
@@ -896,7 +966,7 @@ def submit_order():
     
     uname = session['user']
     if uname not in users_db:
-        users_db[uname] = {'name': uname, 'username': uname, 'wallet': 0.0}
+        return redirect(url_for('logout'))
     user = users_db[uname]
     
     package_str = request.form.get('package')
@@ -951,7 +1021,7 @@ def settings_page():
         return redirect(url_for('login'))
     uname = session['user']
     if uname not in users_db:
-        users_db[uname] = {'name': uname, 'username': uname, 'wallet': 0.0}
+        return redirect(url_for('logout'))
     u_info = users_db[uname]
     
     tot_orders = len([o for o in orders_db if o['username'] == uname])
@@ -987,8 +1057,51 @@ def admin_dashboard():
         promos=promo_codes,
         total_users=tot_users,
         total_orders=tot_orders,
-        pending_orders=pend_orders
+        pending_orders=pend_orders,
+        all_users=list(users_db.values()),
+        searched_user=None,
+        search_error=None
     )
+
+@app.route('/admin/search-user', methods=['POST'])
+def search_user():
+    if not session.get('admin'):
+        return redirect(url_for('admin_login'))
+    
+    s_term = request.form.get('search_term').strip().upper()
+    found_u = None
+    
+    for u in users_db.values():
+        if u.get('user_uid', '').upper() == s_term or u.get('username', '').upper() == s_term:
+            found_u = u
+            break
+            
+    tot_users = len(users_db)
+    tot_orders = len(orders_db)
+    pend_orders = len([o for o in orders_db if o['status'] == 'Pending'])
+
+    return render_template_string(
+        ADMIN_DASHBOARD_TEMPLATE, 
+        orders=orders_db, 
+        add_moneys=add_money_db, 
+        banners=banners_db, 
+        settings=site_settings,
+        promos=promo_codes,
+        total_users=tot_users,
+        total_orders=tot_orders,
+        pending_orders=pend_orders,
+        all_users=list(users_db.values()),
+        searched_user=found_u,
+        search_error=None if found_u else "কোনো ইউজার পাওয়া যায়নি!"
+    )
+
+@app.route('/admin/toggle-ban/<uname>')
+def toggle_ban(uname):
+    if not session.get('admin'):
+        return redirect(url_for('admin_login'))
+    if uname in users_db:
+        users_db[uname]['is_banned'] = not users_db[uname].get('is_banned', False)
+    return redirect(url_for('admin_dashboard'))
 
 @app.route('/admin/add-promo', methods=['POST'])
 def add_promo():
@@ -1074,11 +1187,8 @@ def add_money_action(action, aid):
             if action == 'approve' and am['status'] == 'Pending':
                 am['status'] = 'Approved'
                 uname = am['username']
-                if uname not in users_db:
-                    users_db[uname] = {'name': uname, 'username': uname, 'wallet': 0.0}
-                if 'wallet' not in users_db[uname]:
-                    users_db[uname]['wallet'] = 0.0
-                users_db[uname]['wallet'] += am['amount']
+                if uname in users_db:
+                    users_db[uname]['wallet'] += am['amount']
             elif action == 'reject':
                 am['status'] = 'Rejected'
             break
