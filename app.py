@@ -655,7 +655,7 @@ ADMIN_DASHBOARD_TEMPLATE = """
     <style>body { background-color: #0f172a; color: #f8fafc; font-family: sans-serif; }</style>
 </head>
 <body class="p-4 pb-24">
-    <div class="max-w-2xl mx-auto space-y-6">
+    <div class="max-w-3xl mx-auto space-y-6">
         <div class="flex justify-between items-center bg-slate-900 border border-slate-800 p-4 rounded-xl">
             <span class="text-lg font-bold text-amber-400">ADMIN CONTROL PANEL</span>
             <div class="flex space-x-2">
@@ -679,7 +679,161 @@ ADMIN_DASHBOARD_TEMPLATE = """
             </div>
         </div>
 
-        <!-- ওয়েবসাইট কাস্টমাইজেশন (নাম, ছবি, ওয়ার্নিং, সার্ভিস চেঞ্জার) -->
+        <!-- ১. রেজিস্টার্ড ইউজারের UID ডাটাবেস ও ইউজার ম্যানেজমেন্ট সেকশন -->
+        <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl space-y-4 shadow-xl">
+            <div class="flex justify-between items-center border-b border-slate-800 pb-2">
+                <h2 class="text-sm font-bold text-sky-400 uppercase tracking-wider"><i class="fa-solid fa-users-gear mr-1.5"></i> Registered Users UID Interface</h2>
+                <span class="text-xs bg-sky-500/20 text-sky-300 font-bold px-2.5 py-1 rounded-full">Total: {{ total_users }} Users</span>
+            </div>
+
+            <!-- ইউজার সার্চ বার -->
+            <form action="/admin/search-user" method="POST" class="flex space-x-2">
+                <input type="text" name="search_term" placeholder="Search by User UID or Username..." required class="flex-1 bg-slate-800 border border-slate-700 rounded-xl p-2.5 text-xs text-white uppercase">
+                <button type="submit" class="bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold px-4 py-2.5 rounded-xl text-xs">Search UID</button>
+            </form>
+
+            {% if searched_user %}
+            <div class="bg-slate-800 p-4 rounded-xl border border-amber-500/50 space-y-2">
+                <div class="flex justify-between items-center">
+                    <span class="text-xs font-bold text-emerald-400">{{ searched_user.name }}</span>
+                    <span class="text-[10px] px-2 py-0.5 rounded-full font-bold {% if searched_user.is_banned %} bg-red-500/20 text-red-400 border border-red-500/30 {% else %} bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 {% endif %}">
+                        {{ 'BANNED' if searched_user.is_banned else 'ACTIVE' }}
+                    </span>
+                </div>
+                <p class="text-xs text-slate-300">Username: <strong>{{ searched_user.username }}</strong></p>
+                <p class="text-xs text-slate-300">User UID: <strong class="text-amber-300">{{ searched_user.user_uid }}</strong></p>
+                <p class="text-xs text-slate-300">Wallet Balance: <strong class="text-emerald-400">{{ searched_user.wallet }} ৳</strong> | Spin Tokens: <strong class="text-amber-400 font-mono">🪙 {{ searched_user.tokens }}</strong></p>
+                <div class="pt-2">
+                    <a href="/admin/toggle-ban/{{ searched_user.username }}" class="block w-full text-center font-bold py-2 rounded-lg text-xs {% if searched_user.is_banned %} bg-emerald-500 text-slate-950 {% else %} bg-red-500 text-white {% endif %}">
+                        {{ 'UNBAN THIS USER' if searched_user.is_banned else 'BAN THIS USER' }}
+                    </a>
+                </div>
+            </div>
+            {% elif search_error %}
+            <p class="text-xs text-red-400 text-center py-1 font-bold">{{ search_error }}</p>
+            {% endif %}
+
+            <!-- সব রেজিস্টার্ড ইউজারের UID লিস্ট -->
+            <div class="space-y-2 max-h-56 overflow-y-auto pr-1">
+                {% for u in all_users %}
+                <div class="bg-slate-800 p-3 rounded-xl border border-slate-700 flex justify-between items-center text-xs">
+                    <div>
+                        <p class="font-bold text-white">{{ u.name }} <span class="text-amber-300 font-mono">({{ u.user_uid }})</span></p>
+                        <p class="text-[10px] text-slate-400">Mobile: {{ u.username }} | Wallet: {{ u.wallet }}৳ | Tokens: 🪙{{ u.tokens }}</p>
+                    </div>
+                    <a href="/admin/toggle-ban/{{ u.username }}" class="px-3 py-1.5 rounded-lg text-[10px] font-bold {% if u.is_banned %} bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 {% else %} bg-red-500/20 text-red-400 border border-red-500/30 {% endif %}">
+                        {{ 'Unban' if u.is_banned else 'Ban' }}
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- ২. আলাদা আলাদা ক্যাটাগরিতে অর্ডার ম্যানেজমেন্ট অপশন -->
+        <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl space-y-4 shadow-xl">
+            <h2 class="text-sm font-bold text-amber-400 uppercase tracking-wider border-b border-slate-800 pb-2"><i class="fa-solid fa-list-check mr-1.5"></i> Order Management (Category Wise)</h2>
+
+            <!-- ক্যাটাগরি ১: ফ্রি ডায়মন্ড উইথড্র ও রিডিম অপশন -->
+            <div class="space-y-3 pt-1">
+                <div class="flex items-center space-x-2 text-sky-400 font-bold text-xs uppercase">
+                    <i class="fa-solid fa-gem text-sm"></i>
+                    <h3>1. Free Diamond Store Withdrawals (Token Redeem)</h3>
+                </div>
+                {% set free_orders = orders | selectattr('service', 'equalto', 'FREE DIAMOND STORE') | list %}
+                {% if free_orders %}
+                    {% for o in free_orders %}
+                    <div class="bg-slate-800/80 p-3.5 rounded-xl border border-sky-500/30 space-y-2">
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs font-bold text-sky-300">#ORD-{{ o.id }} ({{ o.package }})</span>
+                            <span class="text-[10px] px-2.5 py-0.5 rounded-full font-bold {% if o.status == 'Pending' %} bg-amber-500/20 text-amber-400 {% elif o.status == 'Completed' %} bg-emerald-500/20 text-emerald-400 {% else %} bg-red-500/20 text-red-400 {% endif %}">
+                                {{ o.status }}
+                            </span>
+                        </div>
+                        <p class="text-xs text-slate-300">User: <strong class="text-white">{{ o.username }}</strong> | Game UID: <strong class="text-amber-300">{{ o.uid }}</strong></p>
+                        <p class="text-xs text-slate-300">Deducted Tokens: <strong class="text-amber-400 font-mono">🪙 {{ o.trxid }}</strong></p>
+                        {% if o.status == 'Pending' %}
+                        <div class="flex space-x-2 pt-1">
+                            <a href="/admin/order-action/complete/{{ o.id }}" class="flex-1 bg-emerald-500 text-slate-950 font-bold py-1.5 rounded-lg text-xs text-center">Approve & Send</a>
+                            <a href="/admin/order-action/reject/{{ o.id }}" class="flex-1 bg-red-500 text-white font-bold py-1.5 rounded-lg text-xs text-center">Reject</a>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="text-[11px] text-slate-500 italic bg-slate-800/40 p-2.5 rounded-xl">কোনো ফ্রি ডায়মন্ড রিডিম রিকোয়েস্ট নেই।</p>
+                {% endif %}
+            </div>
+
+            <hr class="border-slate-800">
+
+            <!-- ক্যাটাগরি ২: সরাসরি টাকা দিয়ে পেমেন্ট অর্ডার (bKash, Nagad, Rocket) -->
+            <div class="space-y-3">
+                <div class="flex items-center space-x-2 text-emerald-400 font-bold text-xs uppercase">
+                    <i class="fa-solid fa-money-bill-wave text-sm"></i>
+                    <h3>2. Direct Payment Orders (bKash / Nagad / Rocket TrxID)</h3>
+                </div>
+                {% set direct_orders = orders | rejectattr('service', 'equalto', 'FREE DIAMOND STORE') | selectattr('payment', 'ne', 'Wallet') | list %}
+                {% if direct_orders %}
+                    {% for o in direct_orders %}
+                    <div class="bg-slate-800/80 p-3.5 rounded-xl border border-emerald-500/30 space-y-2">
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs font-bold text-emerald-300">#ORD-{{ o.id }} - {{ o.service }}</span>
+                            <span class="text-[10px] px-2.5 py-0.5 rounded-full font-bold {% if o.status == 'Pending' %} bg-amber-500/20 text-amber-400 {% elif o.status == 'Completed' %} bg-emerald-500/20 text-emerald-400 {% else %} bg-red-500/20 text-red-400 {% endif %}">
+                                {{ o.status }}
+                            </span>
+                        </div>
+                        <p class="text-xs text-slate-300">User: <strong class="text-white">{{ o.username }}</strong> | Game UID: <strong class="text-white">{{ o.uid }}</strong></p>
+                        <p class="text-xs text-slate-300">Package: <strong class="text-white">{{ o.package }}</strong></p>
+                        <p class="text-xs text-slate-300">Payment Method: <strong class="text-amber-300">{{ o.payment }} (TrxID: {{ o.trxid }})</strong></p>
+                        {% if o.status == 'Pending' %}
+                        <div class="flex space-x-2 pt-1">
+                            <a href="/admin/order-action/complete/{{ o.id }}" class="flex-1 bg-emerald-500 text-slate-950 font-bold py-1.5 rounded-lg text-xs text-center">Complete</a>
+                            <a href="/admin/order-action/reject/{{ o.id }}" class="flex-1 bg-red-500 text-white font-bold py-1.5 rounded-lg text-xs text-center">Reject</a>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="text-[11px] text-slate-500 italic bg-slate-800/40 p-2.5 rounded-xl">কোনো সরাসরি পেমেন্টের অর্ডার নেই।</p>
+                {% endif %}
+            </div>
+
+            <hr class="border-slate-800">
+
+            <!-- ক্যাটাগরি ৩: ব্যালেন্স/ওয়ালেট দিয়ে টপ-আপ অর্ডার -->
+            <div class="space-y-3">
+                <div class="flex items-center space-x-2 text-amber-400 font-bold text-xs uppercase">
+                    <i class="fa-solid fa-wallet text-sm"></i>
+                    <h3>3. Wallet Balance Paid Orders</h3>
+                </div>
+                {% set wallet_orders = orders | selectattr('payment', 'equalto', 'Wallet') | list %}
+                {% if wallet_orders %}
+                    {% for o in wallet_orders %}
+                    <div class="bg-slate-800/80 p-3.5 rounded-xl border border-amber-500/30 space-y-2">
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs font-bold text-amber-300">#ORD-{{ o.id }} - {{ o.service }}</span>
+                            <span class="text-[10px] px-2.5 py-0.5 rounded-full font-bold {% if o.status == 'Pending' %} bg-amber-500/20 text-amber-400 {% elif o.status == 'Completed' %} bg-emerald-500/20 text-emerald-400 {% else %} bg-red-500/20 text-red-400 {% endif %}">
+                                {{ o.status }}
+                            </span>
+                        </div>
+                        <p class="text-xs text-slate-300">User: <strong class="text-white">{{ o.username }}</strong> | Game UID: <strong class="text-white">{{ o.uid }}</strong></p>
+                        <p class="text-xs text-slate-300">Package: <strong class="text-white">{{ o.package }}</strong></p>
+                        <p class="text-xs text-slate-300">Paid Status: <strong class="text-emerald-400">Wallet Balance Deducted</strong></p>
+                        {% if o.status == 'Pending' %}
+                        <div class="flex space-x-2 pt-1">
+                            <a href="/admin/order-action/complete/{{ o.id }}" class="flex-1 bg-emerald-500 text-slate-950 font-bold py-1.5 rounded-lg text-xs text-center">Complete</a>
+                            <a href="/admin/order-action/reject/{{ o.id }}" class="flex-1 bg-red-500 text-white font-bold py-1.5 rounded-lg text-xs text-center">Reject</a>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="text-[11px] text-slate-500 italic bg-slate-800/40 p-2.5 rounded-xl">কোনো ওয়ালেট ব্যালেন্সের অর্ডার নেই।</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- ৩. ওয়েবসাইট কাস্টমাইজেশন সেকশন -->
         <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl space-y-4 shadow-xl">
             <h2 class="text-sm font-bold text-amber-400 uppercase tracking-wider"><i class="fa-solid fa-sliders mr-1.5"></i> ওয়েবসাইট ও সার্ভিস কাস্টমাইজ করুন</h2>
             <form action="/admin/update-settings" method="POST" class="space-y-3">
@@ -723,7 +877,7 @@ ADMIN_DASHBOARD_TEMPLATE = """
             </form>
         </div>
 
-        <!-- ব্যানার স্লাইডার ম্যানেজার -->
+        <!-- ৪. স্লাইডার ব্যানার সেকশন -->
         <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl space-y-3">
             <h2 class="text-sm font-bold text-sky-400 uppercase tracking-wider"><i class="fa-solid fa-images mr-1"></i> স্লাইডার ব্যানার ম্যানেজার</h2>
             <form action="/admin/add-banner" method="POST" class="space-y-2">
@@ -741,58 +895,6 @@ ADMIN_DASHBOARD_TEMPLATE = """
             </div>
         </div>
 
-        <!-- ইউজার সার্চ ও ব্যান -->
-        <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl space-y-3">
-            <h2 class="text-sm font-bold text-amber-400 uppercase tracking-wider"><i class="fa-solid fa-user-shield mr-1.5"></i> Search User UID For Ban / Details</h2>
-            <form action="/admin/search-user" method="POST" class="flex space-x-2">
-                <input type="text" name="search_term" placeholder="Enter User UID or Username..." required class="flex-1 bg-slate-800 border border-slate-700 rounded-xl p-2.5 text-xs text-white uppercase">
-                <button type="submit" class="bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold px-4 py-2.5 rounded-xl text-xs">Search</button>
-            </form>
-
-            {% if searched_user %}
-            <div class="bg-slate-800/80 p-4 rounded-xl border border-amber-500/40 space-y-2 mt-3">
-                <div class="flex justify-between items-center">
-                    <span class="text-xs font-bold text-emerald-400">{{ searched_user.name }}</span>
-                    <span class="text-[10px] px-2 py-0.5 rounded-full font-bold {% if searched_user.is_banned %} bg-red-500/20 text-red-400 border border-red-500/30 {% else %} bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 {% endif %}">
-                        {{ 'BANNED' if searched_user.is_banned else 'ACTIVE' }}
-                    </span>
-                </div>
-                <p class="text-xs text-slate-300">Username: <strong>{{ searched_user.username }}</strong></p>
-                <p class="text-xs text-slate-300">User UID: <strong class="text-amber-300">{{ searched_user.user_uid }}</strong></p>
-                <p class="text-xs text-slate-300">Wallet: <strong class="text-emerald-400">{{ searched_user.wallet }} ৳</strong> | Tokens: <strong class="text-amber-400 font-mono">🪙 {{ searched_user.tokens }}</strong></p>
-                
-                <div class="pt-2 flex space-x-2">
-                    {% if searched_user.is_banned %}
-                    <a href="/admin/toggle-ban/{{ searched_user.username }}" class="flex-1 bg-emerald-500 text-slate-950 font-bold py-2 rounded-lg text-xs text-center">UNBAN USER</a>
-                    {% else %}
-                    <a href="/admin/toggle-ban/{{ searched_user.username }}" class="flex-1 bg-red-500 text-white font-bold py-2 rounded-lg text-xs text-center">BAN USER</a>
-                    {% endif %}
-                </div>
-            </div>
-            {% elif search_error %}
-            <p class="text-xs text-red-400 text-center py-1">{{ search_error }}</p>
-            {% endif %}
-        </div>
-
-        <!-- পেন্ডিং অর্ডারসমূহ -->
-        <h2 class="text-sm font-bold text-amber-400 uppercase tracking-wider pt-2">Pending Orders (Topup & Free Diamond)</h2>
-        {% if orders %}
-            {% for o in orders %}
-                {% if o.status == 'Pending' %}
-                <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl space-y-2">
-                    <p class="text-xs text-slate-300">Order #{{ o.id }} - <strong class="text-emerald-400">{{ o.service }}</strong> (User: {{ o.username }})</p>
-                    <p class="text-xs text-slate-300">UID: <strong class="text-white">{{ o.uid }}</strong> | Package: <strong class="text-white">{{ o.package }}</strong></p>
-                    <p class="text-xs text-slate-300">Payment: <strong class="text-amber-300">{{ o.payment }} {% if o.trxid %} (TrxID: {{ o.trxid }}) {% endif %}</strong></p>
-                    <div class="flex space-x-2 pt-1">
-                        <a href="/admin/order-action/complete/{{ o.id }}" class="flex-1 bg-emerald-500 text-slate-950 font-bold py-2 rounded-lg text-xs text-center">Complete</a>
-                        <a href="/admin/order-action/reject/{{ o.id }}" class="flex-1 bg-red-500 text-white font-bold py-2 rounded-lg text-xs text-center">Reject</a>
-                    </div>
-                </div>
-                {% endif %}
-            {% endfor %}
-        {% else %}
-            <p class="text-xs text-slate-500">কোনো পেন্ডিং অর্ডার নেই।</p>
-        {% endif %}
     </div>
 </body>
 </html>
@@ -911,7 +1013,7 @@ def redeem_diamond():
         'uid': uid,
         'package': pkg_name,
         'payment': 'Redeemed Token',
-        'trxid': f'{needed_tokens} Tokens',
+        'trxid': f'{needed_tokens}',
         'status': 'Pending',
         'time': now_str
     }
