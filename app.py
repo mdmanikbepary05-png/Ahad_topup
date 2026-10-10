@@ -1,14 +1,16 @@
 from flask import Flask, render_template_string, request, redirect, url_for, session
 import random
+import datetime
 
 app = Flask(__name__)
 app.secret_key = 'ahad_topup_secret_key_secure'
 
+# ডাটাবেস সিমুলেশন
 users_db = {}
 orders_db = []
 add_money_db = []
 
-# প্রোমো কোড ডাটাবেস (অ্যাডমিন বা কোড থেকে নিয়ন্ত্রিত)
+# প্রোমো কোড ডাটাবেস
 promo_codes = {
     "AHAD50": 50,  # ৫০ টাকা ছাড়
     "FREE20": 20   # ২০ টাকা ছাড়
@@ -20,7 +22,7 @@ banners_db = [
     {"id": 2, "image_url": "https://lh3.googleusercontent.com/d/1KSmxyifb-7fMI2CM__GYkEHwGiaoGslr", "caption": "১০০% ট্রাস্টেড ও দ্রুত সার্ভিস"}
 ]
 
-# ড্রাইভ লিংক দিয়ে ৬টি সার্ভিস আইকন ও কাস্টম সেটিংস
+# সাইট ও সার্ভিস সেটিংস
 site_settings = {
     "site_title": "AHAD TOPUP",
     "payment_number": "01727246581",
@@ -79,7 +81,6 @@ BASE_HEAD = """
             justify-content: center; font-size: 24px; box-shadow: 0 4px 10px rgba(0,0,0,0.4); z-index: 50;
         }
 
-        /* Sun / Light Mode Style */
         body.light-mode {
             background-color: #f1f5f9 !important;
             color: #0f172a !important;
@@ -92,11 +93,6 @@ BASE_HEAD = """
         body.light-mode .card-bg {
             background: linear-gradient(135deg, #ffffff, #f8fafc) !important;
             border-color: #cbd5e1 !important;
-        }
-        body.light-mode text-slate-200, 
-        body.light-mode text-slate-300, 
-        body.light-mode text-white {
-            color: #0f172a !important;
         }
     </style>
 </head>
@@ -199,7 +195,7 @@ INDEX_TEMPLATE = BASE_HEAD + """
             }
         </script>
 
-        <!-- স্পিন অ্যান্ড উইন ব্যানার প্রমোশন -->
+        <!-- স্পিন অ্যান্ড উইন ব্যানার -->
         <a href="/spin" class="block bg-gradient-to-r from-amber-500 to-orange-600 p-3 rounded-2xl shadow-lg text-slate-950 flex justify-between items-center">
             <div class="flex items-center space-x-3">
                 <div class="w-10 h-10 bg-black/20 rounded-full flex items-center justify-center text-xl">🎰</div>
@@ -211,47 +207,68 @@ INDEX_TEMPLATE = BASE_HEAD + """
             <span class="bg-black/80 text-amber-400 font-bold px-3 py-1.5 rounded-xl text-[10px]">SPIN NOW</span>
         </a>
 
+        <!-- লাইভ সার্চ বার -->
+        <div class="relative">
+            <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3.5 text-slate-400 text-xs"></i>
+            <input type="text" id="serviceSearchInput" onkeyup="filterServices()" placeholder="সার্ভিস খুঁজুন (যেমন: UID, Likes)..." class="w-full bg-slate-900 border border-slate-800 rounded-xl py-2.5 pl-10 pr-4 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500">
+        </div>
+
         <h2 class="text-center font-bold tracking-wider text-slate-200 mb-2 text-lg border-b border-slate-800 pb-2">REGULAR TOPUP</h2>
 
-        <div class="grid grid-cols-3 gap-3">
-            <a href="/order/1" class="card-bg p-2.5 rounded-xl text-center flex flex-col items-center hover:border-emerald-500 transition">
+        <div class="grid grid-cols-3 gap-3" id="servicesGrid">
+            <a href="/order/1" class="service-card card-bg p-2.5 rounded-xl text-center flex flex-col items-center hover:border-emerald-500 transition">
                 <div class="w-16 h-16 bg-slate-800 rounded-lg mb-2 flex items-center justify-center border border-slate-700 overflow-hidden">
                     <img src="{{ settings.service_1_icon }}" class="w-full h-full object-cover">
                 </div>
-                <span class="text-[11px] font-bold text-slate-200 leading-tight">{{ settings.service_1_name }}</span>
+                <span class="service-title text-[11px] font-bold text-slate-200 leading-tight">{{ settings.service_1_name }}</span>
             </a>
-            <a href="/order/2" class="card-bg p-2.5 rounded-xl text-center flex flex-col items-center hover:border-emerald-500 transition">
+            <a href="/order/2" class="service-card card-bg p-2.5 rounded-xl text-center flex flex-col items-center hover:border-emerald-500 transition">
                 <div class="w-16 h-16 bg-slate-800 rounded-lg mb-2 flex items-center justify-center border border-slate-700 overflow-hidden">
                     <img src="{{ settings.service_2_icon }}" class="w-full h-full object-cover">
                 </div>
-                <span class="text-[11px] font-bold text-slate-200 leading-tight">{{ settings.service_2_name }}</span>
+                <span class="service-title text-[11px] font-bold text-slate-200 leading-tight">{{ settings.service_2_name }}</span>
             </a>
-            <a href="/order/3" class="card-bg p-2.5 rounded-xl text-center flex flex-col items-center hover:border-emerald-500 transition">
+            <a href="/order/3" class="service-card card-bg p-2.5 rounded-xl text-center flex flex-col items-center hover:border-emerald-500 transition">
                 <div class="w-16 h-16 bg-slate-800 rounded-lg mb-2 flex items-center justify-center border border-slate-700 overflow-hidden">
                     <img src="{{ settings.service_3_icon }}" class="w-full h-full object-cover">
                 </div>
-                <span class="text-[11px] font-bold text-slate-200 leading-tight">{{ settings.service_3_name }}</span>
+                <span class="service-title text-[11px] font-bold text-slate-200 leading-tight">{{ settings.service_3_name }}</span>
             </a>
-            <a href="/order/4" class="card-bg p-2.5 rounded-xl text-center flex flex-col items-center hover:border-emerald-500 transition">
+            <a href="/order/4" class="service-card card-bg p-2.5 rounded-xl text-center flex flex-col items-center hover:border-emerald-500 transition">
                 <div class="w-16 h-16 bg-slate-800 rounded-lg mb-2 flex items-center justify-center border border-slate-700 overflow-hidden">
                     <img src="{{ settings.service_4_icon }}" class="w-full h-full object-cover">
                 </div>
-                <span class="text-[11px] font-bold text-slate-200 leading-tight">{{ settings.service_4_name }}</span>
+                <span class="service-title text-[11px] font-bold text-slate-200 leading-tight">{{ settings.service_4_name }}</span>
             </a>
-            <a href="/order/5" class="card-bg p-2.5 rounded-xl text-center flex flex-col items-center hover:border-emerald-500 transition">
+            <a href="/order/5" class="service-card card-bg p-2.5 rounded-xl text-center flex flex-col items-center hover:border-emerald-500 transition">
                 <div class="w-16 h-16 bg-slate-800 rounded-lg mb-2 flex items-center justify-center border border-slate-700 overflow-hidden">
                     <img src="{{ settings.service_5_icon }}" class="w-full h-full object-cover">
                 </div>
-                <span class="text-[11px] font-bold text-slate-200 leading-tight">{{ settings.service_5_name }}</span>
+                <span class="service-title text-[11px] font-bold text-slate-200 leading-tight">{{ settings.service_5_name }}</span>
             </a>
-            <a href="/order/6" class="card-bg p-2.5 rounded-xl text-center flex flex-col items-center hover:border-emerald-500 transition">
+            <a href="/order/6" class="service-card card-bg p-2.5 rounded-xl text-center flex flex-col items-center hover:border-emerald-500 transition">
                 <div class="w-16 h-16 bg-slate-800 rounded-lg mb-2 flex items-center justify-center border border-slate-700 overflow-hidden">
                     <img src="{{ settings.service_6_icon }}" class="w-full h-full object-cover">
                 </div>
-                <span class="text-[11px] font-bold text-slate-200 leading-tight">{{ settings.service_6_name }}</span>
+                <span class="service-title text-[11px] font-bold text-slate-200 leading-tight">{{ settings.service_6_name }}</span>
             </a>
         </div>
     </main>
+
+    <script>
+        function filterServices() {
+            let input = document.getElementById('serviceSearchInput').value.toLowerCase();
+            let cards = document.getElementsByClassName('service-card');
+            for (let card of cards) {
+                let title = card.querySelector('.service-title').innerText.toLowerCase();
+                if (title.includes(input)) {
+                    card.style.display = "flex";
+                } else {
+                    card.style.display = "none";
+                }
+            }
+        }
+    </script>
 """ + BOTTOM_NAV
 
 SPIN_TEMPLATE = BASE_HEAD + """
@@ -319,7 +336,6 @@ ORDER_TEMPLATE = BASE_HEAD + """
             <input type="hidden" name="package" id="selectedPackageInput" required>
         </div>
 
-        <!-- প্রমো কোড বা কুপন বক্স -->
         <div class="bg-slate-900 p-4 rounded-xl border border-slate-800 space-y-2">
             <label class="block text-xs font-semibold text-slate-400">PROMO / COUPON CODE (Optional)</label>
             <input type="text" name="promo" placeholder="Enter Promo Code (e.g. AHAD50)" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-xs text-amber-400 uppercase font-bold">
@@ -389,6 +405,15 @@ SETTINGS_TEMPLATE = BASE_HEAD + """
             <div class="bg-slate-800 p-3 rounded-xl border border-slate-700 flex justify-between items-center">
                 <span class="text-xs text-slate-300">Wallet Balance:</span>
                 <span class="text-sm font-bold text-emerald-400">{{ user.wallet }} ৳</span>
+            </div>
+        </div>
+
+        <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl space-y-3">
+            <h3 class="text-xs font-bold text-amber-400 uppercase tracking-wider"><i class="fa-solid fa-share-nodes mr-1"></i> Referral Program</h3>
+            <p class="text-[11px] text-slate-400">বন্ধুকে রেফার করুন এবং বোনাস ট্রাই করুন:</p>
+            <div class="bg-slate-800 p-2.5 rounded-xl border border-slate-700 flex justify-between items-center">
+                <span class="text-xs font-mono text-emerald-400 select-all">https://ahadtopup.com/ref/{{ user.username }}</span>
+                <button onclick="navigator.clipboard.writeText('https://ahadtopup.com/ref/{{ user.username }}'); alert('Referral link copied!');" class="bg-emerald-500 text-slate-950 font-bold px-3 py-1 rounded-lg text-xs">Copy</button>
             </div>
         </div>
 
@@ -489,17 +514,17 @@ ADD_MONEY_PAY_TEMPLATE = BASE_HEAD + """
 ORDERS_TEMPLATE = BASE_HEAD + """
     <header class="flex items-center p-4 bg-slate-900 border-b border-slate-800 sticky top-0 z-40">
         <a href="/" class="text-slate-300 mr-4 text-lg"><i class="fa-solid fa-arrow-left"></i></a>
-        <h1 class="text-base font-bold uppercase tracking-wider text-slate-200">My Orders & Add Money History</h1>
+        <h1 class="text-base font-bold uppercase tracking-wider text-slate-200">My Orders & Invoice</h1>
     </header>
 
     <main class="p-4 max-w-md mx-auto space-y-4">
         <h3 class="text-xs font-bold text-slate-400 uppercase">Topup Orders</h3>
         {% if orders %}
             {% for o in orders %}
-            <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl space-y-2">
+            <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl space-y-2 relative">
                 <div class="flex justify-between items-center">
-                    <span class="text-xs font-bold text-emerald-400">{{ o.service }}</span>
-                    <span class="text-xs px-2.5 py-1 rounded-full font-bold 
+                    <span class="text-xs font-bold text-emerald-400">#ORD-{{ o.id }} - {{ o.service }}</span>
+                    <span class="text-[10px] px-2.5 py-1 rounded-full font-bold 
                         {% if o.status == 'Pending' %} bg-amber-500/20 text-amber-400 border border-amber-500/30
                         {% elif o.status == 'Completed' %} bg-emerald-500/20 text-emerald-400 border border-emerald-500/30
                         {% else %} bg-red-500/20 text-red-400 border border-red-500/30 {% endif %}">
@@ -509,6 +534,7 @@ ORDERS_TEMPLATE = BASE_HEAD + """
                 <p class="text-xs text-slate-300">UID: <strong>{{ o.uid }}</strong></p>
                 <p class="text-xs text-slate-300">Package: <strong>{{ o.package }}</strong></p>
                 <p class="text-xs text-slate-300">Payment: <strong class="text-amber-300">{{ o.payment }} {% if o.trxid %} (TrxID: {{ o.trxid }}) {% endif %}</strong></p>
+                <p class="text-[10px] text-slate-500 text-right">{{ o.time }}</p>
             </div>
             {% endfor %}
         {% else %}
@@ -604,6 +630,38 @@ ADMIN_DASHBOARD_TEMPLATE = """
             </div>
         </div>
 
+        <!-- প্রিমিয়াম অ্যানালিটিক্স ড্যাশবোর্ড -->
+        <div class="grid grid-cols-3 gap-3">
+            <div class="bg-slate-900 border border-slate-800 p-4 rounded-2xl text-center">
+                <p class="text-[10px] text-slate-400 font-bold uppercase">Total Users</p>
+                <h3 class="text-xl font-black text-sky-400 mt-1">{{ total_users }}</h3>
+            </div>
+            <div class="bg-slate-900 border border-slate-800 p-4 rounded-2xl text-center">
+                <p class="text-[10px] text-slate-400 font-bold uppercase">Total Orders</p>
+                <h3 class="text-xl font-black text-emerald-400 mt-1">{{ total_orders }}</h3>
+            </div>
+            <div class="bg-slate-900 border border-slate-800 p-4 rounded-2xl text-center">
+                <p class="text-[10px] text-slate-400 font-bold uppercase">Pending</p>
+                <h3 class="text-xl font-black text-amber-400 mt-1">{{ pending_orders }}</h3>
+            </div>
+        </div>
+
+        <!-- কাস্টম প্রমো কোড ম্যানেজার -->
+        <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl space-y-3">
+            <h2 class="text-sm font-bold text-emerald-400 uppercase tracking-wider"><i class="fa-solid fa-ticket mr-1"></i> প্রমো কোড তৈরি করুন</h2>
+            <form action="/admin/add-promo" method="POST" class="flex space-x-2">
+                <input type="text" name="code" placeholder="কোড (যেমন: EID2026)" required class="flex-1 bg-slate-800 border border-slate-700 rounded-lg p-2 text-xs text-white uppercase">
+                <input type="number" name="discount" placeholder="ডিসকাউন্ট ৳" required class="w-28 bg-slate-800 border border-slate-700 rounded-lg p-2 text-xs text-white">
+                <button type="submit" class="bg-emerald-500 text-slate-950 font-bold px-4 py-2 rounded-lg text-xs">+ যুক্ত করুন</button>
+            </form>
+            <div class="flex flex-wrap gap-2 pt-2">
+                {% for code, disc in promos.items() %}
+                <span class="bg-slate-800 border border-slate-700 text-amber-300 px-3 py-1 rounded-full text-xs font-bold">{{ code }} ({{ disc }}৳ ছাড়)</span>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- ওয়েবসাইট কাস্টমাইজেশন -->
         <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl space-y-4 shadow-xl">
             <h2 class="text-sm font-bold text-amber-400 uppercase tracking-wider"><i class="fa-solid fa-sliders mr-1.5"></i> ওয়েবসাইট ও সার্ভিস কাস্টমাইজ করুন</h2>
             <form action="/admin/update-settings" method="POST" class="space-y-3">
@@ -647,33 +705,7 @@ ADMIN_DASHBOARD_TEMPLATE = """
             </form>
         </div>
 
-        <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl space-y-4 shadow-xl">
-            <h2 class="text-sm font-bold text-amber-400 uppercase tracking-wider"><i class="fa-solid fa-images mr-1.5"></i> স্লাইডার ব্যানার ম্যানেজ করুন</h2>
-            <form action="/admin/add-banner" method="POST" class="space-y-3">
-                <div>
-                    <label class="block text-xs font-semibold text-slate-400 mb-1">Banner Image URL</label>
-                    <input type="text" name="image_url" required placeholder="https://..." class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-sm text-white">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-slate-400 mb-1">Banner Caption / Text</label>
-                    <input type="text" name="caption" required placeholder="ব্যানারের টেক্সট..." class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-sm text-white">
-                </div>
-                <button type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-2.5 rounded-xl text-xs transition">
-                    + ব্যানার যুক্ত করুন
-                </button>
-            </form>
-            
-            <div class="space-y-2 pt-2">
-                <p class="text-xs text-slate-400 font-semibold">সক্রিয় ব্যানারসমূহ:</p>
-                {% for b in banners %}
-                <div class="flex justify-between items-center bg-slate-800 p-2.5 rounded-lg border border-slate-700">
-                    <span class="text-xs text-white truncate max-w-[250px]">{{ b.caption }}</span>
-                    <a href="/admin/delete-banner/{{ b.id }}" class="bg-red-500/20 text-red-400 px-2.5 py-1 rounded text-xs font-bold">Delete</a>
-                </div>
-                {% endfor %}
-            </div>
-        </div>
-
+        <!-- পেন্ডিং অ্যাড মানি -->
         <h2 class="text-sm font-bold text-sky-400 uppercase tracking-wider">Pending Add Money Requests</h2>
         {% if add_moneys %}
             {% for am in add_moneys %}
@@ -692,6 +724,7 @@ ADMIN_DASHBOARD_TEMPLATE = """
             <p class="text-xs text-slate-500">কোনো পেন্ডিং অ্যাড মানি রিকোয়েস্ট নেই।</p>
         {% endif %}
 
+        <!-- পেন্ডিং অর্ডার -->
         <h2 class="text-sm font-bold text-amber-400 uppercase tracking-wider pt-4">Pending Topup Orders</h2>
         {% if orders %}
             {% for o in orders %}
@@ -871,7 +904,6 @@ def submit_order():
     trxid = request.form.get('trxid', 'N/A')
     promo = request.form.get('promo', '').strip().upper()
     
-    # প্রমো কোড হিসাব
     discount = 0
     if promo in promo_codes:
         discount = promo_codes[promo]
@@ -890,6 +922,7 @@ def submit_order():
         trxid = 'Wallet Paid'
 
     order_id = len(orders_db) + 1
+    now_str = datetime.datetime.now().strftime("%I:%M %p, %d %b")
     order_data = {
         'id': order_id,
         'username': uname,
@@ -898,7 +931,8 @@ def submit_order():
         'package': package_str,
         'payment': payment_method,
         'trxid': trxid,
-        'status': 'Pending'
+        'status': 'Pending',
+        'time': now_str
     }
     orders_db.append(order_data)
     return redirect(url_for('my_orders'))
@@ -939,7 +973,31 @@ def admin_login():
 def admin_dashboard():
     if not session.get('admin'):
         return redirect(url_for('admin_login'))
-    return render_template_string(ADMIN_DASHBOARD_TEMPLATE, orders=orders_db, add_moneys=add_money_db, banners=banners_db, settings=site_settings)
+    
+    tot_users = len(users_db)
+    tot_orders = len(orders_db)
+    pend_orders = len([o for o in orders_db if o['status'] == 'Pending'])
+    
+    return render_template_string(
+        ADMIN_DASHBOARD_TEMPLATE, 
+        orders=orders_db, 
+        add_moneys=add_money_db, 
+        banners=banners_db, 
+        settings=site_settings,
+        promos=promo_codes,
+        total_users=tot_users,
+        total_orders=tot_orders,
+        pending_orders=pend_orders
+    )
+
+@app.route('/admin/add-promo', methods=['POST'])
+def add_promo():
+    if not session.get('admin'):
+        return redirect(url_for('admin_login'))
+    code = request.form.get('code').strip().upper()
+    discount = float(request.form.get('discount'))
+    promo_codes[code] = discount
+    return redirect(url_for('admin_dashboard'))
 
 @app.route('/admin/update-settings', methods=['POST'])
 def update_settings():
